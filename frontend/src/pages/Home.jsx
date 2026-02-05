@@ -138,53 +138,7 @@ const Home = () => {
                             </div>
                         </section>
 
-                        {/* Tracks Section - Modernized */}
-                        <section>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
-                                Conference Tracks
-                            </h3>
-                            <div className="grid md:grid-cols-3 gap-6">
-                                {/* Track 1 */}
-                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                                        <Network className="w-5 h-5 text-blue-600" />
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900 mb-3">Computing</h4>
-                                    <ul className="space-y-2 text-sm text-gray-600">
-                                        <li>• Cloud Computing</li>
-                                        <li>• AI & Machine Learning</li>
-                                        <li>• Data Science</li>
-                                        <li>• Quantum Computing</li>
-                                    </ul>
-                                </div>
-                                {/* Track 2 */}
-                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                                        <Wifi className="w-5 h-5 text-green-600" />
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900 mb-3">Communication</h4>
-                                    <ul className="space-y-2 text-sm text-gray-600">
-                                        <li>• 5G/6G Networks</li>
-                                        <li>• Wireless Comm.</li>
-                                        <li>• IoT & Sensors</li>
-                                        <li>• Satellite Comm.</li>
-                                    </ul>
-                                </div>
-                                {/* Track 3 */}
-                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                                        <Shield className="w-5 h-5 text-red-600" />
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900 mb-3">Cyber Security</h4>
-                                    <ul className="space-y-2 text-sm text-gray-600">
-                                        <li>• Network Security</li>
-                                        <li>• Cryptography</li>
-                                        <li>• Blockchain</li>
-                                        <li>• Cyber Physical</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </section>
+
 
                         {/* Topics of Interest Section */}
                         <section>
@@ -273,83 +227,45 @@ const Home = () => {
                             </div>
                         </section>
 
-                        {/* Venue & Participation Section */}
-                        <section className="grid md:grid-cols-2 gap-8">
-                            {/* Venue Details */}
-                            <div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
-                                    Venue
-                                </h3>
-                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 h-full">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <MapPin className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xl font-bold text-gray-800 mb-2">Ganpat University</h4>
-                                            <address className="text-gray-600 text-sm leading-relaxed not-italic space-y-1">
-                                                <p>Ganpat Vidyanagar, Mehsana-Gandhinagar Highway,</p>
-                                                <p>North Gujarat, India, Pin Code 384012</p>
-                                                <p className="pt-2 text-blue-600 font-medium">coms2@ganpatuniversity.ac.in</p>
-                                            </address>
-                                        </div>
-                                    </div>
-                                    <div className="relative h-48 rounded-lg overflow-hidden border border-gray-200 mt-6">
-                                        <iframe
-                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7335.5!2d72.4532934!3d23.5258338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c476c5013fd03%3A0xa1fe01d9ab30482!2sGanpat%20University%20(GUNI)!5e0!3m2!1sen!2sin!4v1707123456789!5m2!1sen!2sin"
-                                            className="absolute inset-0 w-full h-full"
-                                            allowFullScreen=""
-                                            loading="lazy"
-                                        ></iframe>
-                                    </div>
-                                </div>
+                        {/* About the University Section */}
+                        <section className="py-12 bg-gray-50/50 rounded-3xl px-8 border border-gray-100">
+                            <div className="text-center mb-10">
+                                <h2 className="text-3xl md:text-4xl font-bold text-sky-500">
+                                    About the University
+                                </h2>
+                                <div className="w-20 h-1 bg-sky-200 mx-auto mt-4 rounded-full"></div>
                             </div>
 
-                            {/* Participation Modes */}
-                            <div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
-                                    Participation Modes
-                                </h3>
-                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 h-full space-y-6">
-                                    {/* Mode 1 */}
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-1">
-                                            <Globe className="w-4 h-4 text-indigo-600" />
-                                        </div>
-                                        <div>
-                                            <h5 className="font-bold text-gray-900 mb-1">International Authors</h5>
-                                            <p className="text-sm text-gray-600 leading-snug">
-                                                (Outside India): Hybrid participation requests will be considered.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {/* Mode 2 */}
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-1">
-                                            <Wifi className="w-4 h-4 text-orange-600" />
-                                        </div>
-                                        <div>
-                                            <h5 className="font-bold text-gray-900 mb-1">Authors from Other States</h5>
-                                            <p className="text-sm text-gray-600 leading-snug">
-                                                (Other than Gujarat): Online participation may be permitted under exceptional circumstances.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {/* Mode 3 */}
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-1">
-                                            <MapPin className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <h5 className="font-bold text-gray-900 mb-1">Authors from Gujarat</h5>
-                                            <p className="text-sm text-gray-600 leading-snug">
-                                                Physical presence of the presenting author is mandatory.
-                                            </p>
-                                        </div>
-                                    </div>
+                            <div className="grid lg:grid-cols-2 gap-12 items-center">
+                                <div className="space-y-6 text-gray-700 leading-relaxed text-justify">
+                                    <p>
+                                        Ganpat University is a well reputed State Private University established in 2005 through
+                                        the State Legislative Act No.19/2005 on 12th April 2005, Government of Gujarat, and
+                                        recognized by the UGC under the section 2(f) of the UGC Act, 1956 having campus
+                                        spread over more than 300 acres of land with world-class infrastructure and more than
+                                        10,000 students on campus.
+                                    </p>
+                                    <p>
+                                        The University offers Diplomas, Under Graduate, Post
+                                        Graduate, and Research Programs in the field of Engineering and Technology, Computer
+                                        Applications, Management, Pharmacy, Sciences, Commerce & Social Science,
+                                        Architecture, Design & Planning, Maritime Studies, Nursing, & Agriculture, etc.
+                                    </p>
+                                </div>
+                                <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video border-4 border-white">
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
+                                        src="https://www.youtube.com/embed/OsoXEo1wpYI"
+                                        title="Aerial Walkthrough of Ganpat University"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
                             </div>
                         </section>
+
+
                     </div>
 
 

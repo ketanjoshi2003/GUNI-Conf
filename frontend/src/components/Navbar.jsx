@@ -59,7 +59,6 @@ const Navbar = () => {
             name: 'Archive',
             path: '/archive',
             dropdown: [
-                { name: 'Previous Speakers', path: '/archive?tab=previous-speakers' },
                 { name: 'Media Coverage', path: '/archive?tab=media-coverage' },
                 { name: 'Glimpses', path: '/archive?tab=glimpses' }
             ]

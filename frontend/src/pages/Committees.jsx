@@ -14,22 +14,58 @@ const Committees = () => {
         }
     }, [search]);
 
-    const advisoryCommittee = [
-        "GanpatBhai Patel, Patron-in-Chief and President, Ganpat University",
-        "Mahendra Sharma, Group Pro-Chancellor, Ganpat University",
-        "Rakesh Patel, Ganpat University",
-        "Girish Patel, Ganpat University",
-        "Saurabh Dave, Ganpat University",
-        "Rajkumar Buyya, The University of Melbourne, Australia",
-        "Mohammed Atiquzzaman, University of Oklahoma, USA",
-        "Arup R. Dasgupta, Space Application Centre, ISRO, India",
-        "Akshai Aggarwal, University of Windsor, Canada",
-        "Bala Natarajan, Kansas State University, USA",
-        "Sartaj Sahni, University of Florida, USA",
-        "Kevin Daimi, University of Detroit, USA",
-        "Virendra C. Bhavsar, University of New Brunswick, Canada",
-        "Hamid R. Arabnia, University of Georgia, USA"
-    ];
+    const advisoryCommitteeData = {
+        patron: {
+            title: "Patron-in-Chief & President",
+            members: ["Shri. Ganpatbhai Patel, President, Ganpat University"]
+        },
+        proChancellor: {
+            title: "Pro- Chancellor and Director General",
+            members: ["Dr. Mahendra Sharma, Pro-Chancellor, Ganpat University"]
+        },
+        proViceChancellor: {
+            title: "Pro- Vice Chancellor",
+            members: [
+                "Dr. Rakesh Patel, Pro-Vice Chancellor, Ganpat University",
+                "Dr. Amit Patel, Pro-Vice Chancellor, Ganpat University"
+            ]
+        },
+        internationalBoard: {
+            title: "International Advisory Board",
+            members: [
+                "Dr. Sartaj Sahni, University of Florida, USA",
+                "Dr. Akshai Aggarwal, University of Windsor, Canada",
+                "Mr. Dipak Mathur, IEEE Asia Pacific Region 10 IEEE R10 Director-Elect",
+                "Dr. Kevin Daimi, University of Detroit, USA",
+                "Dr. Hamid R. Arabnia, University of Georgia, USA",
+                "Dr. Bala Natarajan, Kansas State University, USA",
+                "Dr. Sanjay Madria, Missouri University of Science and Technology, USA",
+                "Dr. Arvind Shah, Georgia Southwestern State University, USA",
+                "Dr. P. Balasubramanian, Nanyang Technological University, Singapore",
+                "Dr. Rutvij H. Jhaveri, PDPU, India",
+                "Mr. Shyam Iyer(ACM Journal Reviewer), Dell EMC, USA",
+                "Dr. Virendra C. Bhavsar, University of New Brunswick, Canada",
+                "Dr. Xing Liu, Kwantlen Polytechnic University, Canada",
+                "Dr. Kalpdrum Passi, Laurential University, Canada",
+                "Dr. Ratvinder Grewal, Laurential University, Canada",
+                "Dr. Ali Mostafaeipour, Yazd University, Iran",
+                "Dr. Ramesh Bansal, University of Sharjah, United Arab Emirates",
+                "Dr. Neville Watson, University of Canterbury, New Zealand",
+                "Dr. Yuan Miao, Victoria University, Australia",
+                "Dr. Shah Miah, Victoria University, Australia",
+                "Dr. Mohan Kolhe, University of Agder, Norway",
+                "Dr. Akhtar Kalam, Victoria University, Melbourne, Australia",
+                "Dr. Pao-Ann Hsiung, National Chung Cheng University, Taiwan",
+                "Dr. Prateek Agrawal, ITEC Research Centre, University of Klagenfurt, Austria",
+                "Dr. Anatoliy Zabrovskiy, ITEC Research Centre, University of Klagenfurt, Austria",
+                "Prof. Valentina Emilia Balas, Researcher, \"Aurel Vlaicu\", University of Arad, Romania",
+                "Dr. Ashok Karania, EMEA, UK",
+                "Dr. D.P. Kothari, Ex Vice Chancellor, VIT University, India",
+                "Dr. H.S. Mazumdar, Director, R&D, Dharmsinh Desai University, India",
+                "Dr. Debajyoti Mukhopadhyay, NHITM, Mumbai University, India"
+            ]
+        }
+    };
 
     const chairs = {
         honorary: {
@@ -344,9 +380,9 @@ const Committees = () => {
                     <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-12">
-                    {/* LEFT COLUMN (Main Content) */}
-                    <div className="lg:col-span-2">
+                <div className="max-w-6xl mx-auto">
+                    {/* Main Content Area */}
+                    <div className="w-full">
                         {/* Tab Navigation */}
                         <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
                             {[
@@ -368,26 +404,36 @@ const Committees = () => {
                         {/* Content Area */}
                         <div className="animate-fade-in-up">
                             {activeTab === 'advisory' && (
-                                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 space-y-10">
                                     <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3 border-b pb-4">
                                         <span className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                                             <Globe className="w-6 h-6" />
                                         </span>
-                                        International Advisory Committee
+                                        Advisory Committee
                                     </h2>
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        {advisoryCommittee.map((member, idx) => (
-                                            <div key={idx} className="flex items-start gap-4 p-4 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
-                                                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                                                <div className="text-gray-700 font-medium">
-                                                    {member.split(',')[0]}
-                                                    <span className="block text-sm text-gray-500 font-normal mt-1">
-                                                        {member.split(',').slice(1).join(',')}
-                                                    </span>
-                                                </div>
+
+                                    {Object.entries(advisoryCommitteeData).map(([key, section]) => (
+                                        <div key={key} className="space-y-4">
+                                            <h3 className="text-lg font-bold text-blue-800 bg-blue-50 px-4 py-2 rounded-lg border-l-4 border-blue-600">
+                                                {section.title}:
+                                            </h3>
+                                            <div className={`grid ${key === 'internationalBoard' ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1'} gap-4`}>
+                                                {section.members.map((member, idx) => (
+                                                    <div key={idx} className="flex items-start gap-3 p-3 rounded-lg border border-gray-50 hover:bg-gray-50 transition-colors">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                                                        <div className="text-gray-700 text-sm">
+                                                            <span className="font-bold">{member.split(',')[0]}</span>
+                                                            {member.split(',').length > 1 && (
+                                                                <span className="block text-xs text-gray-500 mt-0.5">
+                                                                    {member.split(',').slice(1).join(',')}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
@@ -417,74 +463,6 @@ const Committees = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
-
-                    {/* RIGHT COLUMN (Sidebar) */}
-                    <div className="space-y-8">
-
-                        {/* Venue Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl p-8 shadow-xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform rotate-12 scale-150">
-                                <MapPin className="w-32 h-32" />
-                            </div>
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-3 relative z-10">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <MapPin className="w-5 h-5 text-sky-400" />
-                                </div>
-                                Venue
-                            </h3>
-                            <div className="space-y-3 text-sm text-gray-300 relative z-10">
-                                <p className="font-semibold text-white text-lg">Ganpat University</p>
-                                <p>Mehsana-Gozaria Highway, Kherva</p>
-                                <p>Gujarat 384012, India</p>
-                                <div className="pt-4 mt-4 border-t border-white/10">
-                                    <p className="text-xs text-gray-400 mb-1">Contact for queries:</p>
-                                    <a href="mailto:coms2@ganpatuniversity.ac.in" className="text-sky-400 hover:text-sky-300 transition-colors">coms2@ganpatuniversity.ac.in</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Important Dates */}
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-sky-100 text-sky-600 rounded-lg">
-                                    <Calendar className="w-5 h-5" />
-                                </div>
-                                Important Dates
-                            </h3>
-                            <div className="space-y-6">
-                                {[
-                                    { label: "Full Paper Submission", date: "May 30, 2026", active: true },
-                                    { label: "Paper Acceptance", date: "July 30, 2026" },
-                                    { label: "Registration Opens", date: "July 30, 2026" },
-                                    { label: "Conference Date", date: "Sept 10-11, 2026" }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex flex-col relative pl-4 border-l-2 border-gray-100 last:border-0">
-                                        <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${item.active ? 'bg-sky-500 ring-4 ring-sky-100' : 'bg-gray-300'}`}></div>
-                                        <span className={`text-xs font-bold uppercase tracking-wider mb-1 ${item.active ? 'text-sky-600' : 'text-gray-400'}`}>{item.date}</span>
-                                        <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Visitors Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800 p-6 flex flex-col items-center">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <Globe className="w-5 h-5 text-blue-400" />
-                                </div>
-                                Visitors
-                            </h3>
-                            <div className="overflow-hidden rounded-lg shadow-inner bg-[#0f172a]">
-                                <img
-                                    src="https://s11.flagcounter.com/count2/JO2k/bg_0F172A/txt_FFFFFF/border_334155/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/"
-                                    alt="Flag Counter"
-                                    className="block opacity-90 hover:opacity-100 transition-opacity"
-                                />
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>

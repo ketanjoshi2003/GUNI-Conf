@@ -116,48 +116,6 @@ const VisaInformation = () => {
                             </div>
                         </section>
 
-                        {/* Participation Modes */}
-                        <section className="bg-white rounded-xl shadow-md border border-gray-100 p-8 hover:shadow-lg transition-shadow">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 border-b pb-4">
-                                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
-                                    <Wifi className="w-6 h-6" />
-                                </div>
-                                Participation Modes
-                            </h2>
-                            <div className="space-y-4 text-gray-700">
-                                <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                                    <ul className="space-y-3">
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                <Globe className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-900">International Authors (outside India):</span>
-                                                <p className="text-sm mt-1">Hybrid participation requests will be considered.</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                <Wifi className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-900">Authors from States other than Gujarat (India):</span>
-                                                <p className="text-sm mt-1">Online participation may be permitted under exceptional circumstances.</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                <MapPin className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-900">Authors from Gujarat (India):</span>
-                                                <p className="text-sm mt-1">Physical presence of the presenting author is mandatory.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </section>
                     </div>
                 </div>
             </div>

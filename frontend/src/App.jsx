@@ -10,6 +10,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
+import Registration from './pages/Registration';
+import Sponsors from './pages/Sponsors';
+
 
 // New Pages
 import CallForPapers from './pages/CallForPapers';
@@ -44,7 +47,7 @@ function App() {
             <Route path="/call-for-papers" element={<CallForPapers />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/registration" element={<Register />} />
+            <Route path="/registration" element={<Registration />} />
 
             <Route path="/paper-submission" element={<PaperSubmission />} />
             <Route path="/paper-publications" element={<PaperPublications />} />
@@ -55,7 +58,7 @@ function App() {
             <Route path="/visa-information" element={<VisaInformation />} />
             <Route path="/accommodation" element={<Accommodation />} />
             <Route path="/tourist-places" element={<TouristPlaces />} />
-            <Route path="/sponsors" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Sponsors Coming Soon</div>} />
+            <Route path="/sponsors" element={<Sponsors />} />
             <Route path="/archive" element={<Archive />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<UserDashboard />} />
