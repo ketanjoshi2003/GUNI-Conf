@@ -19,9 +19,11 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/guni_conf')
 // Routes
 const conferenceRoutes = require('./routes/conferenceRoutes');
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/conference', conferenceRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
