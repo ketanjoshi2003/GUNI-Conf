@@ -18,6 +18,12 @@ import PaperPublications from './pages/PaperPublications';
 import AcceptedPapers from './pages/AcceptedPapers';
 import BestPaperAward from './pages/BestPaperAward';
 import ImportantDates from './pages/ImportantDates';
+import VisaInformation from './pages/VisaInformation';
+import Accommodation from './pages/Accommodation';
+import TouristPlaces from './pages/TouristPlaces';
+import Committees from './pages/Committees';
+import Speakers from './pages/Speakers';
+import Archive from './pages/Archive';
 
 function App() {
   return (
@@ -30,9 +36,9 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/authors" element={<Authors />} />
             <Route path="/for-authors" element={<Authors />} />
-            {/* Placeholders for new items without specific requests yet */}
-            <Route path="/committees" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Committees Coming Soon</div>} />
-            <Route path="/speakers" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Speakers Coming Soon</div>} />
+
+            <Route path="/committees" element={<Committees />} />
+            <Route path="/speakers" element={<Speakers />} />
 
             <Route path="/contact" element={<Contact />} />
             <Route path="/call-for-papers" element={<CallForPapers />} />
@@ -46,11 +52,11 @@ function App() {
             <Route path="/best-paper-award" element={<BestPaperAward />} />
 
             <Route path="/important-dates" element={<ImportantDates />} />
-            <Route path="/visa-information" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Visa Information Coming Soon</div>} />
-            <Route path="/accommodation" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Accommodation Coming Soon</div>} />
-            <Route path="/tourist-places" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Tourist Places Coming Soon</div>} />
+            <Route path="/visa-information" element={<VisaInformation />} />
+            <Route path="/accommodation" element={<Accommodation />} />
+            <Route path="/tourist-places" element={<TouristPlaces />} />
             <Route path="/sponsors" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Sponsors Coming Soon</div>} />
-            <Route path="/archive" element={<div className="pt-32 pb-20 text-center text-3xl font-bold text-gray-600">Archive Coming Soon</div>} />
+            <Route path="/archive" element={<Archive />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<UserDashboard />} />
           </Routes>

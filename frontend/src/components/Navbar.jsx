@@ -28,12 +28,40 @@ const Navbar = () => {
                 { name: 'Tourist Places', path: '/tourist-places' },
             ]
         },
-        { name: 'Committees', path: '/committees', hasSub: true },
-        { name: 'Speakers', path: '/speakers', hasSub: true },
+        {
+            name: 'Committees',
+            path: '/committees',
+            dropdown: [
+                { name: 'Advisory Committee', path: '/committees?tab=advisory' },
+                { name: 'Conference Chairs', path: '/committees?tab=conference-chairs' },
+                { name: 'Technical Program Committee', path: '/committees?tab=technical-program' },
+                { name: 'Organizing Committee', path: '/committees?tab=organizing' }
+            ]
+        },
+        {
+            name: 'Speakers',
+            path: '/speakers',
+            dropdown: [
+                { name: 'Speakers - 2025', path: '/speakers?year=2025' },
+                { name: 'Speakers - 2024', path: '/speakers?year=2024' },
+                { name: 'Speakers - 2023', path: '/speakers?year=2023' },
+                { name: 'Speakers - 2022', path: '/speakers?year=2022' },
+                { name: 'Speakers - 2021', path: '/speakers?year=2021' },
+                { name: 'Speakers - 2020', path: '/speakers?year=2020' }
+            ]
+        },
         { name: 'Registration', path: '/registration' },
         { name: 'Proceedings', path: 'https://link.springer.com/book/10.1007/978-3-031-75170-7', isExternal: true },
         { name: 'Sponsors', path: '/sponsors' },
-        { name: 'Archive', path: '/archive', hasSub: true },
+        {
+            name: 'Archive',
+            path: '/archive',
+            dropdown: [
+                { name: 'Previous Speakers', path: '/archive?tab=previous-speakers' },
+                { name: 'Media Coverage', path: '/archive?tab=media-coverage' },
+                { name: 'Glimpses', path: '/archive?tab=glimpses' }
+            ]
+        },
         { name: 'Contact', path: '/contact' }
     ];
 
