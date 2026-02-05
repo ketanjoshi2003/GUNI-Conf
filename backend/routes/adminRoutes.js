@@ -8,6 +8,7 @@ const PreviousEdition = require('../models/PreviousEdition');
 const RegistrationFee = require('../models/RegistrationFee');
 const Archive = require('../models/Archive');
 const News = require('../models/News');
+const Conference = require('../models/Conference');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // ============ PUBLIC GET ROUTES ============
@@ -90,6 +91,31 @@ router.get('/news', async (req, res) => {
     }
 });
 
+router.get('/conference-info', async (req, res) => {
+    try {
+        let conf = await Conference.findOne({ conference_id: 'coms2-2026' });
+        if (!conf) {
+            conf = new Conference({
+                conference_id: 'coms2-2026',
+                name: 'International Conference on Computing, Communication and Security',
+                short_name: 'COMS2',
+                year: '2026',
+                edition: '7th Edition',
+                mode: 'Hybrid Mode',
+                venue: 'Ganpat University',
+                country: 'India',
+                start_date: new Date('2026-09-10'),
+                end_date: new Date('2026-09-11'),
+                theme: '7th Edition • Hybrid Mode'
+            });
+            await conf.save();
+        }
+        res.json(conf);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // ============ PROTECTED ROUTES (POST, PUT, DELETE) ============
 
 router.use(protect);
@@ -152,18 +178,36 @@ router.delete('/committees/:id', async (req, res) => {
 // Important Dates
 router.post('/important-dates', async (req, res) => {
     try {
+        console.log('Creating Important Date:', req.body);
+        // If we're pining this new date, unpin all existing ones first
+        if (req.body.isPinned === true) {
+            await ImportantDate.updateMany({}, { isPinned: false });
+        }
         const date = new ImportantDate(req.body);
         const saved = await date.save();
         res.status(201).json(saved);
     } catch (error) {
+        console.error('Create Important Date Error:', error.message);
         res.status(400).json({ message: error.message });
     }
 });
 router.put('/important-dates/:id', async (req, res) => {
     try {
-        const updated = await ImportantDate.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        console.log('Updating Important Date:', req.params.id, req.body);
+        // If we're pining this date, unpin every OTHER date
+        if (req.body.isPinned === true) {
+            console.log('Unpining other dates...');
+            await ImportantDate.updateMany({ _id: { $ne: req.params.id } }, { isPinned: false });
+        }
+
+        const updated = await ImportantDate.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
         res.json(updated);
     } catch (error) {
+        console.error('Update Important Date Error:', error.message);
         res.status(400).json({ message: error.message });
     }
 });
@@ -308,6 +352,20 @@ router.delete('/news/:id', async (req, res) => {
     try {
         await News.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Conference Settings
+router.put('/conference-info', async (req, res) => {
+    try {
+        const updated = await Conference.findOneAndUpdate(
+            { conference_id: 'coms2-2026' },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

@@ -3,7 +3,12 @@ const mongoose = require('mongoose');
 const conferenceSchema = new mongoose.Schema({
   conference_id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
+  short_name: { type: String },
+  year: { type: String },
+  edition: { type: String },
+  mode: { type: String },
   theme: { type: String },
+  description: { type: String },
   venue: { type: String },
   state: { type: String },
   country: { type: String },

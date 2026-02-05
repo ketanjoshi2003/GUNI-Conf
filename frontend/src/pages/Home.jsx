@@ -24,7 +24,7 @@ const HeroBackground = () => {
 };
 
 const Home = () => {
-    const [conference, setConference] = useState(null);
+    const [conferenceInfo, setConferenceInfo] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
@@ -53,11 +53,29 @@ const Home = () => {
         pairedTopics.push([filteredTopics[i], filteredTopics[i + 1] || null]);
     }
 
+    const [countdownTarget, setCountdownTarget] = useState(new Date('2026-09-10'));
+
+    useEffect(() => {
+        // Fetch pinned date for countdown
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`)
+            .then(res => {
+                const pinned = res.data.find(d => d.isPinned);
+                if (pinned) {
+                    setCountdownTarget(new Date(pinned.date));
+                }
+            })
+            .catch(err => console.error('Error fetching countdown target:', err));
+    }, []);
+
     useEffect(() => {
         const calculateTimeLeft = () => {
-            // Target date: Sept 10, 2026. 
-            const difference = +new Date('2026-09-10') - +new Date();
-            let timeLeft = {};
+            const difference = +countdownTarget - +new Date();
+            let timeLeft = {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            };
 
             if (difference > 0) {
                 timeLeft = {
@@ -75,11 +93,11 @@ const Home = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [countdownTarget]);
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/api/conference/coms2-2026`)
-            .then(res => setConference(res.data))
+            .then(res => setConferenceInfo(res.data))
             .catch(err => console.error(err));
     }, []);
 
@@ -93,22 +111,36 @@ const Home = () => {
                 <div className="relative z-10 container mx-auto px-4 md:px-6 py-20">
                     <div className="animate-fade-in-up">
                         <span className="inline-block py-1 px-3 rounded-full bg-blue-500/30 border border-blue-400 text-[10px] md:text-sm font-semibold mb-4 backdrop-blur-sm">
-                            7th Edition • Hybrid Mode
+                            {conferenceInfo?.edition || '7th Edition'} • {conferenceInfo?.mode || 'Hybrid Mode'}
                         </span>
                         <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 leading-tight tracking-tight">
-                            COMS2 <span className="text-sky-400">2026</span>
+                            {conferenceInfo?.short_name || 'COMS2'} <span className="text-sky-400">{conferenceInfo?.year || '2026'}</span>
                         </h1>
                         <p className="text-base sm:text-lg lg:text-2xl font-light mb-8 max-w-3xl mx-auto text-gray-200 px-4">
-                            International Conference on Computing, Communication and Security
+                            {conferenceInfo?.name || 'International Conference on Computing, Communication and Security'}
                         </p>
                         <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 justify-center items-center mb-12 px-4">
                             <div className="flex items-center gap-2 text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-full max-w-sm lg:w-auto justify-center">
                                 <Calendar className="w-4 h-4 lg:w-5 lg:h-5 text-sky-400" />
-                                <span>Sept 10-11, 2026</span>
+                                <span>
+                                    {(() => {
+                                        if (!conferenceInfo?.start_date || !conferenceInfo?.end_date) return 'Sept 10-11, 2026';
+                                        const s = new Date(conferenceInfo.start_date);
+                                        const e = new Date(conferenceInfo.end_date);
+                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                                        const month = months[s.getUTCMonth()];
+                                        const sDay = s.getUTCDate();
+                                        const eDay = e.getUTCDate();
+                                        const year = e.getUTCFullYear();
+
+                                        if (sDay === eDay) return `${month} ${sDay}, ${year}`;
+                                        return `${month} ${sDay}-${eDay}, ${year}`;
+                                    })()}
+                                </span>
                             </div>
                             <div className="flex items-center gap-2 text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-full max-w-sm lg:w-auto justify-center">
                                 <MapPin className="w-4 h-4 lg:w-5 lg:h-5 text-red-400" />
-                                <span>Ganpat University, India</span>
+                                <span>{conferenceInfo?.venue || 'Ganpat University'}, {conferenceInfo?.country || 'India'}</span>
                             </div>
                         </div>
 
@@ -139,16 +171,26 @@ const Home = () => {
                         {/* Intro Text */}
                         <section className="space-y-6 text-gray-700 leading-relaxed text-justify text-base">
                             <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4">
-                                Welcome to COMS2 2026
+                                Welcome to {conferenceInfo?.short_name || 'COMS2'} {conferenceInfo?.year || '2026'}
                             </h3>
-                            <p>
-                                The <strong>7th Edition of International Conference on Computing Communication and Security (COMS2)</strong> is being organized by Ganpat University, India on September 10-11, 2026.
-                            </p>
-                            <p>
-                                COMS2-2026 aims to provide a platform for researchers, scientists, practitioners, and academicians
-                                to present and discuss their cutting-edge innovations, trends, and concerns as well as practical
-                                challenges encountered and solutions adopted in the fields of Computing, Communication and Security.
-                            </p>
+                            {conferenceInfo?.description ? (
+                                <div className="space-y-4">
+                                    {conferenceInfo.description.split('\n').filter(p => p.trim()).map((para, i) => (
+                                        <p key={i}>{para}</p>
+                                    ))}
+                                </div>
+                            ) : (
+                                <>
+                                    <p>
+                                        The <strong>{conferenceInfo?.edition || '7th Edition'} of International Conference on Computing Communication and Security ({conferenceInfo?.short_name || 'COMS2'})</strong> is being organized by {conferenceInfo?.venue || 'Ganpat University'}, {conferenceInfo?.country || 'India'} on {conferenceInfo?.start_date ? new Date(conferenceInfo.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : 'September 10-11, 2026'}.
+                                    </p>
+                                    <p>
+                                        {conferenceInfo?.short_name || 'COMS2'}-{conferenceInfo?.year || '2026'} aims to provide a platform for researchers, scientists, practitioners, and academicians
+                                        to present and discuss their cutting-edge innovations, trends, and concerns as well as practical
+                                        challenges encountered and solutions adopted in the fields of Computing, Communication and Security.
+                                    </p>
+                                </>
+                            )}
                             <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
                                 <p className="text-blue-900 font-medium">
                                     Accepted papers will be published in <strong>Springer Proceedings</strong> and indexed in SCOPUS.
