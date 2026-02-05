@@ -1,98 +1,109 @@
-import React from 'react';
-import { FileText, Download, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
 
 const CallForPapers = () => {
-    const topics = [
-        "Wireless Networks and Communication",
-        "Network Security and Cyber Security",
-        "Next Generation Networks",
-        "Green Networking and Smart Grid",
-        "Ad Hoc Networks",
-        "Sensor Network",
-        "Cloud Communications and Networking",
-        "Cognitive Radio",
-        "MIMO Technologies",
-        "Social Networks and Crowdsourcing",
-        "Satellite Communications and Networking",
-        "Software Defined Networking",
-        "Cyber Physical Systems",
-        "Cognitive Radio and White-space Networking",
-        "Quantum Computing and Networking",
-        "Mobile and Ubiquitous Computing"
-    ];
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const tracks = {
+        column1: [
+            "Next Generation Networks",
+            "Ad Hoc Networks, Sensor Network",
+            "Cognitive Radio, MIMO Technologies",
+            "Satellite Communications and Networking",
+            "Cyber Physical Systems",
+            "Quantum Computing and Networking"
+        ],
+        column2: [
+            "Green Networking and Smart Grid",
+            "Cloud Communications and Networking",
+            "Social Networks and Crowdsourcing",
+            "Software Defined Networking",
+            "Cognitive Radio and White-space Networking",
+            "Mobile and Ubiquitous computing"
+        ]
+    };
+
+    const filterTopics = (topics) => {
+        return topics.filter(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
+    };
 
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
+        <div className="bg-white min-h-screen pt-32 pb-20">
             <div className="container mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-                    <h1 className="text-4xl font-bold text-gray-900">Call for Papers</h1>
-                    <a
-                        href="https://coms2.gnu.ac.in/wp-content/uploads/2026/01/Call_for_Papers-7th-Edition-Springer-International_Conference_Computing_Communication_Secuirty_COMS2-2026.pdf"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-md shadow-red-500/20 font-medium"
-                    >
-                        <Download size={20} />
-                        Download PDF
-                    </a>
-                </div>
+                {/* Header Image or Title Section could go here, but screenshot just shows text */}
+                <div className="max-w-4xl mx-auto">
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-8">
-                        <section className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                                <FileText className="text-accent" />
-                                Topics of Interest
-                            </h2>
-                            <p className="text-gray-600 mb-6">
-                                Authors are solicited to submit complete unpublished papers in the following, but not limited to, thematic areas:
-                            </p>
-                            <ul className="grid md:grid-cols-2 gap-4">
-                                {topics.map((topic, idx) => (
-                                    <li key={idx} className="flex items-start gap-3">
-                                        <CheckCircle className="text-green-500 w-5 h-5 flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700">{topic}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
+                    <p className="text-gray-700 mb-8 text-justify leading-relaxed">
+                        Researchers, authors, and industrial practitioners are invited to submit original,
+                        high-quality technical papers of their newest research findings, novel technical studies,
+                        innovative ideas, and visionary perspectives in computing science, networking,
+                        communication, security, and future trends (but are not limited to):
+                    </p>
+
+                    <div className="flex justify-end mb-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-600 text-sm">Search:</span>
+                            <input
+                                type="text"
+                                className="border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:border-blue-500"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    <div className="space-y-8">
-                        <div className="bg-primary text-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
-                            <div className="relative z-10">
-                                <h3 className="text-xl font-bold mb-4">Important Dates</h3>
-                                <ul className="space-y-4">
-                                    <li className="flex justify-between border-b border-gray-700 pb-2">
-                                        <span className="text-gray-300">Paper Submission</span>
-                                        <span className="font-semibold">TBA</span>
-                                    </li>
-                                    <li className="flex justify-between border-b border-gray-700 pb-2">
-                                        <span className="text-gray-300">Notification</span>
-                                        <span className="font-semibold">TBA</span>
-                                    </li>
-                                    <li className="flex justify-between border-b border-gray-700 pb-2">
-                                        <span className="text-gray-300">Registration</span>
-                                        <span className="font-semibold">TBA</span>
-                                    </li>
-                                    <li className="flex justify-between">
-                                        <span className="text-gray-300">Conference Dates</span>
-                                        <span className="font-semibold text-accent">Oct 09-10</span>
-                                    </li>
-                                </ul>
+                    <div className="border border-gray-200 rounded-sm overflow-hidden">
+                        {/* Headers */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 bg-[#d9edf7] border-b border-gray-200 font-bold text-[#31708f]">
+                            <div className="p-3 border-r border-gray-200 flex items-center gap-2">
+                                <span className="text-xs">▼</span> Wireless Networks and Communication
+                            </div>
+                            <div className="p-3 flex items-center gap-2">
+                                <span className="text-xs">▼</span> Network Security and Cyber Security
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-800 mb-4">Submission Link</h3>
-                            <p className="text-gray-600 mb-4">
-                                Please submit your papers through the Springer OCS system.
-                            </p>
-                            <button className="w-full px-4 py-2 bg-gray-100 text-gray-400 font-medium rounded-lg cursor-not-allowed">
-                                Submission Closed
-                            </button>
+                        {/* Content */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 bg-white">
+                            {/* Col 1 */}
+                            <div className="p-4 border-r border-gray-200 space-y-4">
+                                {filterTopics(tracks.column1).length > 0 ? (
+                                    filterTopics(tracks.column1).map((topic, idx) => (
+                                        <div key={idx} className="flex gap-2 text-gray-700">
+                                            <span className="text-blue-500">•</span>
+                                            <span>{topic}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-gray-400 italic">No matches</div>
+                                )}
+                            </div>
+
+                            {/* Col 2 */}
+                            <div className="p-4 space-y-4">
+                                {filterTopics(tracks.column2).length > 0 ? (
+                                    filterTopics(tracks.column2).map((topic, idx) => (
+                                        <div key={idx} className="flex gap-2 text-gray-700">
+                                            <span className="text-blue-500">•</span>
+                                            <span>{topic}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-gray-400 italic">No matches</div>
+                                )}
+                            </div>
                         </div>
                     </div>
+
+                    <div className="mt-4 text-sm text-gray-500">
+                        Showing 1 to 6 of 6 entries
+                    </div>
+
+                    <div className="mt-12 text-center">
+                        <a href="#" className="text-[#31708f] hover:underline font-semibold text-lg hover:text-blue-600 transition-colors">
+                            Call for Papers 7th Edition – Springer International Conference Computing Communication Security COMS2 - 2026
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>
