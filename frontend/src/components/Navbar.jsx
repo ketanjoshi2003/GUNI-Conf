@@ -285,43 +285,43 @@ const Navbar = () => {
                         className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-fade-in"
                         onClick={() => setIsSearchOpen(false)}
                     ></div>
-                    <div className="relative w-full max-w-xl animate-fade-in-up">
-                        <div className="bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.3)] overflow-hidden border border-white/50">
+                    <div className="relative w-full max-w-lg animate-fade-in-up">
+                        <div className="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.3)] overflow-hidden border border-white/50">
                             {/* Input Field */}
-                            <div className="flex items-center px-6 py-5">
-                                <Search className="text-blue-500 mr-4 opacity-70" size={22} />
+                            <div className="flex items-center px-5 py-4">
+                                <Search className="text-blue-500 mr-3.5 opacity-70" size={20} />
                                 <input
                                     autoFocus
                                     type="text"
-                                    placeholder="Search COMS2..."
-                                    className="flex-grow text-lg focus:outline-none text-slate-800 placeholder-slate-400 font-semibold bg-transparent"
+                                    placeholder="Search..."
+                                    className="flex-grow text-base focus:outline-none text-slate-800 placeholder-slate-400 font-semibold bg-transparent"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 <button
                                     onClick={() => setIsSearchOpen(false)}
-                                    className="p-1.5 hover:bg-slate-100/80 rounded-full transition-all text-slate-400 group"
+                                    className="p-1.5 hover:bg-slate-100/80 rounded-lg transition-all text-slate-400 group"
                                 >
-                                    <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+                                    <X size={16} className="group-hover:rotate-90 transition-transform duration-300" />
                                 </button>
                             </div>
 
                             {/* Results Area */}
-                            <div className="max-h-[50vh] overflow-y-auto px-3 pb-3">
+                            <div className="max-h-[45vh] overflow-y-auto px-2 pb-2">
                                 {searchQuery.trim() === '' ? (
-                                    <div className="px-3 py-4">
-                                        <div className="flex items-center gap-3 mb-4 px-1">
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em] whitespace-nowrap">Suggested</span>
+                                    <div className="px-3 py-3">
+                                        <div className="flex items-center gap-3 mb-3 px-1">
+                                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.15em] whitespace-nowrap">Suggested</span>
                                             <div className="h-[1px] flex-grow bg-slate-100"></div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
-                                            {['Registration', 'Call for Papers', 'Dates', 'Speakers', 'Sponsors', 'Archive'].map(tag => (
+                                            {['Registration', 'Dates', 'Speakers', 'Sponsors'].map(tag => (
                                                 <button
                                                     key={tag}
                                                     onClick={() => setSearchQuery(tag)}
-                                                    className="flex items-center gap-2.5 px-4 py-3 bg-slate-50/50 border border-slate-100 hover:border-blue-200 hover:bg-white hover:text-blue-700 rounded-xl text-xs font-bold transition-all group"
+                                                    className="flex items-center gap-2 px-3.5 py-2.5 bg-slate-50/50 border border-slate-100 hover:border-blue-200 hover:bg-white hover:text-blue-700 rounded-lg text-[11px] font-bold transition-all group"
                                                 >
-                                                    <Search size={12} className="text-slate-400 group-hover:text-blue-500" />
+                                                    <Search size={10} className="text-slate-400 group-hover:text-blue-500" />
                                                     {tag}
                                                 </button>
                                             ))}
@@ -329,7 +329,7 @@ const Navbar = () => {
                                     </div>
                                 ) : filteredResults.length > 0 ? (
                                     <div className="py-1">
-                                        <div className="px-3 py-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Results</div>
+                                        <div className="px-3 py-2 text-[8px] font-bold text-slate-400 uppercase tracking-wider">Results</div>
                                         <div className="space-y-1">
                                             {filteredResults.map((result, idx) => (
                                                 <Link
@@ -339,42 +339,42 @@ const Navbar = () => {
                                                         setIsSearchOpen(false);
                                                         setSearchQuery('');
                                                     }}
-                                                    className="flex items-center justify-between p-3 hover:bg-blue-600 rounded-xl group transition-all duration-200 border border-transparent hover:border-blue-500"
+                                                    className="flex items-center justify-between p-2.5 hover:bg-blue-600 rounded-lg group transition-all duration-200"
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-blue-600 shadow-sm group-hover:bg-white/20 group-hover:text-white transition-colors">
-                                                            <FileText size={16} />
+                                                        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-blue-600 shadow-sm group-hover:bg-white/20 group-hover:text-white transition-colors">
+                                                            <FileText size={14} />
                                                         </div>
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-bold text-slate-700 group-hover:text-white transition-colors">{result.name}</span>
-                                                            <span className="text-[10px] font-medium text-slate-400 group-hover:text-blue-100 transition-colors uppercase tracking-tight">{result.path}</span>
+                                                            <span className="text-[13px] font-bold text-slate-700 group-hover:text-white transition-colors leading-none mb-1">{result.name}</span>
+                                                            <span className="text-[9px] font-medium text-slate-400 group-hover:text-blue-100 transition-colors uppercase tracking-tight">{result.path}</span>
                                                         </div>
                                                     </div>
-                                                    <ChevronRight size={14} className="text-slate-300 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                                                    <ChevronRight size={12} className="text-slate-300 group-hover:text-white group-hover:translate-x-1 transition-all" />
                                                 </Link>
                                             ))}
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="py-10 text-center">
-                                        <p className="text-slate-500 text-sm font-medium">No results for <span className="text-slate-900 font-bold italic">"{searchQuery}"</span></p>
+                                    <div className="py-8 text-center">
+                                        <p className="text-slate-500 text-xs font-medium">No results found</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Footer / Shortcuts */}
-                            <div className="px-6 py-3 flex justify-between items-center bg-slate-50/50 backdrop-blur-sm border-t border-slate-100">
-                                <div className="flex gap-4">
-                                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-tight">
-                                        <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-slate-400 font-sans">ESC</kbd>
+                            <div className="px-5 py-3 flex justify-between items-center bg-slate-50/50 backdrop-blur-sm border-t border-slate-100">
+                                <div className="flex gap-3">
+                                    <div className="flex items-center gap-1.5 text-[8px] font-bold text-slate-400 uppercase tracking-tight">
+                                        <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded-md text-slate-400 font-sans">ESC</kbd>
                                         <span>Close</span>
                                     </div>
-                                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-tight">
-                                        <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-slate-400 font-sans">↵</kbd>
-                                        <span>Select</span>
+                                    <div className="flex items-center gap-1.5 text-[8px] font-bold text-slate-400 uppercase tracking-tight">
+                                        <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded-md text-slate-400 font-sans">↵</kbd>
+                                        <span>Go</span>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-black text-blue-500/40 uppercase tracking-widest">COMS2</span>
+                                <span className="text-[8px] font-black text-blue-500/30 uppercase tracking-[0.2em]">COMS2</span>
                             </div>
                         </div>
                     </div>
