@@ -5,7 +5,7 @@ import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const [activeDropdown, setActiveDropdown] = useState(null); // For mobile accordion
+    const [activeDropdown, setActiveDropdown] = useState(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
@@ -117,7 +117,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex space-x-1 items-center">
+                <div className="hidden lg:flex lg:space-x-1 items-center">
                     {navItems.map((item) => (
                         <div key={item.name} className="relative group">
                             {item.isExternal ? (
@@ -125,14 +125,14 @@ const Navbar = () => {
                                     href={item.path}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`font-medium px-3 py-2 flex items-center gap-1 transition-colors hover:text-blue-600 ${useSolidStyle ? 'text-gray-700' : 'text-white/90'}`}
+                                    className={`font-medium px-2 xl:px-3 py-2 flex items-center gap-1 transition-colors hover:text-blue-600 whitespace-nowrap text-xs xl:text-sm ${useSolidStyle ? 'text-gray-700' : 'text-white/90'}`}
                                 >
                                     {item.name}
                                 </a>
                             ) : (
                                 <Link
                                     to={item.path}
-                                    className={`font-medium px-3 py-2 flex items-center gap-1 transition-colors hover:text-blue-600 ${useSolidStyle ? 'text-gray-700' : 'text-white/90'}`}
+                                    className={`font-medium px-2 xl:px-3 py-2 flex items-center gap-1 transition-colors hover:text-blue-600 whitespace-nowrap text-xs xl:text-sm ${useSolidStyle ? 'text-gray-700' : 'text-white/90'}`}
                                 >
                                     {item.name}
                                     {(item.dropdown || item.hasSub) && <ChevronDown size={14} />}
@@ -169,7 +169,13 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu Button */}
-                <div className="md:hidden">
+                <div className="lg:hidden flex items-center gap-4">
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
+                        className={`p-2 rounded-full transition-colors ${useSolidStyle ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}
+                    >
+                        <Search size={22} />
+                    </button>
                     <button onClick={() => setIsOpen(!isOpen)} className={useSolidStyle ? 'text-gray-700' : 'text-white'}>
                         {isOpen ? <X size={28} /> : <Menu size={28} />}
                     </button>
@@ -178,55 +184,81 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             {isOpen && (
-                <div className="md:hidden bg-gray-900 absolute top-full left-0 w-full shadow-lg h-screen overflow-y-auto pb-20">
-                    <div className="flex flex-col text-white">
-                        {navItems.map((item) => (
-                            <div key={item.name} className="border-b border-gray-800">
-                                <div
-                                    className="flex justify-between items-center px-6 py-4 cursor-pointer hover:bg-gray-800 transition-colors"
-                                    onClick={() => (item.dropdown || item.hasSub) ? toggleDropdown(item.name) : setIsOpen(false)}
-                                >
-                                    {item.isExternal ? (
-                                        <a href={item.path} target="_blank" rel="noopener noreferrer" className="flex-grow font-medium text-sm tracking-wider uppercase">
-                                            {item.name}
-                                        </a>
-                                    ) : (
-                                        <Link
-                                            to={item.path}
-                                            className="flex-grow font-medium text-sm tracking-wider uppercase"
-                                            onClick={(e) => {
-                                                if (item.dropdown || item.hasSub) e.preventDefault(); // Prevent navigation if it has submenu, let parent div handle toggle
-                                                else setIsOpen(false)
-                                            }}
-                                        >
-                                            {item.name}
-                                        </Link>
-                                    )}
+                <div className="lg:hidden fixed inset-0 z-50 bg-gray-900/95 backdrop-blur-xl animate-fade-in overflow-y-auto">
+                    <div className="p-6 flex flex-col min-h-screen">
+                        {/* Mobile Header with Logo and Close */}
+                        <div className="flex justify-between items-center mb-8 pb-6 border-b border-white/10">
+                            <Link to="/" onClick={() => setIsOpen(false)}>
+                                <img src="/logo.png" alt="Logo" className="h-10 w-auto brightness-0 invert" />
+                            </Link>
+                            <button onClick={() => setIsOpen(false)} className="p-2 text-white/70 hover:text-white bg-white/5 rounded-full">
+                                <X size={24} />
+                            </button>
+                        </div>
 
-                                    {(item.dropdown || item.hasSub) && (
-                                        <div className={`transition-transform duration-300 ${activeDropdown === item.name ? 'rotate-180' : ''}`}>
-                                            {activeDropdown === item.name ? <ChevronDown size={16} className="text-blue-400" /> : <ChevronRight size={16} className="text-gray-500" />}
+                        <div className="flex flex-col gap-1">
+                            {navItems.map((item) => (
+                                <div key={item.name} className="relative">
+                                    <div
+                                        className={`flex justify-between items-center px-4 py-4 rounded-xl transition-all ${activeDropdown === item.name ? 'bg-blue-600/10 text-blue-400' : 'text-white/80 hover:bg-white/5'}`}
+                                        onClick={() => (item.dropdown || item.hasSub) ? toggleDropdown(item.name) : setIsOpen(false)}
+                                    >
+                                        {item.isExternal ? (
+                                            <a href={item.path} target="_blank" rel="noopener noreferrer" className="flex-grow font-bold text-sm tracking-wide">
+                                                {item.name}
+                                            </a>
+                                        ) : (
+                                            <Link
+                                                to={item.path}
+                                                className="flex-grow font-bold text-sm tracking-wide"
+                                                onClick={(e) => {
+                                                    if (item.dropdown || item.hasSub) e.preventDefault();
+                                                    else setIsOpen(false)
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        )}
+
+                                        {(item.dropdown || item.hasSub) && (
+                                            <div className={`transition-transform duration-300 ${activeDropdown === item.name ? 'rotate-180' : ''}`}>
+                                                <ChevronDown size={18} className={activeDropdown === item.name ? 'text-blue-400' : 'text-gray-500'} />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Mobile Submenu */}
+                                    {item.dropdown && (
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${activeDropdown === item.name ? 'max-h-[500px] mb-4 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                            <div className="mt-2 ml-4 pl-4 border-l-2 border-blue-500/30 flex flex-col gap-1">
+                                                {item.dropdown.map((subItem) => (
+                                                    <Link
+                                                        key={subItem.name}
+                                                        to={subItem.path}
+                                                        onClick={() => setIsOpen(false)}
+                                                        className={`block px-4 py-3 text-sm rounded-lg transition-colors ${location.pathname === subItem.path ? 'bg-blue-600/20 text-blue-400 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                                    >
+                                                        {subItem.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
+                            ))}
+                        </div>
 
-                                {/* Mobile Submenu */}
-                                {item.dropdown && activeDropdown === item.name && (
-                                    <div className="bg-gray-800/50">
-                                        {item.dropdown.map((subItem) => (
-                                            <Link
-                                                key={subItem.name}
-                                                to={subItem.path}
-                                                onClick={() => setIsOpen(false)}
-                                                className={`block px-8 py-3 text-sm border-l-2 border-transparent hover:border-blue-500 hover:bg-white/5 transition-colors ${location.pathname === subItem.path ? 'text-blue-400 border-blue-400 bg-white/5' : 'text-gray-400'}`}
-                                            >
-                                                {subItem.name}
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                        {/* Search Button in Mobile Menu */}
+                        <button
+                            onClick={() => {
+                                setIsOpen(false);
+                                setIsSearchOpen(true);
+                            }}
+                            className="mt-8 flex items-center gap-3 w-full p-4 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-900/40"
+                        >
+                            <Search size={20} />
+                            <span>Quick Search</span>
+                        </button>
                     </div>
                 </div>
             )}
@@ -234,7 +266,7 @@ const Navbar = () => {
             {isSearchOpen && (
                 <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24 px-6">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-fade-in"
                         onClick={() => setIsSearchOpen(false)}
                     ></div>
                     <div className="relative w-full max-w-2xl animate-fade-in-up">

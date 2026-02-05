@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { Film, Newspaper, Image as ImageIcon } from 'lucide-react';
 
@@ -7,6 +8,9 @@ const Archive = () => {
     const query = new URLSearchParams(location.search);
     const defaultTab = query.get('tab') || 'media-coverage';
     const [activeTab, setActiveTab] = React.useState(defaultTab);
+    const [archives, setArchives] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const tab = query.get('tab');
@@ -15,18 +19,27 @@ const Archive = () => {
         }
     }, [location.search]);
 
+    useEffect(() => {
+        const fetchArchives = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/admin/archive');
+                setArchives(response.data);
+            } catch (err) {
+                console.error('Error fetching archives:', err);
+                setError('Failed to load archive data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchArchives();
+    }, []);
+
+    const mediaItems = archives.filter(item => item.type === 'media-coverage');
+    const glimpseItems = archives.filter(item => item.type === 'glimpses');
+
     const tabs = [
         { id: 'media-coverage', label: 'Media Coverage', icon: Newspaper },
         { id: 'glimpses', label: 'Glimpses', icon: ImageIcon },
-    ];
-
-    const mediaCoverage = [
-        { title: "Media Coverage: First COMS2 2020", year: "2020", image: "https://via.placeholder.com/300x400?text=2020+Coverage" },
-        { title: "Media Coverage: Second COMS2 2021", year: "2021", image: "https://via.placeholder.com/300x400?text=2021+Coverage" },
-        { title: "Media Coverage: Third COMS2 2022", year: "2022", image: "https://via.placeholder.com/300x400?text=2022+Coverage" },
-        { title: "Media Coverage: Fourth COMS2 2023", year: "2023", image: "https://via.placeholder.com/300x400?text=2023+Coverage" },
-        { title: "Media Coverage: Fifth COMS2 2024", year: "2024", image: "https://via.placeholder.com/300x400?text=2024+Coverage" },
-        { title: "Media Coverage: Sixth COMS2 2025", year: "2025", image: "https://via.placeholder.com/300x400?text=2025+Coverage" },
     ];
 
     return (
@@ -66,29 +79,69 @@ const Archive = () => {
 
                         {/* Media Coverage Tab */}
                         {activeTab === 'media-coverage' && (
-                            <div className="grid md:grid-cols-2 gap-8 animate-fade-in-up">
-                                {mediaCoverage.map((item, index) => (
-                                    <div key={index} className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-                                        <div className="p-4 border-b border-gray-50 bg-gray-50">
-                                            <h3 className="font-bold text-lg text-blue-900">{item.title}</h3>
-                                        </div>
-                                        <div className="p-6 flex justify-center bg-gray-100/50">
-                                            <div className="w-full max-w-sm h-64 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center flex-col text-gray-400">
-                                                <Newspaper className="w-12 h-12 mb-2 opacity-50" />
-                                                <span className="text-sm">Newspaper Clipping {item.year}</span>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in-up">
+                                {loading ? (
+                                    <div className="col-span-full py-20 text-center text-gray-400 italic">Loading archive items...</div>
+                                ) : mediaItems.length > 0 ? (
+                                    mediaItems.map((item, index) => (
+                                        <div key={index} className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden transform transition-all hover:scale-[1.02]">
+                                            <div className="p-4 border-b border-gray-50 bg-gray-50">
+                                                <h3 className="font-bold text-lg text-blue-900 line-clamp-1">{item.title}</h3>
                                             </div>
+                                            <div className="p-0 flex justify-center bg-gray-100/50 aspect-[3/4]">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 border-2 border-dashed border-gray-200 m-4 rounded-lg">
+                                                        <Newspaper className="w-12 h-12 mb-2 opacity-50" />
+                                                        <span className="text-sm">Coverage {item.year}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {item.link && (
+                                                <a
+                                                    href={item.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block p-4 text-center text-blue-600 font-bold hover:bg-blue-50 transition-colors border-t border-gray-50"
+                                                >
+                                                    View Source
+                                                </a>
+                                            )}
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="col-span-full py-20 text-center bg-white rounded-xl shadow-sm border border-gray-100 italic text-gray-400">
+                                        No media coverage items found.
                                     </div>
-                                ))}
+                                )}
                             </div>
                         )}
 
                         {/* Glimpses Tab */}
                         {activeTab === 'glimpses' && (
-                            <div className="animate-fade-in-up text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
-                                <Film className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-gray-400">Photo Gallery Coming Soon</h3>
-                                <p className="text-gray-400 mt-2">Glimpses of previous conferences will be uploaded here.</p>
+                            <div className="animate-fade-in-up">
+                                {loading ? (
+                                    <div className="py-20 text-center text-gray-400 italic">Loading glimpses...</div>
+                                ) : glimpseItems.length > 0 ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        {glimpseItems.map((item, index) => (
+                                            <div key={index} className="relative group aspect-square rounded-xl overflow-hidden shadow-lg border border-gray-100">
+                                                <img src={item.image || 'https://via.placeholder.com/400?text=Conference+Glimpses'} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                                    <p className="text-white font-bold text-sm">{item.title}</p>
+                                                    <p className="text-gray-300 text-xs">{item.year}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+                                        <Film className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold text-gray-400">Photo Gallery Coming Soon</h3>
+                                        <p className="text-gray-400 mt-2">Glimpses of previous conferences will be uploaded here.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

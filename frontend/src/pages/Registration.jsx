@@ -1,10 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Registration = () => {
     const navigate = useNavigate();
+    const [registrationFees, setRegistrationFees] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const registrationFees = [
+    useEffect(() => {
+        const fetchFees = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/admin/registration-fees');
+                if (response.data && response.data.length > 0) {
+                    setRegistrationFees(response.data);
+                } else {
+                    // Fallback to initial data if DB is empty
+                    setRegistrationFees(initialRegistrationFees);
+                }
+            } catch (error) {
+                console.error('Error fetching registration fees:', error);
+                setRegistrationFees(initialRegistrationFees);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFees();
+    }, []);
+
+    const initialRegistrationFees = [
         {
             type: "Author Registration: Academicians/ Researcher/ Students",
             indian: "10,000/- + Taxes",
@@ -56,30 +79,63 @@ const Registration = () => {
                     <h1 className="text-4xl font-bold text-gray-900 mb-8 border-l-4 border-blue-600 pl-4">Registration Details</h1>
 
                     {/* Registration Fee Table */}
-                    <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200 mb-6 font-sans">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-blue-600 text-white">
-                                    <th className="px-6 py-4 font-semibold border-r border-blue-500">Type of Registration</th>
-                                    <th className="px-6 py-4 font-semibold border-r border-blue-500">Indian participants (INR)</th>
-                                    <th className="px-6 py-4 font-semibold">Foreign participants (USD)</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {registrationFees.map((fee, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                        <td className="px-6 py-4 text-gray-700 border-r border-gray-100">{fee.type}</td>
-                                        <td className="px-6 py-4 text-gray-700 border-r border-gray-100 font-medium">{fee.indian}</td>
-                                        <td className="px-6 py-4 text-gray-700 font-medium">{fee.foreign}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="mb-8">
+                        {/* Desktop View */}
+                        <div className="hidden lg:block overflow-x-auto rounded-xl shadow-lg border border-gray-200 font-sans">
+                            {loading ? (
+                                <div className="p-12 text-center text-gray-500 italic">Loading fees...</div>
+                            ) : (
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-blue-600 text-white text-sm">
+                                            <th className="px-6 py-4 font-semibold border-r border-blue-500 whitespace-nowrap">Type of Registration</th>
+                                            <th className="px-6 py-4 font-semibold border-r border-blue-500">Indian participants (INR)</th>
+                                            <th className="px-6 py-4 font-semibold">Foreign participants (USD)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200">
+                                        {registrationFees.map((fee, index) => (
+                                            <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                <td className="px-6 py-4 text-gray-700 border-r border-gray-100 text-sm">{fee.type}</td>
+                                                <td className="px-6 py-4 text-gray-700 border-r border-gray-100 font-medium text-sm">{fee.indian}</td>
+                                                <td className="px-6 py-4 text-gray-700 font-medium text-sm">{fee.foreign}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
+                        {/* Mobile View: Cards */}
+                        <div className="lg:hidden space-y-4">
+                            {loading ? (
+                                <div className="p-8 text-center text-gray-500 italic">Loading fees...</div>
+                            ) : (
+                                registrationFees.map((fee, index) => (
+                                    <div key={index} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                                        <div className="text-blue-600 font-bold text-sm leading-snug">
+                                            {fee.type}
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-50">
+                                            <div>
+                                                <div className="text-[10px] uppercase font-bold text-gray-400">Indian (INR)</div>
+                                                <div className="text-gray-900 font-bold">{fee.indian}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] uppercase font-bold text-gray-400">Foreign (USD)</div>
+                                                <div className="text-gray-900 font-bold">{fee.foreign}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
 
-                    <p className="text-gray-600 italic mb-12 text-sm">
-                        *Accompanying guest/ spouse does not include co-author(s). Co-authors are supposed to register under 'Attendee' category.
-                    </p>
+                    <div className="flex items-start gap-2 bg-amber-50 p-4 rounded-xl border border-amber-100 text-amber-800 text-xs italic mb-12">
+                        <span className="font-bold flex-shrink-0">Note:</span>
+                        <p>Accompanying guest/ spouse does not include co-author(s). Co-authors are supposed to register under 'Attendee' category.</p>
+                    </div>
 
                     {/* Important Notes Section */}
                     <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 mb-12">

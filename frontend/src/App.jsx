@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -7,11 +7,10 @@ import About from './pages/About';
 import Authors from './pages/Authors';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
-import UserDashboard from './pages/UserDashboard';
 import Registration from './pages/Registration';
 import Sponsors from './pages/Sponsors';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 // New Pages
@@ -28,44 +27,58 @@ import Committees from './pages/Committees';
 import Speakers from './pages/Speakers';
 import Archive from './pages/Archive';
 
+function AppContent() {
+  const location = useLocation();
+  const isHiddenPath = location.pathname.startsWith('/admin') || location.pathname === '/login';
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!isHiddenPath && <Navbar />}
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/authors" element={<Authors />} />
+          <Route path="/for-authors" element={<Authors />} />
+
+          <Route path="/committees" element={<Committees />} />
+          <Route path="/speakers" element={<Speakers />} />
+
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/call-for-papers" element={<CallForPapers />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registration" element={<Registration />} />
+
+          <Route path="/paper-submission" element={<PaperSubmission />} />
+          <Route path="/paper-publications" element={<PaperPublications />} />
+          <Route path="/accepted-papers" element={<AcceptedPapers />} />
+          <Route path="/best-paper-award" element={<BestPaperAward />} />
+
+          <Route path="/important-dates" element={<ImportantDates />} />
+          <Route path="/visa-information" element={<VisaInformation />} />
+          <Route path="/accommodation" element={<Accommodation />} />
+          <Route path="/tourist-places" element={<TouristPlaces />} />
+          <Route path="/sponsors" element={<Sponsors />} />
+          <Route path="/archive" element={<Archive />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+      {!isHiddenPath && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/authors" element={<Authors />} />
-            <Route path="/for-authors" element={<Authors />} />
-
-            <Route path="/committees" element={<Committees />} />
-            <Route path="/speakers" element={<Speakers />} />
-
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/call-for-papers" element={<CallForPapers />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/registration" element={<Registration />} />
-
-            <Route path="/paper-submission" element={<PaperSubmission />} />
-            <Route path="/paper-publications" element={<PaperPublications />} />
-            <Route path="/accepted-papers" element={<AcceptedPapers />} />
-            <Route path="/best-paper-award" element={<BestPaperAward />} />
-
-            <Route path="/important-dates" element={<ImportantDates />} />
-            <Route path="/visa-information" element={<VisaInformation />} />
-            <Route path="/accommodation" element={<Accommodation />} />
-            <Route path="/tourist-places" element={<TouristPlaces />} />
-            <Route path="/sponsors" element={<Sponsors />} />
-            <Route path="/archive" element={<Archive />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/dashboard" element={<UserDashboard />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }

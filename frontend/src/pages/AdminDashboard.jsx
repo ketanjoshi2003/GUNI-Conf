@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-    Users, Calendar, FileText, Tag, BookOpen,
+    Users, Calendar, FileText, Tag, BookOpen, Newspaper,
     Plus, Edit2, Trash2, Save, X, LogOut
 } from 'lucide-react';
 
@@ -17,6 +17,9 @@ const AdminDashboard = () => {
     const [dates, setDates] = useState([]);
     const [topics, setTopics] = useState([]);
     const [editions, setEditions] = useState([]);
+    const [fees, setFees] = useState([]);
+    const [archives, setArchives] = useState([]);
+    const [news, setNews] = useState([]);
 
     // Form states
     const [editingItem, setEditingItem] = useState(null);
@@ -30,23 +33,39 @@ const AdminDashboard = () => {
             return;
         }
         setUser(userInfo);
-        loadData();
+        loadData(userInfo.token);
     }, [navigate]);
 
-    const loadData = async () => {
+    const getAuthConfig = (token) => {
+        const t = token || user?.token;
+        return {
+            headers: {
+                Authorization: `Bearer ${t}`
+            }
+        };
+    };
+
+    const loadData = async (token) => {
         try {
-            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/admin/speakers'),
-                axios.get('http://localhost:5000/api/admin/committees'),
-                axios.get('http://localhost:5000/api/admin/important-dates'),
-                axios.get('http://localhost:5000/api/admin/topics'),
-                axios.get('http://localhost:5000/api/admin/previous-editions')
+            const config = getAuthConfig(token);
+            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes] = await Promise.all([
+                axios.get('http://localhost:5000/api/admin/speakers', config),
+                axios.get('http://localhost:5000/api/admin/committees', config),
+                axios.get('http://localhost:5000/api/admin/important-dates', config),
+                axios.get('http://localhost:5000/api/admin/topics', config),
+                axios.get('http://localhost:5000/api/admin/previous-editions', config),
+                axios.get('http://localhost:5000/api/admin/registration-fees', config),
+                axios.get('http://localhost:5000/api/admin/archive', config),
+                axios.get('http://localhost:5000/api/admin/news', config)
             ]);
             setSpeakers(speakersRes.data);
             setCommittees(committeesRes.data);
             setDates(datesRes.data);
             setTopics(topicsRes.data);
             setEditions(editionsRes.data);
+            setFees(feesRes.data);
+            setArchives(archivesRes.data);
+            setNews(newsRes.data);
         } catch (error) {
             console.error('Error loading data:', error);
         }
@@ -54,7 +73,7 @@ const AdminDashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('userInfo');
-        navigate('/login');
+        navigate('/');
     };
 
     const handleAdd = () => {
@@ -78,10 +97,11 @@ const AdminDashboard = () => {
     const handleSave = async () => {
         try {
             const endpoint = getEndpoint();
+            const config = getAuthConfig();
             if (isAdding) {
-                await axios.post(`http://localhost:5000/api/admin/${endpoint}`, formData);
+                await axios.post(`http://localhost:5000/api/admin/${endpoint}`, formData, config);
             } else {
-                await axios.put(`http://localhost:5000/api/admin/${endpoint}/${editingItem}`, formData);
+                await axios.put(`http://localhost:5000/api/admin/${endpoint}/${editingItem}`, formData, config);
             }
             await loadData();
             handleCancel();
@@ -95,7 +115,8 @@ const AdminDashboard = () => {
         if (!confirm('Are you sure you want to delete this item?')) return;
         try {
             const endpoint = getEndpoint();
-            await axios.delete(`http://localhost:5000/api/admin/${endpoint}/${id}`);
+            const config = getAuthConfig();
+            await axios.delete(`http://localhost:5000/api/admin/${endpoint}/${id}`, config);
             await loadData();
         } catch (error) {
             console.error('Error deleting:', error);
@@ -109,7 +130,10 @@ const AdminDashboard = () => {
             'committees': 'committees',
             'dates': 'important-dates',
             'topics': 'topics',
-            'editions': 'previous-editions'
+            'editions': 'previous-editions',
+            'fees': 'registration-fees',
+            'archives': 'archive',
+            'news': 'news'
         };
         return map[activeTab];
     };
@@ -119,7 +143,10 @@ const AdminDashboard = () => {
         { id: 'committees', label: 'Committees', icon: Users },
         { id: 'dates', label: 'Important Dates', icon: Calendar },
         { id: 'topics', label: 'Topics', icon: Tag },
-        { id: 'editions', label: 'Previous Editions', icon: BookOpen }
+        { id: 'editions', label: 'Previous Editions', icon: BookOpen },
+        { id: 'fees', label: 'Registration Fees', icon: FileText },
+        { id: 'archives', label: 'Archives', icon: BookOpen },
+        { id: 'news', label: 'Latest News', icon: Newspaper }
     ];
 
     const renderForm = () => {
@@ -220,6 +247,28 @@ const AdminDashboard = () => {
                     { name: 'link', label: 'Proceedings Link' },
                     { name: 'publisher', label: 'Publisher' }
                 ];
+            case 'fees':
+                return [
+                    { name: 'type', label: 'Registration Type', required: true, fullWidth: true },
+                    { name: 'indian', label: 'Indian Fees (INR)', required: true },
+                    { name: 'foreign', label: 'Foreign Fees (USD)', required: true },
+                    { name: 'order', label: 'Order', type: 'number' }
+                ];
+            case 'archives':
+                return [
+                    { name: 'title', label: 'Title', required: true, fullWidth: true },
+                    { name: 'year', label: 'Year', type: 'number' },
+                    { name: 'type', label: 'Archive Type', type: 'select', options: ['media-coverage', 'glimpses'] },
+                    { name: 'image', label: 'Image URL' },
+                    { name: 'link', label: 'External Link' },
+                    { name: 'order', label: 'Display Order', type: 'number' }
+                ];
+            case 'news':
+                return [
+                    { name: 'title', label: 'News Title', required: true, fullWidth: true },
+                    { name: 'link', label: 'Link (Optional)', fullWidth: true },
+                    { name: 'date', label: 'Display Date', type: 'date' }
+                ];
             default:
                 return [];
         }
@@ -283,6 +332,9 @@ const AdminDashboard = () => {
             case 'dates': return dates;
             case 'topics': return topics;
             case 'editions': return editions;
+            case 'fees': return fees;
+            case 'archives': return archives;
+            case 'news': return news;
             default: return [];
         }
     };
@@ -319,6 +371,26 @@ const AdminDashboard = () => {
                     { key: 'title', label: 'Title' },
                     { key: 'publisher', label: 'Publisher' }
                 ];
+            case 'fees':
+                return [
+                    { key: 'type', label: 'Registration Type' },
+                    { key: 'indian', label: 'Indian (INR)' },
+                    { key: 'foreign', label: 'Foreign (USD)' },
+                    { key: 'order', label: 'Order' }
+                ];
+            case 'archives':
+                return [
+                    { key: 'title', label: 'Title' },
+                    { key: 'year', label: 'Year' },
+                    { key: 'type', label: 'Type' },
+                    { key: 'order', label: 'Order' }
+                ];
+            case 'news':
+                return [
+                    { key: 'title', label: 'News' },
+                    { key: 'date', label: 'Date', render: (item) => item.date ? new Date(item.date).toLocaleDateString() : 'N/A' },
+                    { key: 'link', label: 'Link' }
+                ];
             default:
                 return [];
         }
@@ -327,7 +399,7 @@ const AdminDashboard = () => {
     if (!user) return null;
 
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
+        <div className="pt-8 pb-20 bg-gray-50 min-h-screen">
             <div className="container mx-auto px-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
@@ -356,8 +428,8 @@ const AdminDashboard = () => {
                                         handleCancel();
                                     }}
                                     className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                                            ? 'border-blue-600 text-blue-600'
-                                            : 'border-transparent text-gray-600 hover:text-gray-900'
+                                        ? 'border-blue-600 text-blue-600'
+                                        : 'border-transparent text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     <Icon size={18} />

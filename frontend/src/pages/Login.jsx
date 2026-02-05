@@ -11,11 +11,11 @@ const Login = () => {
         e.preventDefault();
         try {
             const { data } = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-            localStorage.setItem('userInfo', JSON.stringify(data));
             if (data.role === 'admin') {
+                localStorage.setItem('userInfo', JSON.stringify(data));
                 navigate('/admin');
             } else {
-                navigate('/dashboard');
+                alert('Unauthorized Access');
             }
         } catch (error) {
             alert(error.response?.data?.message || 'Login Failed');
@@ -23,7 +23,7 @@ const Login = () => {
     };
 
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-6">
             <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full border border-gray-100">
                 <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Login</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -51,9 +51,6 @@ const Login = () => {
                         Login
                     </button>
                 </form>
-                <div className="mt-4 text-center">
-                    <a href="/register" className="text-sm text-accent hover:underline">Create an account</a>
-                </div>
             </div>
         </div>
     );
