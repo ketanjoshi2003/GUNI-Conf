@@ -12,9 +12,9 @@ const VisaInformation = () => {
                     <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-12">
+                <div className="grid lg:grid-cols-1 gap-12">
                     {/* LEFT COLUMN (Main Content) */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="w-full space-y-8">
 
                         {/* Requirements Card */}
                         <section className="bg-white rounded-xl shadow-md border border-gray-100 p-8 hover:shadow-lg transition-shadow">
@@ -126,15 +126,23 @@ const VisaInformation = () => {
                             </h2>
                             <div className="space-y-4 text-gray-700">
                                 <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                                    <h3 className="font-bold text-gray-900 mb-2">Hybrid Mode Supported</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-3">
                                             <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                 <Globe className="w-3.5 h-3.5" />
                                             </div>
                                             <div>
-                                                <span className="font-semibold text-gray-900">International Authors (Outside India):</span>
-                                                <p className="text-sm mt-1">Permitted to present their papers via <span className="font-medium text-green-600">Online Mode</span> due to travel constraints.</p>
+                                                <span className="font-semibold text-gray-900">International Authors (outside India):</span>
+                                                <p className="text-sm mt-1">Hybrid participation requests will be considered.</p>
+                                            </div>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="w-6 h-6 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <Wifi className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold text-gray-900">Authors from States other than Gujarat (India):</span>
+                                                <p className="text-sm mt-1">Online participation may be permitted under exceptional circumstances.</p>
                                             </div>
                                         </li>
                                         <li className="flex items-start gap-3">
@@ -142,83 +150,14 @@ const VisaInformation = () => {
                                                 <MapPin className="w-3.5 h-3.5" />
                                             </div>
                                             <div>
-                                                <span className="font-semibold text-gray-900">Indian Authors:</span>
-                                                <p className="text-sm mt-1">Required to present papers via <span className="font-medium text-blue-600">Physical Presence</span> at the venue (Ganpat University, Gujarat).</p>
+                                                <span className="font-semibold text-gray-900">Authors from Gujarat (India):</span>
+                                                <p className="text-sm mt-1">Physical presence of the presenting author is mandatory.</p>
                                             </div>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </section>
-                    </div>
-
-
-                    {/* RIGHT COLUMN (Sidebar) */}
-                    <div className="space-y-8">
-
-                        {/* Venue Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl p-8 shadow-xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform rotate-12 scale-150">
-                                <MapPin className="w-32 h-32" />
-                            </div>
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-3 relative z-10">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <MapPin className="w-5 h-5 text-sky-400" />
-                                </div>
-                                Venue
-                            </h3>
-                            <div className="space-y-3 text-sm text-gray-300 relative z-10">
-                                <p className="font-semibold text-white text-lg">Ganpat University</p>
-                                <p>Mehsana-Gozaria Highway, Kherva</p>
-                                <p>Gujarat 384012, India</p>
-                                <div className="pt-4 mt-4 border-t border-white/10">
-                                    <p className="text-xs text-gray-400 mb-1">Contact for queries:</p>
-                                    <a href="mailto:coms2@ganpatuniversity.ac.in" className="text-sky-400 hover:text-sky-300 transition-colors">coms2@ganpatuniversity.ac.in</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Important Dates */}
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-sky-100 text-sky-600 rounded-lg">
-                                    <Calendar className="w-5 h-5" />
-                                </div>
-                                Important Dates
-                            </h3>
-                            <div className="space-y-6">
-                                {[
-                                    { label: "Full Paper Submission", date: "May 30, 2026", active: true },
-                                    { label: "Paper Acceptance", date: "July 30, 2026" },
-                                    { label: "Registration Opens", date: "July 30, 2026" },
-                                    { label: "Conference Date", date: "Sept 10-11, 2026" }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex flex-col relative pl-4 border-l-2 border-gray-100 last:border-0">
-                                        <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${item.active ? 'bg-sky-500 ring-4 ring-sky-100' : 'bg-gray-300'}`}></div>
-                                        <span className={`text-xs font-bold uppercase tracking-wider mb-1 ${item.active ? 'text-sky-600' : 'text-gray-400'}`}>{item.date}</span>
-                                        <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Visitors Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800 p-6 flex flex-col items-center">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <Globe className="w-5 h-5 text-blue-400" />
-                                </div>
-                                Visitors
-                            </h3>
-                            <div className="overflow-hidden rounded-lg shadow-inner bg-[#0f172a]">
-                                <img
-                                    src="https://s11.flagcounter.com/count2/JO2k/bg_0F172A/txt_FFFFFF/border_334155/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/"
-                                    alt="Flag Counter"
-                                    className="block opacity-90 hover:opacity-100 transition-opacity"
-                                />
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>

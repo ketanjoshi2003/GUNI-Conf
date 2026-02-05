@@ -6,6 +6,8 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null); // For mobile accordion
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
 
     // Check if we are on the home page
@@ -73,6 +75,31 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setIsSearchOpen(false);
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, []);
+
+    // Flatten nav items for searching
+    const allSearchableItems = [];
+    navItems.forEach(item => {
+        allSearchableItems.push({ name: item.name, path: item.path });
+        if (item.dropdown) {
+            item.dropdown.forEach(sub => {
+                allSearchableItems.push({ name: `${item.name} > ${sub.name}`, path: sub.path });
+            });
+        }
+    });
+
+    const filteredResults = searchQuery.trim() === ''
+        ? []
+        : allSearchableItems.filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ).slice(0, 8);
+
     const useSolidStyle = scrolled || !isHome;
 
     const toggleDropdown = (name) => {
@@ -132,15 +159,12 @@ const Navbar = () => {
                         </div>
                     ))}
 
-                    <Link
-                        to={localStorage.getItem('userInfo') ?
-                            (JSON.parse(localStorage.getItem('userInfo')).role === 'admin' ? '/admin' : '/dashboard')
-                            : '/login'}
-                        className={`font-semibold ml-4 transition-colors ${useSolidStyle ? 'text-accent' : 'text-white'} hover:underline`}
+
+
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
+                        className={`p-2 rounded-full transition-colors ${useSolidStyle ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}
                     >
-                        {localStorage.getItem('userInfo') ? 'Dashboard' : 'Login'}
-                    </Link>
-                    <button className={`p-2 rounded-full transition-colors ${useSolidStyle ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}>
                         <Search size={20} />
                     </button>
                 </div>
@@ -204,13 +228,98 @@ const Navbar = () => {
                                 )}
                             </div>
                         ))}
-                        <Link
-                            to="/login"
-                            onClick={() => setIsOpen(false)}
-                            className="px-6 py-4 font-medium text-sm tracking-wider uppercase border-b border-gray-800 hover:bg-gray-800 transition-colors"
-                        >
-                            Login / Dashboard
-                        </Link>
+                    </div>
+                </div>
+            )}
+            {/* Search Overlay */}
+            {isSearchOpen && (
+                <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24 px-6">
+                    <div
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setIsSearchOpen(false)}
+                    ></div>
+                    <div className="relative w-full max-w-2xl animate-fade-in-up">
+                        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+                            <div className="flex items-center p-4 border-b">
+                                <Search className="text-gray-400 mr-3" size={24} />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Search for topics, authors, sessions..."
+                                    className="flex-grow text-lg focus:outline-none text-gray-800"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                <button
+                                    onClick={() => setIsSearchOpen(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="max-h-[400px] overflow-y-auto p-2">
+                                {searchQuery.trim() === '' ? (
+                                    <div className="p-8 text-center text-gray-500">
+                                        <div className="mb-2 font-medium">Quick Links</div>
+                                        <div className="flex flex-wrap justify-center gap-2">
+                                            {['Registration', 'Call for Papers', 'Important Dates', 'Speakers'].map(tag => (
+                                                <button
+                                                    key={tag}
+                                                    onClick={() => setSearchQuery(tag)}
+                                                    className="px-3 py-1 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 rounded-full text-xs font-semibold transition-colors"
+                                                >
+                                                    {tag}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : filteredResults.length > 0 ? (
+                                    <div className="py-2">
+                                        <div className="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Search Results</div>
+                                        {filteredResults.map((result, idx) => (
+                                            <Link
+                                                key={idx}
+                                                to={result.path}
+                                                onClick={() => {
+                                                    setIsSearchOpen(false);
+                                                    setSearchQuery('');
+                                                }}
+                                                className="flex items-center justify-between px-4 py-3 hover:bg-blue-50 rounded-xl group transition-all"
+                                            >
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors">{result.name}</span>
+                                                    <span className="text-[10px] text-gray-400 group-hover:text-blue-400">{result.path}</span>
+                                                </div>
+                                                <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-12 text-center">
+                                        <div className="text-gray-400 mb-2 italic">No results found for "{searchQuery}"</div>
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="text-blue-600 text-sm font-semibold hover:underline"
+                                        >
+                                            Clear search
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="bg-gray-50 px-4 py-3 flex justify-between items-center border-t border-gray-100">
+                                <div className="flex gap-4">
+                                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                                        <span className="px-1.5 py-0.5 bg-white border border-gray-200 rounded shadow-sm">ESC</span> Close
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                                        <span className="px-1.5 py-0.5 bg-white border border-gray-200 rounded shadow-sm">↵</span> Select
+                                    </div>
+                                </div>
+                                <div className="text-[10px] text-gray-400 font-medium italic">COMS2 2026 Archive Search</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

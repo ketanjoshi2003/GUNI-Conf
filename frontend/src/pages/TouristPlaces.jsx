@@ -47,6 +47,21 @@ const TouristPlaces = () => {
             name: "Statue of Unity",
             location: "Kevadia",
             image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Statue_of_Unity.jpg/1200px-Statue_of_Unity.jpg"
+        },
+        {
+            name: "Thol Lake Bird Sanctuary",
+            location: "Thol, Mehsana",
+            image: "https://commons.wikimedia.org/wiki/Special:FilePath/THOL_LAKE_BIRD_SANCTUARY.jpg?width=1200"
+        },
+        {
+            name: "Taranga Jain Temple",
+            location: "Taranga Hill, Mehsana",
+            image: "https://commons.wikimedia.org/wiki/Special:FilePath/Taranga_Temple_2017.jpg?width=1200"
+        },
+        {
+            name: "Dharoi Dam",
+            location: "Dharoi, Mehsana",
+            image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dharoi_dam_04.jpg?width=1200"
         }
     ];
 

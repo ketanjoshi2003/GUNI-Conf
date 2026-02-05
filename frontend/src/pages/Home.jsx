@@ -4,12 +4,33 @@ import { Calendar, MapPin, ArrowRight, Shield, Network, Wifi, Globe } from 'luci
 
 const Home = () => {
     const [conference, setConference] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
         hours: 0,
         minutes: 0,
         seconds: 0
     });
+
+    const topics = [
+        "Wireless Networks and Communication", "Network Security and Cyber Security",
+        "Next Generation Networks", "Green Networking and Smart Grid",
+        "Ad Hoc Networks, Sensor Network", "Cloud Communications and Networking",
+        "Cognitive Radio, MIMO Technologies", "Social Networks and Crowdsourcing",
+        "Satellite Communications and Networking", "Software Defined Networking",
+        "Cyber Physical Systems", "Cognitive Radio and White-space Networking",
+        "Quantum Computing and Networking", "Mobile and Ubiquitous computing"
+    ];
+
+    const filteredTopics = topics.filter(topic =>
+        topic.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Group filtered topics into pairs for the 2-column table
+    const pairedTopics = [];
+    for (let i = 0; i < filteredTopics.length; i += 2) {
+        pairedTopics.push([filteredTopics[i], filteredTopics[i + 1] || null]);
+    }
 
     useEffect(() => {
         const calculateTimeLeft = () => {
@@ -79,8 +100,7 @@ const Home = () => {
                                 const value = Object.values(timeLeft)[idx];
                                 return (
                                     <div key={label} className="flex flex-col items-center group">
-                                        <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:bg-white/10 transition-all text-white relative overflow-hidden">
-                                            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
+                                        <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center text-4xl md:text-5xl font-bold rounded-2xl border border-white/30 bg-white/10 text-white relative">
                                             {String(value).padStart(2, '0')}
                                         </div>
                                         <span className="text-sky-200 font-bold text-xs uppercase mt-3 tracking-widest">{label}</span>
@@ -96,7 +116,7 @@ const Home = () => {
                 <div className="grid lg:grid-cols-3 gap-12">
 
                     {/* LEFT COLUMN (Main Content) */}
-                    <div className="lg:col-span-2 space-y-12">
+                    <div className="lg:col-span-3 space-y-12">
 
                         {/* Intro Text */}
                         <section className="space-y-6 text-gray-700 leading-relaxed text-justify text-base">
@@ -166,159 +186,174 @@ const Home = () => {
                             </div>
                         </section>
 
-                        {/* About University */}
+                        {/* Topics of Interest Section */}
                         <section>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
-                                Host Institute
-                            </h3>
-                            <div className="grid md:grid-cols-2 gap-8 items-center bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                                <div className="p-6">
-                                    <h4 className="text-xl font-bold text-gray-800 mb-3">Ganpat University</h4>
-                                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                        A high-tech state private university with a sprawling 300-acre green campus
-                                        in Mehsana, Gujarat. We are committed to value-based quality education.
-                                    </p>
-                                    <a href="#" className="text-blue-600 text-sm font-semibold hover:underline flex items-center gap-1">
-                                        Learn More <ArrowRight className="w-4 h-4" />
-                                    </a>
-                                </div>
-                                <div className="h-full min-h-[200px] bg-gray-100 relative">
-                                    <iframe
-                                        className="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/jZ5Duv2T4QY?si=u3hWjkq9zS5gYJ9_"
-                                        title="University Drone View"
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    ></iframe>
+                            <div className="flex justify-between items-end mb-6">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4">
+                                    Topics of Interest
+                                </h3>
+                                <div className="hidden md:flex items-center gap-2">
+                                    <span className="text-sm text-gray-600">Search:</span>
+                                    <input
+                                        type="text"
+                                        className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500"
+                                        placeholder=""
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
                                 </div>
                             </div>
+
+                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm text-gray-700">
+                                        <tbody className="divide-y divide-gray-100">
+                                            {pairedTopics.map((row, idx) => (
+                                                <tr key={idx} className={idx === 0 && searchQuery === '' ? "bg-blue-50/80 font-semibold text-gray-900" : "hover:bg-gray-50 transition-colors"}>
+                                                    <td className="p-4 border-r border-gray-100 w-1/2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
+                                                            {row[0]}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 w-1/2">
+                                                        {row[1] && (
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
+                                                                {row[1]}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {pairedTopics.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="2" className="p-8 text-center text-gray-500 italic">
+                                                        No topics found matching "{searchQuery}"
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="mt-4 text-sm text-gray-500">
+                                Showing 1 to {filteredTopics.length} of {topics.length} entries
+                            </div>
                         </section>
-                    </div>
 
-
-                    {/* RIGHT COLUMN (Sidebar) */}
-                    <div className="space-y-8">
-
-                        {/* Previous Publications */}
+                        {/* Previous Editions Section */}
                         <section>
-                            <h3 className="text-gray-900 font-bold text-lg mb-4 flex items-center gap-2">
-                                <span className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
-                                    <Globe className="w-4 h-4" />
-                                </span>
-                                Publications
+                            <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
+                                Previous Editions (Springer CCIS Series)
                             </h3>
-                            <p className="text-xs text-gray-500 mb-4">Indexed in Scopus and DBLP</p>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {[
-                                    { ccis: "1235", year: "2020", from: "blue-600", to: "blue-400" },
-                                    { ccis: "1358", year: "2021", from: "indigo-600", to: "indigo-400" },
-                                    { ccis: "1572", year: "2022", from: "violet-600", to: "violet-400" },
-                                    { ccis: "1856", year: "2024", from: "fuchsia-600", to: "fuchsia-400" }
-                                ].map((book) => (
-                                    <div key={book.ccis} className={`bg-gradient-to-br from-${book.from} to-${book.to} rounded-xl shadow-lg p-4 text-white hover:scale-105 transition-transform cursor-pointer relative overflow-hidden group`}>
-                                        <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-fullblur-2xl -mr-8 -mt-8"></div>
-                                        <div className="relative z-10">
-                                            <span className="text-[10px] font-bold opacity-75 tracking-wider bg-black/20 px-2 py-0.5 rounded-full">SPRINGER</span>
-                                            <div className="font-bold text-2xl mt-2 mb-1">CCIS {book.ccis}</div>
-                                            <div className="text-[10px] font-medium opacity-90 leading-tight">
-                                                Computing, Comm. & Security
+                                    { year: '2024', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2024)' },
+                                    { year: '2023', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2023)' },
+                                    { year: '2022', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2022)' },
+                                    { year: '2021', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2021)' },
+                                    { year: '2020', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2020)' }
+                                ].map((item) => (
+                                    <div key={item.year} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group border-l-4 border-l-transparent hover:border-l-blue-600">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                {item.year}
                                             </div>
+                                            <span className="text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100 uppercase tracking-tight">Scopus Indexed</span>
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-800 leading-snug">
+                                            {item.title}
+                                        </p>
+                                        <div className="mt-3 flex items-center text-blue-600 text-[10px] font-bold uppercase tracking-widest gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            View Proceedings <ArrowRight size={10} />
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </section>
 
-                        {/* Important Dates */}
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-sky-100 text-sky-600 rounded-lg">
-                                    <Calendar className="w-5 h-5" />
-                                </div>
-                                Important Dates
-                            </h3>
-                            <div className="space-y-6">
-                                {[
-                                    { label: "Full Paper Submission", date: "May 30, 2026", active: true },
-                                    { label: "Paper Acceptance", date: "July 30, 2026" },
-                                    { label: "Registration Opens", date: "July 30, 2026" },
-                                    { label: "Conference Date", date: "Sept 10-11, 2026" }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex flex-col relative pl-4 border-l-2 border-gray-100 last:border-0">
-                                        <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${item.active ? 'bg-sky-500 ring-4 ring-sky-100' : 'bg-gray-300'}`}></div>
-                                        <span className={`text-xs font-bold uppercase tracking-wider mb-1 ${item.active ? 'text-sky-600' : 'text-gray-400'}`}>{item.date}</span>
-                                        <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                        {/* Venue & Participation Section */}
+                        <section className="grid md:grid-cols-2 gap-8">
+                            {/* Venue Details */}
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
+                                    Venue
+                                </h3>
+                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 h-full">
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <MapPin className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xl font-bold text-gray-800 mb-2">Ganpat University</h4>
+                                            <address className="text-gray-600 text-sm leading-relaxed not-italic space-y-1">
+                                                <p>Ganpat Vidyanagar, Mehsana-Gandhinagar Highway,</p>
+                                                <p>North Gujarat, India, Pin Code 384012</p>
+                                                <p className="pt-2 text-blue-600 font-medium">coms2@ganpatuniversity.ac.in</p>
+                                            </address>
+                                        </div>
                                     </div>
-                                ))}
+                                    <div className="relative h-48 rounded-lg overflow-hidden border border-gray-200 mt-6">
+                                        <iframe
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7335.5!2d72.4532934!3d23.5258338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c476c5013fd03%3A0xa1fe01d9ab30482!2sGanpat%20University%20(GUNI)!5e0!3m2!1sen!2sin!4v1707123456789!5m2!1sen!2sin"
+                                            className="absolute inset-0 w-full h-full"
+                                            allowFullScreen=""
+                                            loading="lazy"
+                                        ></iframe>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Latest News */}
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-green-100 text-green-600 rounded-lg">
-                                    <Wifi className="w-5 h-5" />
-                                </div>
-                                Latest News
-                            </h3>
-                            <div className="space-y-4">
-                                <div className="group cursor-pointer">
-                                    <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Call for Papers - COMS2 2026 announced</p>
-                                    <span className="text-xs text-blue-500 mt-1 inline-block bg-blue-50 px-2 py-0.5 rounded">International Conference</span>
-                                </div>
-                                <div className="w-full h-px bg-gray-100"></div>
-                                <div className="group cursor-pointer">
-                                    <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Advisory Committee Invited</p>
-                                    <span className="text-xs text-gray-400 mt-1 block">1 week ago</span>
-                                </div>
-                                <div className="w-full h-px bg-gray-100"></div>
-                                <div className="group cursor-pointer">
-                                    <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Paper Format Templates Available</p>
-                                    <span className="text-xs text-gray-400 mt-1 block">2 weeks ago</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Venue Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl p-8 shadow-xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform rotate-12 scale-150">
-                                <MapPin className="w-32 h-32" />
-                            </div>
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-3 relative z-10">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <MapPin className="w-5 h-5 text-sky-400" />
-                                </div>
-                                Venue
-                            </h3>
-                            <div className="space-y-3 text-sm text-gray-300 relative z-10">
-                                <p className="font-semibold text-white text-lg">Ganpat University</p>
-                                <p>Mehsana-Gozaria Highway, Kherva</p>
-                                <p>Gujarat 384012, India</p>
-                                <div className="pt-4 mt-4 border-t border-white/10">
-                                    <p className="text-xs text-gray-400 mb-1">Contact for queries:</p>
-                                    <a href="mailto:coms2@ganpatuniversity.ac.in" className="text-sky-400 hover:text-sky-300 transition-colors">coms2@ganpatuniversity.ac.in</a>
+                            {/* Participation Modes */}
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4">
+                                    Participation Modes
+                                </h3>
+                                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 h-full space-y-6">
+                                    {/* Mode 1 */}
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                            <Globe className="w-4 h-4 text-indigo-600" />
+                                        </div>
+                                        <div>
+                                            <h5 className="font-bold text-gray-900 mb-1">International Authors</h5>
+                                            <p className="text-sm text-gray-600 leading-snug">
+                                                (Outside India): Hybrid participation requests will be considered.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {/* Mode 2 */}
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                            <Wifi className="w-4 h-4 text-orange-600" />
+                                        </div>
+                                        <div>
+                                            <h5 className="font-bold text-gray-900 mb-1">Authors from Other States</h5>
+                                            <p className="text-sm text-gray-600 leading-snug">
+                                                (Other than Gujarat): Online participation may be permitted under exceptional circumstances.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {/* Mode 3 */}
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                            <MapPin className="w-4 h-4 text-green-600" />
+                                        </div>
+                                        <div>
+                                            <h5 className="font-bold text-gray-900 mb-1">Authors from Gujarat</h5>
+                                            <p className="text-sm text-gray-600 leading-snug">
+                                                Physical presence of the presenting author is mandatory.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Visitors Widget */}
-                        <div className="bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800 p-6 flex flex-col items-center">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                    <Globe className="w-5 h-5 text-blue-400" />
-                                </div>
-                                Visitors
-                            </h3>
-                            <div className="overflow-hidden rounded-lg shadow-inner bg-[#0f172a]">
-                                <img
-                                    src="https://s11.flagcounter.com/count2/JO2k/bg_0F172A/txt_FFFFFF/border_334155/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/"
-                                    alt="Flag Counter"
-                                    className="block opacity-90 hover:opacity-100 transition-opacity"
-                                />
-                            </div>
-                        </div>
+                        </section>
                     </div>
+
+
+
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Conference = require('./models/Conference');
 const dotenv = require('dotenv');
 
