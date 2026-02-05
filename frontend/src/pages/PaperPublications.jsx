@@ -1,38 +1,92 @@
 import React from 'react';
+import { BookOpen, CheckCircle, BarChart3, ExternalLink } from 'lucide-react';
 
 const PaperPublications = () => {
     return (
-        <div className="bg-white min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-5xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
+            <div className="container mx-auto px-6 max-w-6xl">
 
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 uppercase">
-                    PUBLICATIONS OF COMS2 PROCEEDING IN SPRINGER CCIS SCOPUS INDEX
-                </h1>
-
-                <div className="space-y-6 text-gray-700 text-justify leading-relaxed">
-                    <p>
-                        Papers submitted to COMS2-2026 will be assessed based on the originality, scientific contribution and novelty,
-                        technical soundness, clarity, and interest to a wide audience. The plagiarism / similarity ratio of the papers
-                        should not exceed 10% overall, and 3% for single source overlap.
+                {/* Hero */}
+                <div className="text-center mb-16 animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
+                        Proceedings & Indexing
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Paper <span className="text-blue-600">Publications</span>
+                    </h1>
+                    <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
+                        Papers submitted to COMS2-2026 are assessed for originality, scientific contribution, and technical soundness.
                     </p>
+                </div>
 
-                    <div>
-                        <strong className="block mb-2 text-black">KEY FEATURES:</strong>
-                        <p className="mb-4">
-                            <strong>Paper Publications:</strong> All accepted, registered and presented papers will be published in Scopus Indexed
-                            Springer CCIS Series Conference Proceedings for COMS2-2026.
-                        </p>
-                        <p>
-                            Previous conference proceeding of COMS2-2024 (paper acceptance rate: 11%),
-                            COMS2-2023 (paper acceptance rate: 10%),
-                            COMS2-2022 (paper acceptance rate: 15%),
-                            COMS2-2021 (paper acceptance rate: 18%),
-                            COMS2-2020 (paper acceptance rate: 27%),
-                            published in Scopus Indexed Springer CCIS can be accessed at{' '}
-                            <a href="https://link.springer.com/conference/coms2" className="text-blue-600 hover:underline break-all">
-                                https://link.springer.com/conference/coms2
-                            </a>
-                        </p>
+                <div className="grid lg:grid-cols-2 gap-12 items-start">
+
+                    {/* Left: Info & Key Features */}
+                    <div className="space-y-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                <BookOpen className="text-blue-600" />
+                                Publishing Partner
+                            </h3>
+                            <p className="text-gray-600 leading-relaxed mb-6">
+                                All accepted, registered, and presented papers will be published in the
+                                <strong className="text-blue-600"> Scopus Indexed Springer CCIS Series Conference Proceedings</strong>.
+                            </p>
+
+                            <div className="space-y-4">
+                                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+                                    <CheckCircle className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Plagiarism Policy</h4>
+                                        <p className="text-sm text-gray-600">Match score should not exceed 10% overall, and 3% for single source.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+                                    <CheckCircle className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Review Process</h4>
+                                        <p className="text-sm text-gray-600">Rigorous double-blind peer review process.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a
+                            href="https://link.springer.com/conference/coms2"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block bg-blue-600 text-white text-center font-bold py-4 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        >
+                            View Previous Proceedings on Springer
+                            <ExternalLink className="inline-block ml-2 mb-1" size={18} />
+                        </a>
+                    </div>
+
+                    {/* Right: Stats */}
+                    <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                <BarChart3 className="text-indigo-600" />
+                                Acceptance Statistics
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {[
+                                    { year: '2024', rate: '11%' },
+                                    { year: '2023', rate: '10%' },
+                                    { year: '2022', rate: '15%' },
+                                    { year: '2021', rate: '18%' },
+                                    { year: '2020', rate: '27%' },
+                                ].map((stat) => (
+                                    <div key={stat.year} className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex justify-between items-center group hover:border-blue-200 transition-colors">
+                                        <span className="font-bold text-gray-500 group-hover:text-gray-700">COMS2-{stat.year}</span>
+                                        <span className="font-bold text-blue-600 text-xl">{stat.rate}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-4 text-center italic">
+                                * Acceptance rate reflects our commitment to quality.
+                            </p>
+                        </div>
                     </div>
                 </div>
 

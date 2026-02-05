@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -263,10 +264,10 @@ const Navbar = () => {
                 </div>
             )}
             {/* Search Overlay */}
-            {isSearchOpen && (
+            {isSearchOpen && createPortal(
                 <div className="fixed inset-0 z-[60] flex items-start justify-center pt-24 px-6">
                     <div
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-fade-in"
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-md animate-fade-in"
                         onClick={() => setIsSearchOpen(false)}
                     ></div>
                     <div className="relative w-full max-w-2xl animate-fade-in-up">
@@ -352,7 +353,8 @@ const Navbar = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </nav>
     );

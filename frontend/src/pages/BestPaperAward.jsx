@@ -1,83 +1,117 @@
 import React, { useState } from 'react';
+import { Trophy, Star, Users, Medal, Quote } from 'lucide-react';
 
 const BestPaperAward = () => {
     const [activeTab, setActiveTab] = useState('2024');
 
-    const render2024Content = () => (
-        <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-                <thead>
-                    <tr className="bg-[#f0f9fd] border-b border-gray-200 text-gray-700">
-                        <th className="p-3 border border-gray-200 font-bold w-16">Paper Id</th>
-                        <th className="p-3 border border-gray-200 font-bold w-1/3">Paper Title</th>
-                        <th className="p-3 border border-gray-200 font-bold">Authors</th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white">
-                    <tr className="hover:bg-gray-50">
-                        <td className="p-3 border border-gray-200 align-top">369</td>
-                        <td className="p-3 border border-gray-200 align-top">
-                            Osmotic Computing Based Task Offloading: A Fuzzy Logic Based Approach
-                        </td>
-                        <td className="p-3 border border-gray-200 align-top text-gray-600">
-                            Ranadir Naha, Sanjaya Kumar Panda, Pradip Kumar Sahu, Veer Surendra Sai University of Technology, Odisha, India;
-                            National Institute of Technology, Warangal, Telangana, India
-                        </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                        <td className="p-3 border border-gray-200 align-top">411</td>
-                        <td className="p-3 border border-gray-200 align-top">
-                            Design of Performance Enhanced Approximate Multiplier for Image Processing Applications
-                        </td>
-                        <td className="p-3 border border-gray-200 align-top text-gray-600">
-                            Dr. K. Sivanandam, P. Sadhana, M. Kumaraswamy College of Engineering, Thalavapalayam, Tamilnadu, India
-                        </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                        <td className="p-3 border border-gray-200 align-top">418</td>
-                        <td className="p-3 border border-gray-200 align-top">
-                            Design and performance analysis of high-efficiency propulsion system for VTOL applications
-                        </td>
-                        <td className="p-3 border border-gray-200 align-top text-gray-600">
-                            Arpit Biswas, Triaudic Robotics Pvt Ltd, New Delhi, India; Ms. Neha chaubey, Imperial College, London, United Kingdom
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div className="mt-4">
-                <a href="#" className="text-[#5bc0de] text-sm hover:underline">Edit</a>
-            </div>
-        </div>
-    );
+    const awards = {
+        '2024': [
+            {
+                id: '369',
+                title: 'Osmotic Computing Based Task Offloading: A Fuzzy Logic Based Approach',
+                authors: 'Ranadir Naha, Sanjaya Kumar Panda, Pradip Kumar Sahu',
+                institution: 'Veer Surendra Sai University of Technology, Odisha, India; National Institute of Technology, Warangal, Telangana, India'
+            },
+            {
+                id: '411',
+                title: 'Design of Performance Enhanced Approximate Multiplier for Image Processing Applications',
+                authors: 'Dr. K. Sivanandam, P. Sadhana',
+                institution: 'M. Kumaraswamy College of Engineering, Thalavapalayam, Tamilnadu, India'
+            },
+            {
+                id: '418',
+                title: 'Design and performance analysis of high-efficiency propulsion system for VTOL applications',
+                authors: 'Arpit Biswas, Ms. Neha chaubey',
+                institution: 'Triaudic Robotics Pvt Ltd, New Delhi, India; Imperial College, London, United Kingdom'
+            }
+        ]
+    };
 
     return (
-        <div className="bg-white min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-5xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
+            <div className="container mx-auto px-6 max-w-6xl">
 
-                <h1 className="text-3xl font-bold text-gray-700 mb-12 text-center">
-                    Best Paper Award- <br /> International Conference COMS2
-                </h1>
+                {/* Hero */}
+                <div className="text-center mb-16 animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-yellow-100 text-yellow-700 text-sm font-semibold mb-4 flex items-center gap-2 w-fit mx-auto">
+                        <Trophy size={14} /> Hall of Fame
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Best Paper <span className="text-blue-600">Awards</span>
+                    </h1>
+                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                        Recognizing excellence in research and innovation at International Conference COMS2.
+                    </p>
+                </div>
 
-                <div className="border border-gray-200 rounded p-4">
-                    {/* Tabs */}
-                    <div className="flex flex-col space-y-2 mb-6">
-                        {['2024', '2023', '2022', '2021', '2020'].map((year) => (
-                            <button
-                                key={year}
-                                onClick={() => setActiveTab(year)}
-                                className={`text-left font-bold uppercase tracking-wide py-2 px-1 transition-colors ${activeTab === year ? 'text-green-500' : 'text-[#5bc0de] hover:text-blue-500'}`}
-                            >
-                                COMS2-{year} PAPERS
-                            </button>
-                        ))}
+                {/* Main Content */}
+                <div className="flex flex-col lg:flex-row gap-8">
+
+                    {/* Sidebar Tabs */}
+                    <div className="lg:w-64 flex-shrink-0 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                        <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 sticky top-32">
+                            {['2024', '2023', '2022', '2021', '2020'].map((year) => (
+                                <button
+                                    key={year}
+                                    onClick={() => setActiveTab(year)}
+                                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${activeTab === year
+                                            ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                                            : 'text-gray-500 hover:bg-gray-50 hover:text-blue-600'
+                                        }`}
+                                >
+                                    COMS2-{year}
+                                    {activeTab === year && <Star size={16} fill="white" />}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Content */}
-                    <div>
-                        {activeTab === '2024' && render2024Content()}
-                        {activeTab !== '2024' && (
-                            <div className="p-8 text-center text-gray-500 italic">
-                                Data for {activeTab} is archived.
+                    {/* Content Area */}
+                    <div className="flex-grow animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                        {awards[activeTab] ? (
+                            <div className="grid gap-6">
+                                {awards[activeTab].map((paper, idx) => (
+                                    <div key={idx} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <Medal size={80} className="text-yellow-500 transform rotate-12" />
+                                        </div>
+
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-lg">
+                                                    Paper ID: {paper.id}
+                                                </span>
+                                                <div className="h-4 w-px bg-gray-300"></div>
+                                                <span className="text-yellow-500 flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
+                                                    <Trophy size={12} /> Winner
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-blue-600 transition-colors">
+                                                "{paper.title}"
+                                            </h3>
+
+                                            <div className="flex items-start gap-3 text-gray-600 mb-2">
+                                                <Users size={18} className="mt-1 text-blue-500 flex-shrink-0" />
+                                                <span className="font-medium text-sm">{paper.authors}</span>
+                                            </div>
+
+                                            <div className="pl-8 text-xs text-gray-400 italic">
+                                                {paper.institution}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-100">
+                                <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Quote className="text-gray-300" size={32} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Archive Mode</h3>
+                                <p className="text-gray-500">
+                                    The detailed list for {activeTab} is currently archived.
+                                </p>
                             </div>
                         )}
                     </div>

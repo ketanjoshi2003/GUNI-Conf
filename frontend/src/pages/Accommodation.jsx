@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Phone, Star, ArrowRight, Building } from 'lucide-react';
+import { MapPin, Phone, Star, ArrowRight, Building, CheckCircle2 } from 'lucide-react';
 
 const Accommodation = () => {
     const hotels = [
@@ -72,78 +72,79 @@ const Accommodation = () => {
     ];
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-                        Accommodation
+        <div className="bg-gray-50 min-h-screen pt-28 pb-20">
+            <div className="container mx-auto px-6 max-w-7xl">
+
+                {/* Hero */}
+                <div className="text-center mb-16 animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
+                        Plan Your Stay
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Accommodation <span className="text-blue-600">Options</span>
                     </h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        We have curated a list of comfortable stay options near the venue and in nearby cities for your convenience.
-                    </p>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-slate-900 text-white">
-                                    <th className="p-4 border-b border-gray-700 font-semibold w-16 text-center">Sr.No</th>
-                                    <th className="p-4 border-b border-gray-700 font-semibold w-1/4">Hotel</th>
-                                    <th className="p-4 border-b border-gray-700 font-semibold">Address & Contact</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {hotels.map((hotel) => (
-                                    <tr key={hotel.id} className="hover:bg-blue-50/50 transition-colors group">
-                                        <td className="p-4 text-center font-medium text-gray-500 group-hover:text-blue-600">
-                                            {hotel.id}
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="font-bold text-gray-900 text-lg mb-1 flex items-center gap-2">
-                                                <Building className="w-4 h-4 text-gray-400" />
-                                                {hotel.name}
-                                            </div>
-                                            <div className="flex text-yellow-400 text-xs">
-                                                {[...Array(hotel.rating)].map((_, i) => (
-                                                    <Star key={i} className="w-3 h-3 fill-current" />
-                                                ))}
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-start gap-2 text-gray-600 mb-2">
-                                                <MapPin className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
-                                                <span className="text-sm leading-relaxed">{hotel.address}</span>
-                                            </div>
-                                            {(hotel.contact || hotel.email) && (
-                                                <div className="flex flex-wrap gap-4 mt-2 pl-6 text-sm">
-                                                    {hotel.contact && (
-                                                        <span className="flex items-center gap-1.5 text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                                                            <Phone className="w-3 h-3" />
-                                                            {hotel.contact}
-                                                        </span>
-                                                    )}
-                                                    {hotel.email && (
-                                                        <span className="text-blue-600 hover:underline cursor-pointer">
-                                                            {hotel.email}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-500 italic">
-                        * Please note that the organizers are not responsible for bookings. Attendees are requested to book directly with the hotels.
+                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                        Curated list of comfortable stay options near the venue and in nearby cities.
                     </p>
                 </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {hotels.map((hotel, idx) => (
+                        <div key={hotel.id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-100 transition-all group animate-fade-in-up" style={{ animationDelay: `${idx * 0.05}s` }}>
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="bg-blue-50 p-2 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    <Building size={20} />
+                                </div>
+                                <div className="flex bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            size={12}
+                                            className={`${i < hotel.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'} ml-0.5 first:ml-0`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-blue-600 transition-colors">
+                                {hotel.name}
+                            </h3>
+
+                            <div className="flex items-start gap-2.5 text-gray-600 text-sm mb-6 min-h-[3rem]">
+                                <MapPin size={16} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                                <span className="line-clamp-2">{hotel.address}</span>
+                            </div>
+
+                            <div className="border-t border-gray-100 pt-4 mt-auto">
+                                {(hotel.contact || hotel.email) ? (
+                                    <div className="space-y-2">
+                                        {hotel.contact && (
+                                            <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                                                <Phone size={14} className="text-gray-400" />
+                                                {hotel.contact}
+                                            </div>
+                                        )}
+                                        {hotel.email && (
+                                            <a href={`mailto:${hotel.email}`} className="flex items-center gap-2 text-sm text-blue-600 font-medium hover:underline px-3 pt-1">
+                                                <ArrowRight size={14} /> Email Hotel
+                                            </a>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span className="text-xs text-gray-400 italic block py-2">Contact details check online</span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-16 bg-blue-50/50 rounded-2xl p-6 text-center border border-blue-100">
+                    <p className="text-sm text-blue-800 flex items-center justify-center gap-2">
+                        <CheckCircle2 size={16} />
+                        Note: Attendees are requested to book directly with the hotels. Organizers are not responsible for reservations.
+                    </p>
+                </div>
+
             </div>
         </div>
     );

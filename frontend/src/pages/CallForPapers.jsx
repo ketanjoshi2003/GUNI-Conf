@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { Search, FileText, CheckCircle2, ChevronRight, Globe } from 'lucide-react';
 
 const CallForPapers = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const tracks = {
-        column1: [
+        "Track 1: Communication & Networks": [
+            "Wireless Networks and Communication",
             "Next Generation Networks",
             "Ad Hoc Networks, Sensor Network",
             "Cognitive Radio, MIMO Technologies",
             "Satellite Communications and Networking",
-            "Cyber Physical Systems",
-            "Quantum Computing and Networking"
-        ],
-        column2: [
             "Green Networking and Smart Grid",
-            "Cloud Communications and Networking",
+            "Cloud Communications and Networking"
+        ],
+        "Track 2: Advanced Computing": [
+            "Cyber Physical Systems",
+            "Quantum Computing and Networking",
             "Social Networks and Crowdsourcing",
             "Software Defined Networking",
             "Cognitive Radio and White-space Networking",
@@ -22,89 +24,94 @@ const CallForPapers = () => {
         ]
     };
 
-    const filterTopics = (topics) => {
-        return topics.filter(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Flatten tracks for easier searching if needed, or filter within categories
+    const filterTopics = (category) => {
+        return tracks[category].filter(topic =>
+            topic.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     };
 
     return (
-        <div className="bg-white min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6">
-                {/* Header Image or Title Section could go here, but screenshot just shows text */}
-                <div className="max-w-4xl mx-auto">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
+            <div className="container mx-auto px-6 max-w-6xl">
 
-                    <p className="text-gray-700 mb-8 text-justify leading-relaxed">
+                {/* Header Section */}
+                <div className="text-center mb-16 animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
+                        Submissions Open
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Call For <span className="text-blue-600">Papers</span>
+                    </h1>
+                    <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
                         Researchers, authors, and industrial practitioners are invited to submit original,
                         high-quality technical papers of their newest research findings, novel technical studies,
-                        innovative ideas, and visionary perspectives in computing science, networking,
-                        communication, security, and future trends (but are not limited to):
+                        innovative ideas, and visionary perspectives.
                     </p>
+                </div>
 
-                    <div className="flex justify-end mb-4">
-                        <div className="flex items-center gap-2">
-                            <span className="text-gray-600 text-sm">Search:</span>
-                            <input
-                                type="text"
-                                className="border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:border-blue-500"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
+                {/* Search Bar */}
+                <div className="max-w-2xl mx-auto mb-16 relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
                     </div>
+                    <input
+                        type="text"
+                        className="block w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all"
+                        placeholder="Search for research topics..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
 
-                    <div className="border border-gray-200 rounded-sm overflow-hidden">
-                        {/* Headers */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 bg-[#d9edf7] border-b border-gray-200 font-bold text-[#31708f]">
-                            <div className="p-3 border-r border-gray-200 flex items-center gap-2">
-                                <span className="text-xs">▼</span> Wireless Networks and Communication
+                {/* Tracks Grid */}
+                <div className="grid md:grid-cols-2 gap-8 mb-16">
+                    {Object.keys(tracks).map((category, idx) => {
+                        const filtered = filterTopics(category);
+                        if (filtered.length === 0 && searchTerm) return null;
+
+                        return (
+                            <div key={idx} className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-100 border border-gray-100 hover:border-blue-100 transition-colors group">
+                                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${idx === 0 ? 'bg-blue-50 text-blue-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                                        {idx === 0 ? <Globe size={20} /> : <FileText size={20} />}
+                                    </div>
+                                    {category}
+                                </h3>
+
+                                <ul className="space-y-3">
+                                    {filtered.map((topic, i) => (
+                                        <li key={i} className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors text-gray-700 group-hover/item">
+                                            <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                                            <span className="font-medium">{topic}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <div className="p-3 flex items-center gap-2">
-                                <span className="text-xs">▼</span> Network Security and Cyber Security
-                            </div>
-                        </div>
+                        );
+                    })}
+                </div>
 
-                        {/* Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 bg-white">
-                            {/* Col 1 */}
-                            <div className="p-4 border-r border-gray-200 space-y-4">
-                                {filterTopics(tracks.column1).length > 0 ? (
-                                    filterTopics(tracks.column1).map((topic, idx) => (
-                                        <div key={idx} className="flex gap-2 text-gray-700">
-                                            <span className="text-blue-500">•</span>
-                                            <span>{topic}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-gray-400 italic">No matches</div>
-                                )}
-                            </div>
-
-                            {/* Col 2 */}
-                            <div className="p-4 space-y-4">
-                                {filterTopics(tracks.column2).length > 0 ? (
-                                    filterTopics(tracks.column2).map((topic, idx) => (
-                                        <div key={idx} className="flex gap-2 text-gray-700">
-                                            <span className="text-blue-500">•</span>
-                                            <span>{topic}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-gray-400 italic">No matches</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 text-sm text-gray-500">
-                        Showing 1 to 6 of 6 entries
-                    </div>
-
-                    <div className="mt-12 text-center">
-                        <a href="#" className="text-[#31708f] hover:underline font-semibold text-lg hover:text-blue-600 transition-colors">
-                            Call for Papers 7th Edition – Springer International Conference Computing Communication Security COMS2 - 2026
+                {/* CTA Section */}
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-10 text-white text-center shadow-2xl relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                    <div className="relative z-10">
+                        <h3 className="text-2xl font-bold mb-4">Ready to Submit?</h3>
+                        <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
+                            Join us at the 7th Edition of Springer International Conference on Computing, Communication and Security (COMS2 - 2026).
+                        </p>
+                        <a
+                            href="https://equinocs.springernature.com/service/COMS2"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-4 rounded-full hover:bg-blue-50 hover:scale-105 transition-all shadow-lg"
+                        >
+                            Submit Your Paper
+                            <ChevronRight size={20} />
                         </a>
                     </div>
-
                 </div>
+
             </div>
         </div>
     );

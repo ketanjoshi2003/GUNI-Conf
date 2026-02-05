@@ -5,11 +5,16 @@ const VisaInformation = () => {
     return (
         <div className="bg-gray-50 min-h-screen pt-28 pb-12">
             <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-                        Visa Information
+                <div className="mb-16 text-center animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
+                        Travel Essentials
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Visa <span className="text-blue-600">Information</span>
                     </h1>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
+                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                        Important guidelines for international delegates attending COMS2 2026.
+                    </p>
                 </div>
 
                 <div className="grid lg:grid-cols-1 gap-12">

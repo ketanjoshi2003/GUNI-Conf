@@ -68,14 +68,16 @@ const TouristPlaces = () => {
     return (
         <div className="bg-gray-50 min-h-screen pt-28 pb-12">
             <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-                        Tourist Places
+                <div className="mb-16 text-center animate-fade-in-up">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
+                        Discover Gujarat
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        Tourist <span className="text-blue-600">Attractions</span>
                     </h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Explore the rich heritage and scenic beauty of Gujarat. Here are some top attractions you can visit during your stay.
+                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                        Explore the rich heritage and scenic beauty of Gujarat near the venue.
                     </p>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
