@@ -8,7 +8,7 @@ const Footer = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/admin/news');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/news`);
                 setNews(response.data);
             } catch (error) {
                 console.error('Error fetching news:', error);

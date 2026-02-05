@@ -49,14 +49,14 @@ const AdminDashboard = () => {
         try {
             const config = getAuthConfig(token);
             const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/admin/speakers', config),
-                axios.get('http://localhost:5000/api/admin/committees', config),
-                axios.get('http://localhost:5000/api/admin/important-dates', config),
-                axios.get('http://localhost:5000/api/admin/topics', config),
-                axios.get('http://localhost:5000/api/admin/previous-editions', config),
-                axios.get('http://localhost:5000/api/admin/registration-fees', config),
-                axios.get('http://localhost:5000/api/admin/archive', config),
-                axios.get('http://localhost:5000/api/admin/news', config)
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/speakers`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/committees`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/previous-editions`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/archive`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/news`, config)
             ]);
             setSpeakers(speakersRes.data);
             setCommittees(committeesRes.data);
@@ -99,9 +99,9 @@ const AdminDashboard = () => {
             const endpoint = getEndpoint();
             const config = getAuthConfig();
             if (isAdding) {
-                await axios.post(`http://localhost:5000/api/admin/${endpoint}`, formData, config);
+                await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, formData, config);
             } else {
-                await axios.put(`http://localhost:5000/api/admin/${endpoint}/${editingItem}`, formData, config);
+                await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}/${editingItem}`, formData, config);
             }
             await loadData();
             handleCancel();
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
         try {
             const endpoint = getEndpoint();
             const config = getAuthConfig();
-            await axios.delete(`http://localhost:5000/api/admin/${endpoint}/${id}`, config);
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}/${id}`, config);
             await loadData();
         } catch (error) {
             console.error('Error deleting:', error);

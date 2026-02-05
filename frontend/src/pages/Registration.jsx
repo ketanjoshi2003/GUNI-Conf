@@ -10,7 +10,7 @@ const Registration = () => {
     useEffect(() => {
         const fetchFees = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/admin/registration-fees');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`);
                 if (response.data && response.data.length > 0) {
                     setRegistrationFees(response.data);
                 } else {

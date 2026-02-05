@@ -22,7 +22,7 @@ const Archive = () => {
     useEffect(() => {
         const fetchArchives = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/admin/archive');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/archive`);
                 setArchives(response.data);
             } catch (err) {
                 console.error('Error fetching archives:', err);

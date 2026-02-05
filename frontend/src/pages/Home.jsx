@@ -78,7 +78,7 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/conference/coms2-2026')
+        axios.get(`${import.meta.env.VITE_API_URL}/api/conference/coms2-2026`)
             .then(res => setConference(res.data))
             .catch(err => console.error(err));
     }, []);
