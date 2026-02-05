@@ -114,7 +114,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`fixed w-full z-50 transition-all duration-500 ${useSolidStyle ? 'bg-white/90 backdrop-blur-xl shadow-lg border-b border-gray-100 py-3' : 'bg-transparent py-5'}`}>
+        <nav className={`fixed w-full z-50 transition-all duration-500 py-4 ${useSolidStyle ? 'bg-white/90 backdrop-blur-xl shadow-lg border-b border-gray-100' : 'bg-transparent'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                 {/* Logo Section */}
                 <Link to="/" className="relative group transition-transform duration-300 hover:scale-105 flex-shrink-0">
