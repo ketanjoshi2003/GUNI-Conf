@@ -1,21 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { MapPin, Mail, ChevronRight, Globe, Wifi } from 'lucide-react';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const Footer = () => {
     const [news, setNews] = useState([]);
+    const [footerDates, setFooterDates] = useState([]);
+
+    const fetchData = useCallback(async () => {
+        try {
+            // Fetch News
+            const newsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/news`);
+            setNews(newsRes.data);
+
+            // Fetch Important Dates for footer display
+            const datesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`);
+            if (datesRes.data && datesRes.data.length > 0) {
+                const mapped = datesRes.data.slice(0, 5).map(d => ({
+                    label: d.event,
+                    date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    highlight: d.isPinned
+                }));
+                setFooterDates(mapped);
+            }
+        } catch (error) {
+            console.error('Error fetching footer data:', error);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchNews = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/news`);
-                setNews(response.data);
-            } catch (error) {
-                console.error('Error fetching news:', error);
-            }
-        };
-        fetchNews();
-    }, []);
+        fetchData();
+    }, [fetchData]);
+
+    useSocketRefresh(() => {
+        console.log('Footer: Refreshing data...');
+        fetchData();
+    });
 
     return (
         <footer className="relative mt-20 lg:mt-32">
@@ -144,18 +164,14 @@ const Footer = () => {
                         <div>
                             <h3 className="text-white text-base md:text-xl font-bold border-l-4 border-blue-500 pl-4 mb-6 uppercase tracking-wider">Important Dates</h3>
                             <ul className="grid grid-cols-1 gap-4 text-sm">
-                                {[
-                                    { label: 'Full Paper Submission', date: 'May 30, 2026' },
-                                    { label: 'Paper Acceptance', date: 'July 30, 2026' },
-                                    { label: 'Registration Opens', date: 'July 30, 2026' },
-                                    { label: 'Camera Ready Paper', date: 'August 15, 2026' },
-                                    { label: 'Conference Date', date: 'Sept 10-11, 2026', highlight: true }
-                                ].map((item, idx) => (
+                                {footerDates.length > 0 ? footerDates.map((item, idx) => (
                                     <li key={idx} className="flex justify-between items-center border-b border-gray-800/50 pb-2 gap-4">
                                         <span className="text-gray-500 text-[10px] md:text-[11px] uppercase font-bold tracking-tight shrink-0">{item.label}</span>
                                         <span className={item.highlight ? 'text-blue-400 font-bold whitespace-nowrap text-right' : 'text-gray-300 whitespace-nowrap text-right'}>{item.date}</span>
                                     </li>
-                                ))}
+                                )) : (
+                                    <li className="text-xs text-gray-500 italic">Dates coming soon...</li>
+                                )}
                             </ul>
                         </div>
 

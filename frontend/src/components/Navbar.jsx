@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
+import axios from 'axios';
+import { Menu, X, Search, ChevronDown, ChevronRight, ExternalLink, FileText } from 'lucide-react';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,65 @@ const Navbar = () => {
 
     // Check if we are on the home page
     const isHome = location.pathname === '/';
+
+    const [speakerYears, setSpeakerYears] = useState(['2026', '2025', '2024', '2023', '2022', '2021', '2020']);
+    const [customCommitteeSections, setCustomCommitteeSections] = useState([]);
+
+    const fetchSpeakerYears = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/speakers`);
+            const years = response.data.map(s => String(s.year));
+            const uniqueYears = [...new Set([...years, '2026', '2025', '2024', '2023', '2022', '2021', '2020'])].sort((a, b) => b - a);
+            setSpeakerYears(uniqueYears);
+        } catch (error) {
+            console.error('Error fetching speaker years:', error);
+        }
+    }, []);
+
+    const fetchCustomCommittees = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/committees`);
+
+            // Standard committee types that should NOT appear in dropdown
+            const standardTypes = [
+                'Advisory Committee',
+                'Honorary Chairs',
+                'General Chairs',
+                'Program Chairs',
+                'Technical Program Chairs',
+                'Track Chairs',
+                'Organizing Chairs',
+                'Organizing Committee',
+                'Industry/University Connect Chair',
+                'Website Chairs',
+                'Publicity Chair',
+                'Technical Program Committee Members'
+            ];
+
+            // Get unique custom types
+            const customTypes = [...new Set(response.data.map(c => c.type))]
+                .filter(type => type && !standardTypes.includes(type))
+                .map(type => ({
+                    name: type,
+                    path: `/committees?tab=${type.toLowerCase().replace(/\s+/g, '-')}`
+                }));
+
+            setCustomCommitteeSections(customTypes);
+        } catch (error) {
+            console.error('Error fetching custom committees:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchSpeakerYears();
+        fetchCustomCommittees();
+    }, [fetchSpeakerYears, fetchCustomCommittees]);
+
+    useSocketRefresh(() => {
+        console.log('Navbar: Refreshing dynamic content...');
+        fetchSpeakerYears();
+        fetchCustomCommittees();
+    });
 
     const navItems = [
         { name: 'Home', path: '/' },
@@ -38,20 +99,17 @@ const Navbar = () => {
                 { name: 'Advisory Committee', path: '/committees?tab=advisory' },
                 { name: 'Conference Chairs', path: '/committees?tab=conference-chairs' },
                 { name: 'Technical Program Committee', path: '/committees?tab=technical-program' },
-                { name: 'Organizing Committee', path: '/committees?tab=organizing' }
+                { name: 'Organizing Committee', path: '/committees?tab=organizing' },
+                ...customCommitteeSections
             ]
         },
         {
             name: 'Speakers',
             path: '/speakers',
-            dropdown: [
-                { name: 'Speakers - 2025', path: '/speakers?year=2025' },
-                { name: 'Speakers - 2024', path: '/speakers?year=2024' },
-                { name: 'Speakers - 2023', path: '/speakers?year=2023' },
-                { name: 'Speakers - 2022', path: '/speakers?year=2022' },
-                { name: 'Speakers - 2021', path: '/speakers?year=2021' },
-                { name: 'Speakers - 2020', path: '/speakers?year=2020' }
-            ]
+            dropdown: speakerYears.map(year => ({
+                name: `Speakers - ${year}`,
+                path: `/speakers?year=${year}`
+            }))
         },
         { name: 'Registration', path: '/registration' },
         { name: 'Proceedings', path: 'https://link.springer.com/book/10.1007/978-3-031-75170-7', isExternal: true },

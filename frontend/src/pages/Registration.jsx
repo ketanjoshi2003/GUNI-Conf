@@ -1,31 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const Registration = () => {
     const navigate = useNavigate();
     const [registrationFees, setRegistrationFees] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchFees = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`);
-                if (response.data && response.data.length > 0) {
-                    setRegistrationFees(response.data);
-                } else {
-                    // Fallback to initial data if DB is empty
-                    setRegistrationFees(initialRegistrationFees);
-                }
-            } catch (error) {
-                console.error('Error fetching registration fees:', error);
+    const fetchFees = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`);
+            if (response.data && response.data.length > 0) {
+                setRegistrationFees(response.data);
+            } else {
+                // Fallback to initial data if DB is empty
                 setRegistrationFees(initialRegistrationFees);
-            } finally {
-                setLoading(false);
             }
-        };
-        fetchFees();
+        } catch (error) {
+            console.error('Error fetching registration fees:', error);
+            setRegistrationFees(initialRegistrationFees);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchFees();
+    }, [fetchFees]);
+
+    useSocketRefresh(() => {
+        console.log('Refreshing registration fees...');
+        fetchFees();
+    });
+
 
     const initialRegistrationFees = [
         {

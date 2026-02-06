@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Calendar, MapPin, ArrowRight, Shield, Network, Wifi, Globe } from 'lucide-react';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const HeroBackground = () => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -33,18 +34,11 @@ const Home = () => {
         seconds: 0
     });
 
-    const topics = [
-        "Wireless Networks and Communication", "Network Security and Cyber Security",
-        "Next Generation Networks", "Green Networking and Smart Grid",
-        "Ad Hoc Networks, Sensor Network", "Cloud Communications and Networking",
-        "Cognitive Radio, MIMO Technologies", "Social Networks and Crowdsourcing",
-        "Satellite Communications and Networking", "Software Defined Networking",
-        "Cyber Physical Systems", "Cognitive Radio and White-space Networking",
-        "Quantum Computing and Networking", "Mobile and Ubiquitous computing"
-    ];
+    const [topics, setTopics] = useState([]);
+    const [previousEditions, setPreviousEditions] = useState([]);
 
     const filteredTopics = topics.filter(topic =>
-        topic.toLowerCase().includes(searchQuery.toLowerCase())
+        topic.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     // Group filtered topics into pairs for the 2-column table
@@ -56,50 +50,73 @@ const Home = () => {
     const [countdownTarget, setCountdownTarget] = useState(new Date('2026-09-10'));
 
     useEffect(() => {
-        // Fetch pinned date for countdown
-        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`)
-            .then(res => {
-                const pinned = res.data.find(d => d.isPinned);
-                if (pinned) {
-                    setCountdownTarget(new Date(pinned.date));
-                }
-            })
-            .catch(err => console.error('Error fetching countdown target:', err));
-    }, []);
-
-    useEffect(() => {
-        const calculateTimeLeft = () => {
-            const difference = +countdownTarget - +new Date();
-            let timeLeft = {
-                days: 0,
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-            };
-
-            if (difference > 0) {
-                timeLeft = {
-                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                    minutes: Math.floor((difference / 1000 / 60) % 60),
-                    seconds: Math.floor((difference / 1000) % 60)
-                };
-            }
-            return timeLeft;
-        };
-
         const timer = setInterval(() => {
-            setTimeLeft(calculateTimeLeft());
+            const now = new Date().getTime();
+            const target = countdownTarget.getTime();
+            const distance = target - now;
+
+            if (distance < 0) {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+            } else {
+                setTimeLeft({
+                    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+                    hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                    minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+                    seconds: Math.floor((distance % (1000 * 60)) / 1000)
+                });
+            }
         }, 1000);
 
         return () => clearInterval(timer);
     }, [countdownTarget]);
 
-    useEffect(() => {
+    const fetchConferenceInfo = () => {
         axios.get(`${import.meta.env.VITE_API_URL}/api/conference/coms2-2026`)
             .then(res => setConferenceInfo(res.data))
             .catch(err => console.error(err));
+    };
+
+    const fetchCountdownTarget = () => {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`)
+            .then(res => {
+                const pinned = res.data.find(d => d.isPinned);
+                if (pinned) {
+                    console.log('Setting new countdown target:', pinned.date);
+                    setCountdownTarget(new Date(pinned.date));
+                }
+            })
+            .catch(err => console.error('Error fetching countdown target:', err));
+    };
+
+    const fetchTopics = () => {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics`)
+            .then(res => setTopics(res.data))
+            .catch(err => console.error('Error fetching topics:', err));
+    };
+
+    const fetchEditions = () => {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/previous-editions`)
+            .then(res => setPreviousEditions(res.data))
+            .catch(err => console.error('Error fetching editions:', err));
+    };
+
+    useEffect(() => {
+        fetchCountdownTarget();
+        fetchConferenceInfo();
+        fetchTopics();
+        fetchEditions();
     }, []);
+
+    useSocketRefresh(() => {
+        console.log('Refreshing home data...');
+        fetchCountdownTarget();
+        fetchConferenceInfo();
+        fetchTopics();
+        fetchEditions();
+    });
+
+
+
 
     return (
         <div className="bg-white">
@@ -224,7 +241,7 @@ const Home = () => {
                                     {filteredTopics.map((topic, idx) => (
                                         <div key={idx} className="p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
                                             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
-                                            <span className="text-gray-700 font-medium">{topic}</span>
+                                            <span className="text-gray-700 font-medium">{topic.title}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -238,14 +255,14 @@ const Home = () => {
                                                     <td className="p-4 border-r border-gray-100 w-1/2">
                                                         <div className="flex items-center gap-2">
                                                             <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
-                                                            {row[0]}
+                                                            {row[0].title}
                                                         </div>
                                                     </td>
                                                     <td className="p-4 w-1/2">
                                                         {row[1] && (
                                                             <div className="flex items-center gap-2">
                                                                 <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
-                                                                {row[1]}
+                                                                {row[1].title}
                                                             </div>
                                                         )}
                                                     </td>
@@ -273,14 +290,8 @@ const Home = () => {
                                 Previous Editions (Springer CCIS Series)
                             </h3>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {[
-                                    { year: '2024', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2024)' },
-                                    { year: '2023', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2023)' },
-                                    { year: '2022', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2022)' },
-                                    { year: '2021', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2021)' },
-                                    { year: '2020', title: 'Proceedings of International Conference on Computing Science, Communication and Security (COMS2-2020)' }
-                                ].map((item) => (
-                                    <div key={item.year} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group border-l-4 border-l-transparent hover:border-l-blue-600">
+                                {previousEditions.length > 0 ? previousEditions.map((item) => (
+                                    <div key={item._id || item.year} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group border-l-4 border-l-transparent hover:border-l-blue-600">
                                         <div className="flex items-center gap-3 mb-3">
                                             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                                 {item.year}
@@ -290,11 +301,18 @@ const Home = () => {
                                         <p className="text-sm font-medium text-gray-800 leading-snug">
                                             {item.title}
                                         </p>
-                                        <div className="mt-3 flex items-center text-blue-600 text-[10px] font-bold uppercase tracking-widest gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <a
+                                            href={item.link || '#'}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="mt-3 flex items-center text-blue-600 text-[10px] font-bold uppercase tracking-widest gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
                                             View Proceedings <ArrowRight size={10} />
-                                        </div>
+                                        </a>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="col-span-full py-10 text-center text-gray-400 italic">No previous editions recorded.</div>
+                                )}
                             </div>
                         </section>
 

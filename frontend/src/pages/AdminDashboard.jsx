@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import axios from 'axios';
-import {
-    Users, Calendar, FileText, Tag, BookOpen, Newspaper,
-    Plus, Edit2, Trash2, Save, X, LogOut, Pin, Settings
-} from 'lucide-react';
+import { Edit2, Trash2, Plus, Save, X, LogOut, Layout, Users, Calendar, Award, Briefcase, Globe, Monitor, Code, Megaphone, MapPin, ChevronDown, ChevronUp, ExternalLink, FileText, Tag, BookOpen, Newspaper, Pin, Settings, PlusCircle, Menu } from 'lucide-react';
+import { advisoryCommitteeData, chairs } from '../data/committeeData';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
+
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [activeTab, setActiveTab] = useState('settings');
+    const inlineFormRef = useRef(null);
 
     // Data states
     const [speakers, setSpeakers] = useState([]);
@@ -21,44 +23,28 @@ const AdminDashboard = () => {
     const [archives, setArchives] = useState([]);
     const [news, setNews] = useState([]);
     const [conferenceInfo, setConferenceInfo] = useState(null);
+    const [expandedTypes, setExpandedTypes] = useState({});
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
     // Form states
     const [editingItem, setEditingItem] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
+    const [isCreatingSection, setIsCreatingSection] = useState(false);
     const [formData, setFormData] = useState({});
 
-    useEffect(() => {
-        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        if (!userInfo || userInfo.role !== 'admin') {
-            navigate('/login');
-            return;
-        }
-        setUser(userInfo);
-        loadData(userInfo.token);
-    }, [navigate]);
-
-    const getAuthConfig = (token) => {
-        const t = token || user?.token;
-        return {
-            headers: {
-                Authorization: `Bearer ${t}`
-            }
-        };
-    };
-
-    const loadData = async (token) => {
+    const loadData = useCallback(async () => {
         try {
-            const config = getAuthConfig(token);
             const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/speakers`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/committees`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/previous-editions`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/archive`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/news`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/admin/conference-info`, config)
+                api.get('/api/admin/speakers'),
+                api.get('/api/admin/committees'),
+                api.get('/api/admin/important-dates'),
+                api.get('/api/admin/topics'),
+                api.get('/api/admin/previous-editions'),
+                api.get('/api/admin/registration-fees'),
+                api.get('/api/admin/archive'),
+                api.get('/api/admin/news'),
+                api.get('/api/admin/conference-info')
             ]);
             setSpeakers(speakersRes.data);
             setCommittees(committeesRes.data);
@@ -72,9 +58,23 @@ const AdminDashboard = () => {
         } catch (error) {
             console.error('Error loading data:', error);
         }
-    };
+    }, [user?.token]);
 
-    const handleLogout = () => {
+    useSocketRefresh(() => {
+        console.log('Admin Dashboard: Refreshing data...');
+        loadData();
+    });
+
+
+    const handleLogout = async () => {
+        try {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (userInfo?.refreshToken) {
+                await api.post('/api/auth/logout', { refreshToken: userInfo.refreshToken });
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
         localStorage.removeItem('userInfo');
         navigate('/');
     };
@@ -83,9 +83,11 @@ const AdminDashboard = () => {
         setIsAdding(true);
         setEditingItem(null);
         setFormData({});
+        if (activeTab === 'committees') setIsCreatingSection(true);
     };
 
     const handleEdit = (item) => {
+        setIsCreatingSection(false);
         setEditingItem(item._id);
 
         // Format dates for <input type="date"> using UTC to avoid off-by-one errors
@@ -106,29 +108,69 @@ const AdminDashboard = () => {
 
     const handleCancel = () => {
         setIsAdding(false);
+        setIsCreatingSection(false);
         setEditingItem(null);
         setFormData({});
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (activeTab !== 'committees') return;
+
+            const isInsideGrid = event.target.closest('.committee-container');
+            const isInlineMemberActive = !isCreatingSection && (isAdding || editingItem);
+
+            if (!isInsideGrid) {
+                if (isInlineMemberActive) handleCancel();
+                if (Object.keys(expandedTypes).length > 0) setExpandedTypes({});
+            } else if (isInlineMemberActive && inlineFormRef.current && !inlineFormRef.current.contains(event.target)) {
+                const isTriggerButton = event.target.closest('button')?.getAttribute('title')?.includes('Edit') ||
+                    event.target.closest('button')?.getAttribute('title')?.includes('Promote') ||
+                    event.target.closest('button')?.innerText?.toUpperCase().includes('ADD MEMBER');
+
+                if (!isTriggerButton) {
+                    handleCancel();
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [activeTab, isCreatingSection, isAdding, editingItem, handleCancel, expandedTypes]);
+
+    useEffect(() => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (!userInfo || userInfo.role !== 'admin') {
+            navigate('/login');
+            return;
+        }
+        setUser(userInfo);
+        loadData();
+    }, [navigate, loadData]);
+
     const handleSave = async () => {
         try {
             const endpoint = getEndpoint();
-            const config = getAuthConfig();
 
-            // Log for debugging
-            console.log('Saving to:', endpoint, formData);
+            console.log('--- SAVE INITIATED ---');
+            console.log('Action:', isAdding ? 'Adding' : 'Editing');
+            console.log('Data to send:', formData);
 
+            let res;
             if (activeTab === 'settings') {
-                await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/conference-info`, formData, config);
+                res = await api.put('/api/admin/conference-info', formData);
             } else if (isAdding) {
-                await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, formData, config);
+                res = await api.post(`/api/admin/${endpoint}`, formData);
             } else {
-                await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}/${editingItem}`, formData, config);
+                res = await api.put(`/api/admin/${endpoint}/${editingItem}`, formData);
             }
+
+            console.log('Save response received:', res.data);
             await loadData();
             handleCancel();
         } catch (error) {
-            console.error('Save failed:', error.response?.data || error.message);
+            console.error('--- SAVE FAILED ---');
+            console.error('Error info:', error.response?.data || error.message);
             alert(`Failed to save: ${error.response?.data?.message || error.message}`);
         }
     };
@@ -137,8 +179,7 @@ const AdminDashboard = () => {
         if (!confirm('Are you sure you want to delete this item?')) return;
         try {
             const endpoint = getEndpoint();
-            const config = getAuthConfig();
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}/${id}`, config);
+            await api.delete(`/api/admin/${endpoint}/${id}`);
             await loadData();
         } catch (error) {
             console.error('Error deleting:', error);
@@ -206,15 +247,50 @@ const AdminDashboard = () => {
                                         <option key={opt} value={opt}>{opt}</option>
                                     ))}
                                 </select>
-                            ) : field.type === 'checkbox' ? (
-                                <div className="flex items-center gap-2 py-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData[field.name] || false}
-                                        onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
-                                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                                    />
-                                    <span className="text-sm text-gray-600">{field.description || 'Enable this option'}</span>
+                            ) : field.type === 'links' ? (
+                                <div className="space-y-2 border p-3 rounded-lg bg-gray-50">
+                                    {(formData.links || []).map((link, idx) => (
+                                        <div key={idx} className="flex gap-2 items-center">
+                                            <input
+                                                placeholder="Link Name (e.g. Website)"
+                                                value={link.name || ''}
+                                                onChange={(e) => {
+                                                    const newLinks = [...(formData.links || [])];
+                                                    newLinks[idx].name = e.target.value;
+                                                    setFormData({ ...formData, links: newLinks });
+                                                }}
+                                                className="flex-1 px-3 py-1 text-sm border rounded focus:ring-1 focus:ring-blue-500"
+                                            />
+                                            <input
+                                                placeholder="URL"
+                                                value={link.url || ''}
+                                                onChange={(e) => {
+                                                    const newLinks = [...(formData.links || [])];
+                                                    newLinks[idx].url = e.target.value;
+                                                    setFormData({ ...formData, links: newLinks });
+                                                }}
+                                                className="flex-[2] px-3 py-1 text-sm border rounded focus:ring-1 focus:ring-blue-500"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newLinks = formData.links.filter((_, i) => i !== idx);
+                                                    setFormData({ ...formData, links: newLinks });
+                                                }}
+                                                className="text-red-500 hover:text-red-700 p-1"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        onClick={() => {
+                                            const newLinks = [...(formData.links || []), { name: '', url: '' }];
+                                            setFormData({ ...formData, links: newLinks });
+                                        }}
+                                        className="text-xs flex items-center gap-1 text-blue-600 font-bold mt-2 hover:text-blue-800"
+                                    >
+                                        <PlusCircle size={14} /> Add Link
+                                    </button>
                                 </div>
                             ) : (
                                 <input
@@ -247,18 +323,30 @@ const AdminDashboard = () => {
                     { name: 'designation', label: 'Designation', required: true },
                     { name: 'organization', label: 'Organization', required: true },
                     { name: 'year', label: 'Year', type: 'number', required: true },
+                    { name: 'sessionTitle', label: 'Session Title (e.g. Plenary Session Talk 1)', fullWidth: true },
+                    { name: 'date', label: 'Session Date (e.g. 12th Sept 2025)' },
+                    { name: 'time', label: 'Session Time (e.g. 09:30 A.M. IST)' },
+                    { name: 'topic', label: 'Talk Topic', fullWidth: true },
+                    { name: 'topicDescription', label: 'Topic Description', type: 'textarea', fullWidth: true },
+                    { name: 'links', label: 'Speaker Links', type: 'links', fullWidth: true },
                     { name: 'bio', label: 'Bio', type: 'textarea', fullWidth: true },
                     { name: 'image', label: 'Image URL' },
                     { name: 'order', label: 'Display Order', type: 'number' }
                 ];
             case 'committees':
+                if (isCreatingSection && !editingItem) {
+                    return [
+                        { name: 'type', label: 'Section Title (e.g. Technical Program Committee)', required: true, fullWidth: true },
+                        { name: 'sectionOrder', label: 'Section Display Order', type: 'number' }
+                    ];
+                }
                 return [
-                    { name: 'name', label: 'Name', required: true },
+                    { name: 'type', label: 'Section Title / Type', required: true, fullWidth: true, disabled: true },
+                    { name: 'sectionOrder', label: 'Section Order', type: 'number' },
+                    { name: 'name', label: 'Member Name', required: true },
                     { name: 'designation', label: 'Designation', required: true },
                     { name: 'organization', label: 'Organization' },
-                    { name: 'email', label: 'Email', type: 'email' },
-                    { name: 'type', label: 'Committee Type', type: 'select', options: ['advisory', 'conference-chairs', 'technical-program', 'organizing'] },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'order', label: 'Member Order in Section', type: 'number' }
                 ];
             case 'dates':
                 return [
@@ -322,12 +410,327 @@ const AdminDashboard = () => {
         }
     };
 
+
+    const renderCommitteeGrid = () => {
+        // Prepare static advisory members
+        const staticAdvisory = Object.values(advisoryCommitteeData).flatMap(sec =>
+            sec.members.map((m, idx) => {
+                const [name, ...rest] = m.split(',');
+                return {
+                    name: name.trim(),
+                    designation: rest.join(',').trim(),
+                    type: 'Advisory Committee',
+                    isStatic: true,
+                    sectionOrder: 1,
+                    _id: `static-adv-${idx}`
+                };
+            })
+        );
+
+        // Prepare static chairs
+        const staticChairs = Object.values(chairs).flatMap(sec =>
+            sec.members.map((m, idx) => {
+                const [name, ...rest] = m.split(',');
+                return {
+                    name: name.trim(),
+                    designation: rest.join(',').trim(),
+                    type: sec.title,
+                    isStatic: true,
+                    sectionOrder: 2,
+                    _id: `static-chair-${sec.title}-${idx}`
+                };
+            })
+        );
+
+        const allMembers = [...committees, ...staticAdvisory, ...staticChairs];
+
+        const grouped = allMembers.reduce((acc, member) => {
+            const type = member.type || 'Uncategorized';
+            if (!acc[type]) {
+                acc[type] = { members: [], sectionOrder: member.sectionOrder || 0 };
+            }
+            acc[type].members.push(member);
+            // If we find a non-zero sectionOrder, use it
+            if (member.sectionOrder && member.sectionOrder !== 0) {
+                acc[type].sectionOrder = member.sectionOrder;
+            }
+            return acc;
+        }, {});
+
+        // Sort sections by sectionOrder
+        const sortedGroups = Object.entries(grouped).sort((a, b) => (a[1].sectionOrder || 0) - (b[1].sectionOrder || 0));
+
+        const toggleType = (type) => {
+            setExpandedTypes(prev => ({ ...prev, [type]: !prev[type] }));
+        };
+
+        const handleEditCombined = (item) => {
+            if (item.isStatic) {
+                setFormData({
+                    name: item.name,
+                    designation: item.designation,
+                    type: item.type,
+                    sectionOrder: item.sectionOrder,
+                    order: 0
+                });
+                setEditingItem(null);
+                setIsAdding(true);
+                setIsCreatingSection(false);
+                setExpandedTypes(prev => ({ ...prev, [item.type]: true }));
+            } else {
+                handleEdit(item);
+                setExpandedTypes(prev => ({ ...prev, [item.type]: true }));
+            }
+        };
+
+        const handleDeleteSection = async (type) => {
+            if (!window.confirm(`Are you sure you want to delete the entire "${type}" section and all its members? This action cannot be undone.`)) return;
+            try {
+                await api.delete(`/api/admin/committees/section/${encodeURIComponent(type)}`);
+                loadData();
+            } catch (error) {
+                console.error('Error deleting section:', error);
+                const message = error.response?.data?.message || error.message || 'Unknown error';
+                alert(`Failed to delete section: ${message}`);
+            }
+        };
+
+        const handleAddMemberToType = (type, sectionOrder) => {
+            setFormData({ type, sectionOrder, order: (grouped[type]?.members.filter(m => m.name).length || 0) + 1 });
+            setIsAdding(true);
+            setIsCreatingSection(false);
+            setEditingItem(null);
+            setExpandedTypes(prev => ({ ...prev, [type]: true }));
+        };
+
+        // Split sortedGroups into two columns
+        const leftColumn = sortedGroups.filter((_, idx) => idx % 2 === 0);
+        const rightColumn = sortedGroups.filter((_, idx) => idx % 2 !== 0);
+
+        const renderSection = ([type, group]) => {
+            const isExpanded = expandedTypes[type];
+            const isAddingHere = isAdding && formData.type === type && !isCreatingSection;
+            const editingMemberInThisSection = editingItem && formData.type === type && !isCreatingSection;
+            const showInlineForm = isAddingHere || editingMemberInThisSection;
+
+            const allTypeMembers = group.members.sort((a, b) => {
+                if (a.isStatic && !b.isStatic) return 1;
+                if (!a.isStatic && b.isStatic) return -1;
+                return (a.order || 0) - (b.order || 0);
+            });
+
+            // Filter out metadata-only members (sections with no names) for display
+            const members = allTypeMembers.filter(m => m.name);
+            const hasMetadataOnly = allTypeMembers.some(m => !m.name);
+
+            return (
+                <div
+                    key={type}
+                    className="bg-white rounded-xl border border-gray-100 shadow-sm mb-4 overflow-hidden transition-all duration-300 hover:shadow-md animate-fade-in-up"
+                >
+                    <button
+                        className="w-full px-5 py-4 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white hover:from-blue-50 hover:to-blue-50/30 transition-all group border-b border-gray-100"
+                        onClick={() => toggleType(type)}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className={`p-1.5 rounded-lg transition-all duration-300 ${isExpanded ? 'bg-blue-600 text-white rotate-180' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white rotate-0'}`}>
+                                <ChevronDown size={16} className="transition-transform duration-300" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider">{type}</h4>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter mt-0.5">
+                                    {group.sectionOrder > 0 && `Order: ${group.sectionOrder} • `}{members.length} {members.length === 1 ? 'Member' : 'Members'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            {hasMetadataOnly && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const meta = allTypeMembers.find(m => !m.name);
+                                        if (meta) handleEdit(meta);
+                                        setIsCreatingSection(true);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all duration-200 hover:scale-110"
+                                    title="Section Settings"
+                                >
+                                    <Settings size={14} />
+                                </button>
+                            )}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteSection(type);
+                                }}
+                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-all duration-200 hover:scale-110"
+                                title="Delete Entire Section"
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddMemberToType(type, group.sectionOrder);
+                                }}
+                                className={`ml-1 p-2 rounded-lg border transition-all duration-200 shadow-sm flex items-center gap-1.5 text-[10px] font-bold uppercase hover:scale-105 ${isAddingHere ? 'bg-blue-600 text-white border-blue-600' : 'text-blue-600 bg-white border-transparent hover:border-blue-100'}`}
+                            >
+                                <Plus size={14} /> Add Member
+                            </button>
+                        </div>
+                    </button>
+
+                    <div
+                        className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
+                            }`}
+                    >
+                        <div className="border-t border-gray-100">
+                            {showInlineForm && (
+                                <div
+                                    ref={inlineFormRef}
+                                    className="p-5 bg-blue-50/50 border-b border-blue-100 animate-slide-in"
+                                >
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
+                                        <p className="text-[10px] font-bold text-blue-800 uppercase tracking-widest">
+                                            {isAddingHere ? 'Add New Member' : 'Edit Member Details'}
+                                        </p>
+                                    </div>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Name</label>
+                                            <input
+                                                value={formData.name || ''}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                                placeholder="e.g. Dr. Jane Smith"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Designation</label>
+                                            <input
+                                                value={formData.designation || ''}
+                                                onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                                                className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                                placeholder="e.g. Professor, GUNI"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Organization</label>
+                                            <input
+                                                value={formData.organization || ''}
+                                                onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                                                className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                                placeholder="e.g. Ganpat University"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Display Order</label>
+                                            <input
+                                                type="number"
+                                                value={formData.order || ''}
+                                                onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                                                className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2 mt-5 pt-4 border-t border-blue-100">
+                                        <button
+                                            onClick={handleSave}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm"
+                                        >
+                                            <Save size={14} /> Save Member
+                                        </button>
+                                        <button
+                                            onClick={handleCancel}
+                                            className="px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-50 transition-all shadow-sm"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {members.length > 0 && (
+                                <table className="w-full text-left">
+                                    <tbody className="divide-y divide-gray-100">
+                                        {members.map(member => (
+                                            <tr key={member._id} className={`hover:bg-blue-50/30 transition-colors ${member.isStatic ? 'bg-gray-50/30' : ''}`}>
+                                                <td className="px-5 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="text-sm font-bold text-gray-800">{member.name}</div>
+                                                        {member.isStatic ? (
+                                                            <span className="text-[8px] font-bold bg-gray-200 text-gray-500 px-1 rounded uppercase tracking-tighter">Code Only</span>
+                                                        ) : (
+                                                            <span className="text-[10px] font-mono text-gray-400 bg-gray-100 px-1.5 rounded">{member.order}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">{member.designation}</div>
+                                                </td>
+                                                <td className="px-5 py-3 text-right whitespace-nowrap">
+                                                    <div className="flex items-center justify-end gap-1.5">
+                                                        <button
+                                                            onClick={() => handleEditCombined(member)}
+                                                            className={`p-1.5 rounded-lg transition-colors ${editingItem === member._id ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-100'}`}
+                                                            title={member.isStatic ? "Promote to Database" : "Edit"}
+                                                        >
+                                                            <Edit2 size={14} />
+                                                        </button>
+                                                        {!member.isStatic && (
+                                                            <button
+                                                                onClick={() => handleDelete(member._id)}
+                                                                className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+
+                            {!showInlineForm && members.length === 0 && (
+                                <div className="p-8 text-center bg-gray-50/30">
+                                    <p className="text-sm text-gray-400 font-medium">No members added to this section yet.</p>
+                                    <button
+                                        onClick={() => handleAddMemberToType(type, group.sectionOrder)}
+                                        className="mt-3 text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        Add First Member
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        return (
+            <div className="p-6 committee-container">
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="flex flex-col">
+                        {leftColumn.map(renderSection)}
+                    </div>
+                    <div className="flex flex-col">
+                        {rightColumn.map(renderSection)}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderTable = () => {
         const data = getData();
         const columns = getColumns();
 
         return (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b">
@@ -348,18 +751,28 @@ const AdminDashboard = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                data.map(item => (
-                                    <tr key={item._id} className="hover:bg-gray-50">
+                                data.map((item, index) => (
+                                    <tr
+                                        key={item._id}
+                                        className="hover:bg-blue-50 transition-all duration-200 animate-fade-in-up hover:shadow-sm"
+                                        style={{ animationDelay: `${index * 50}ms` }}
+                                    >
                                         {columns.map(col => (
                                             <td key={col.key} className="px-4 py-3 text-sm text-gray-800">
                                                 {col.render ? col.render(item) : item[col.key]}
                                             </td>
                                         ))}
                                         <td className="px-4 py-3 text-right">
-                                            <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-800 mr-3">
+                                            <button
+                                                onClick={() => handleEdit(item)}
+                                                className="text-blue-600 hover:text-blue-800 mr-3 transition-all duration-200 hover:scale-110 inline-block"
+                                            >
                                                 <Edit2 size={16} />
                                             </button>
-                                            <button onClick={() => handleDelete(item._id)} className="text-red-600 hover:text-red-800">
+                                            <button
+                                                onClick={() => handleDelete(item._id)}
+                                                className="text-red-600 hover:text-red-800 transition-all duration-200 hover:scale-110 inline-block"
+                                            >
                                                 <Trash2 size={16} />
                                             </button>
                                         </td>
@@ -463,8 +876,17 @@ const AdminDashboard = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50">
+            {/* Mobile Menu Button */}
+            <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200"
+            >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
             {/* Sidebar Navigation */}
-            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed inset-y-0 shadow-sm z-10">
+            <aside className={`w-64 bg-white border-r border-gray-200 flex flex-col fixed inset-y-0 shadow-sm z-40 transition-transform duration-300 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}>
                 <div className="p-6 border-b border-gray-50">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
@@ -484,6 +906,7 @@ const AdminDashboard = () => {
                                 onClick={() => {
                                     setActiveTab(tab.id);
                                     handleCancel();
+                                    setIsMobileMenuOpen(false); // Close menu on mobile after selection
                                 }}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive
                                     ? 'bg-blue-50 text-blue-700 font-semibold'
@@ -507,8 +930,16 @@ const AdminDashboard = () => {
                 </div>
             </aside>
 
+            {/* Overlay for mobile */}
+            {isMobileMenuOpen && (
+                <div
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="lg:hidden fixed inset-0 bg-black/50 z-30"
+                ></div>
+            )}
+
             {/* Main Content Area */}
-            <main className="flex-grow ml-64 p-8">
+            <main className="flex-grow lg:ml-64 p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
                 <header className="flex justify-between items-center mb-8">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">
@@ -520,15 +951,16 @@ const AdminDashboard = () => {
                     {!isAdding && !editingItem && (
                         <button
                             onClick={handleAdd}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 flex items-center gap-2 transition-colors"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md"
                         >
                             <Plus size={18} />
-                            Add New
+                            {activeTab === 'committees' ? 'Add New Section' : 'Add New'}
                         </button>
                     )}
                 </header>
 
                 {/* Content */}
+
                 {activeTab === 'settings' ? (
                     <div className="space-y-6">
                         {!isAdding && !editingItem && (
@@ -595,18 +1027,22 @@ const AdminDashboard = () => {
                     </div>
                 ) : (
                     <div className="space-y-8 animate-fade-in-up">
-                        {/* Form Component */}
-                        {renderForm()}
+                        {/* Form Component - Hidden for committee members because they use inline forms */}
+                        {!(activeTab === 'committees' && !isCreatingSection && (isAdding || editingItem)) && renderForm()}
 
                         {/* Table Component */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                                 <h3 className="text-sm font-bold text-gray-800">Existing Records</h3>
                                 <div className="text-[10px] font-bold text-gray-500 uppercase">
-                                    {getData().length} Total
+                                    {activeTab === 'committees' ? (
+                                        `${[...new Set([...committees.map(c => c.type || 'Uncategorized'), 'Advisory Committee', ...Object.values(chairs).map(s => s.title)])].length} Sections`
+                                    ) : (
+                                        `${getData().length} Total`
+                                    )}
                                 </div>
                             </div>
-                            {renderTable()}
+                            {activeTab === 'committees' ? renderCommitteeGrid() : renderTable()}
                         </div>
                     </div>
                 )}

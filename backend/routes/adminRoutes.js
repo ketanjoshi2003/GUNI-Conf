@@ -7,9 +7,20 @@ const Topic = require('../models/Topic');
 const PreviousEdition = require('../models/PreviousEdition');
 const RegistrationFee = require('../models/RegistrationFee');
 const Archive = require('../models/Archive');
+const { protect, admin } = require('../middleware/authMiddleware');
 const News = require('../models/News');
 const Conference = require('../models/Conference');
-const { protect, admin } = require('../middleware/authMiddleware');
+
+// Helper to emit refresh event
+const emitRefresh = (req) => {
+    const io = req.app.get('io');
+    if (io) {
+        console.log('Emitting contentUpdated event...');
+        io.emit('contentUpdated');
+    } else {
+        console.log('Warning: Socket.io instance not found in app settings');
+    }
+};
 
 // ============ PUBLIC GET ROUTES ============
 
@@ -124,16 +135,21 @@ router.use(admin);
 // Speakers
 router.post('/speakers', async (req, res) => {
     try {
+        console.log('Received request to add speaker:', req.body);
         const speaker = new Speaker(req.body);
         const saved = await speaker.save();
+        console.log('Speaker saved successfully:', saved._id);
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
+        console.error('Error adding speaker:', error.message);
         res.status(400).json({ message: error.message });
     }
 });
 router.put('/speakers/:id', async (req, res) => {
     try {
         const updated = await Speaker.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -142,6 +158,7 @@ router.put('/speakers/:id', async (req, res) => {
 router.delete('/speakers/:id', async (req, res) => {
     try {
         await Speaker.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Speaker deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -153,6 +170,7 @@ router.post('/committees', async (req, res) => {
     try {
         const committee = new Committee(req.body);
         const saved = await committee.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -161,14 +179,30 @@ router.post('/committees', async (req, res) => {
 router.put('/committees/:id', async (req, res) => {
     try {
         const updated = await Committee.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+router.delete('/committees/section/:type', async (req, res) => {
+    try {
+        const { type } = req.params;
+        console.log(`Backend: Deleting all members for section: ${type}`);
+        const result = await Committee.deleteMany({ type });
+        console.log(`Backend: Deleted ${result.deletedCount} members`);
+        emitRefresh(req);
+        res.json({ message: 'Committee section deleted', count: result.deletedCount });
+    } catch (error) {
+        console.error('Backend Error deleting section:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 router.delete('/committees/:id', async (req, res) => {
     try {
         await Committee.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Committee member deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -185,6 +219,7 @@ router.post('/important-dates', async (req, res) => {
         }
         const date = new ImportantDate(req.body);
         const saved = await date.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         console.error('Create Important Date Error:', error.message);
@@ -205,6 +240,7 @@ router.put('/important-dates/:id', async (req, res) => {
             req.body,
             { new: true, runValidators: true }
         );
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         console.error('Update Important Date Error:', error.message);
@@ -214,6 +250,7 @@ router.put('/important-dates/:id', async (req, res) => {
 router.delete('/important-dates/:id', async (req, res) => {
     try {
         await ImportantDate.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Date deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -225,6 +262,7 @@ router.post('/topics', async (req, res) => {
     try {
         const topic = new Topic(req.body);
         const saved = await topic.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -233,6 +271,7 @@ router.post('/topics', async (req, res) => {
 router.put('/topics/:id', async (req, res) => {
     try {
         const updated = await Topic.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -241,6 +280,7 @@ router.put('/topics/:id', async (req, res) => {
 router.delete('/topics/:id', async (req, res) => {
     try {
         await Topic.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Topic deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -252,6 +292,7 @@ router.post('/previous-editions', async (req, res) => {
     try {
         const edition = new PreviousEdition(req.body);
         const saved = await edition.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -260,6 +301,7 @@ router.post('/previous-editions', async (req, res) => {
 router.put('/previous-editions/:id', async (req, res) => {
     try {
         const updated = await PreviousEdition.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -268,6 +310,7 @@ router.put('/previous-editions/:id', async (req, res) => {
 router.delete('/previous-editions/:id', async (req, res) => {
     try {
         await PreviousEdition.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Edition deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -279,6 +322,7 @@ router.post('/registration-fees', async (req, res) => {
     try {
         const fee = new RegistrationFee(req.body);
         const saved = await fee.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -287,6 +331,7 @@ router.post('/registration-fees', async (req, res) => {
 router.put('/registration-fees/:id', async (req, res) => {
     try {
         const updated = await RegistrationFee.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -295,6 +340,7 @@ router.put('/registration-fees/:id', async (req, res) => {
 router.delete('/registration-fees/:id', async (req, res) => {
     try {
         await RegistrationFee.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Registration fee deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -306,6 +352,7 @@ router.post('/archive', async (req, res) => {
     try {
         const archive = new Archive(req.body);
         const saved = await archive.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -314,6 +361,7 @@ router.post('/archive', async (req, res) => {
 router.put('/archive/:id', async (req, res) => {
     try {
         const updated = await Archive.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -322,6 +370,7 @@ router.put('/archive/:id', async (req, res) => {
 router.delete('/archive/:id', async (req, res) => {
     try {
         await Archive.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -333,6 +382,7 @@ router.post('/news', async (req, res) => {
     try {
         const news = new News(req.body);
         const saved = await news.save();
+        emitRefresh(req);
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -342,6 +392,7 @@ router.post('/news', async (req, res) => {
 router.put('/news/:id', async (req, res) => {
     try {
         const updated = await News.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -351,6 +402,7 @@ router.put('/news/:id', async (req, res) => {
 router.delete('/news/:id', async (req, res) => {
     try {
         await News.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
         res.json({ message: 'Deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -365,6 +417,7 @@ router.put('/conference-info', async (req, res) => {
             req.body,
             { new: true, runValidators: true }
         );
+        emitRefresh(req);
         res.json(updated);
     } catch (error) {
         res.status(400).json({ message: error.message });

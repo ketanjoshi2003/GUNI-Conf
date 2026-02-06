@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { Film, Newspaper, Image as ImageIcon } from 'lucide-react';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const Archive = () => {
     const location = useLocation();
@@ -12,27 +13,34 @@ const Archive = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const fetchArchives = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/archive`);
+            setArchives(response.data);
+        } catch (err) {
+            console.error('Error fetching archives:', err);
+            setError('Failed to load archive data');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         const tab = query.get('tab');
         if (tab && (tab === 'media-coverage' || tab === 'glimpses')) {
             setActiveTab(tab);
         }
-    }, [location.search]);
+    }, [location.search, query]);
 
     useEffect(() => {
-        const fetchArchives = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/archive`);
-                setArchives(response.data);
-            } catch (err) {
-                console.error('Error fetching archives:', err);
-                setError('Failed to load archive data');
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchArchives();
-    }, []);
+    }, [fetchArchives]);
+
+    useSocketRefresh(() => {
+        console.log('Refreshing archives...');
+        fetchArchives();
+    });
+
 
     const mediaItems = archives.filter(item => item.type === 'media-coverage');
     const glimpseItems = archives.filter(item => item.type === 'glimpses');

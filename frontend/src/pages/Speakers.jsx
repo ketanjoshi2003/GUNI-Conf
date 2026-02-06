@@ -1,11 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { Calendar, MapPin, Globe, User, Award, Briefcase } from 'lucide-react';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const Speakers = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const year = searchParams.get('year') || '2026';
+    const [speakers, setSpeakers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchSpeakers = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/speakers?year=${year}`);
+            if (response.data && response.data.length > 0) {
+                const normalized = response.data.map(s => ({
+                    ...s,
+                    title: s.designation || s.title,
+                    affiliation: s.organization || s.affiliation
+                }));
+                setSpeakers(normalized);
+            } else {
+                // Keep the static fallback for previous years if not in DB
+                setSpeakers(speakersData[year] || []);
+            }
+        } catch (error) {
+            console.error('Error fetching speakers:', error);
+            setSpeakers(speakersData[year] || []);
+        } finally {
+            setLoading(false);
+        }
+    }, [year]);
+
+    useEffect(() => {
+        fetchSpeakers();
+    }, [fetchSpeakers]);
+
+    useSocketRefresh(() => {
+        console.log('Refreshing speakers...');
+        fetchSpeakers();
+    });
 
     const speakersData = {
         '2026': [], // Pending
@@ -293,7 +329,7 @@ const Speakers = () => {
         ]
     };
 
-    const speakers = speakersData[year] || [];
+    // const speakers = speakersData[year] || [];
 
     return (
         <div className="bg-gray-50 min-h-screen pt-28 pb-12">
@@ -310,54 +346,82 @@ const Speakers = () => {
                     <div className="w-full space-y-8 animate-fade-in-up">
                         {speakers.length > 0 ? (
                             speakers.map((speaker, index) => (
-                                <div key={index} className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col md:flex-row gap-8 hover:shadow-xl transition-shadow">
-                                    <div className="flex-shrink-0 flex flex-col items-center md:items-start">
-                                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-50 shadow-md">
-                                            <img
-                                                src={speaker.image}
-                                                alt={speaker.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div className="mt-4 flex justify-center w-full">
-                                            <span className="p-2 bg-blue-100 text-blue-600 rounded-full">
-                                                <Briefcase className="w-5 h-5" />
-                                            </span>
+                                <div key={index} className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-12 hover:shadow-2xl transition-all duration-500 overflow-hidden relative group">
+                                    {/* Session Metadata Header */}
+                                    <div className="text-center mb-10 space-y-2">
+                                        {speaker.date && (
+                                            <p className="text-gray-500 font-medium text-sm tracking-wide">
+                                                Date: <span className="text-gray-800 font-bold">{speaker.date}</span>
+                                            </p>
+                                        )}
+                                        {speaker.time && (
+                                            <p className="text-gray-500 font-medium text-sm tracking-wide">
+                                                Time: <span className="text-gray-800 font-bold">{speaker.time}</span>
+                                            </p>
+                                        )}
+                                        {speaker.sessionTitle && (
+                                            <h4 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-700 to-sky-600 bg-clip-text text-transparent italic">
+                                                {speaker.sessionTitle}: {speaker.topic}
+                                            </h4>
+                                        )}
+                                        <div className="pt-2">
+                                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">
+                                                Speaker: <span className="text-blue-600">{speaker.name}</span>
+                                            </h2>
+                                            <p className="text-lg text-gray-700 font-semibold max-w-2xl mx-auto leading-tight">
+                                                {speaker.title}, {speaker.affiliation}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="flex-grow text-center md:text-left">
-                                        <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-2">
-                                            <h2 className="text-2xl font-bold text-gray-900">{speaker.name}</h2>
-                                            {speaker.time && (
-                                                <span className="inline-block mt-2 md:mt-0 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full whitespace-nowrap">
-                                                    {speaker.time.split('|')[0]}
-                                                </span>
-                                            )}
+
+                                    <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-start">
+                                        {/* Image Section */}
+                                        <div className="flex-shrink-0 mx-auto md:mx-0">
+                                            <div className="relative p-1 rounded-full bg-gradient-to-tr from-yellow-400 via-orange-500 to-yellow-200">
+                                                <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                                                    <img
+                                                        src={speaker.image || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop'}
+                                                        alt={speaker.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <h3 className="text-blue-600 font-semibold mb-2 flex items-center justify-center md:justify-start gap-2">
-                                            <Award className="w-4 h-4" />
-                                            {speaker.title}
-                                        </h3>
-
-                                        {speaker.topic && (
-                                            <div className="mb-3 p-3 bg-gray-50 rounded-lg border-l-4 border-blue-500 text-left">
-                                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Talk Topic</p>
-                                                <p className="text-gray-900 font-medium italic">"{speaker.topic}"</p>
-                                                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                                    <Calendar className="w-3 h-3" />
-                                                    {speaker.time}
+                                        {/* Bio & Links Section */}
+                                        <div className="flex-grow space-y-6">
+                                            <div>
+                                                <p className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary">
+                                                    {speaker.bio}
                                                 </p>
+                                                {speaker.topicDescription && (
+                                                    <div className="mt-6 p-5 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-gray-700 relative">
+                                                        <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase tracking-widest shadow-lg">Talk Abstract</div>
+                                                        {speaker.topicDescription}
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
 
-                                        <p className="text-gray-500 text-sm mb-4 flex items-center justify-center md:justify-start gap-2">
-                                            <MapPin className="w-4 h-4" />
-                                            {speaker.affiliation}
-                                        </p>
-                                        <p className="text-gray-700 leading-relaxed text-sm">
-                                            {speaker.bio}
-                                        </p>
+                                            {/* Social/Reference Links */}
+                                            <div className="flex flex-wrap gap-x-8 gap-y-4 pt-4 border-t border-gray-100">
+                                                {(speaker.links || []).map((link, lIdx) => (
+                                                    <a
+                                                        key={lIdx}
+                                                        href={link.url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="group flex flex-col gap-0.5"
+                                                    >
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-blue-500 transition-colors">
+                                                            {link.name || 'Official Link'}
+                                                        </span>
+                                                        <span className="text-sky-600 group-hover:text-blue-700 transition-all font-bold text-sm underline decoration-sky-300 decoration-2 underline-offset-4 break-all">
+                                                            {link.url}
+                                                        </span>
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))

@@ -1,8 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, AlertCircle } from 'lucide-react';
+import axios from 'axios';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const ImportantDates = () => {
-    const events = [
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchDates = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`);
+            if (response.data && response.data.length > 0) {
+                // Map API fields to match the UI component's expected structure
+                const mappedEvents = response.data.map(item => ({
+                    label: item.event,
+                    date: new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    status: "upcoming",
+                    highlight: item.isPinned
+                }));
+                setEvents(mappedEvents);
+            } else {
+                setEvents(staticEvents);
+            }
+        } catch (error) {
+            console.error('Error fetching dates:', error);
+            setEvents(staticEvents);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchDates();
+    }, [fetchDates]);
+
+    useSocketRefresh(() => {
+        console.log('ImportantDates: Refreshing data...');
+        fetchDates();
+    });
+
+    const staticEvents = [
         { label: "Full Paper Submission", date: "May 30, 2026", status: "upcoming" },
         { label: "Paper Acceptance Notification", date: "July 30, 2026", status: "upcoming" },
         { label: "Registration Opens", date: "July 30, 2026", status: "upcoming" },
