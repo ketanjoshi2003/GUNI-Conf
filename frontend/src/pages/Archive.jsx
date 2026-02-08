@@ -30,7 +30,7 @@ const Archive = () => {
         if (tab && (tab === 'media-coverage' || tab === 'glimpses')) {
             setActiveTab(tab);
         }
-    }, [location.search, query]);
+    }, [location.search]);
 
     useEffect(() => {
         fetchArchives();

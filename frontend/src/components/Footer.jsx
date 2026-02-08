@@ -61,7 +61,7 @@ const Footer = () => {
 
                             <div className="mt-auto relative h-48 md:h-64 rounded-2xl md:rounded-3xl overflow-hidden border-2 md:border-4 border-white shadow-lg">
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7335.5!2d72.4532934!3d23.5258338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c476c5013fd03%3A0xa1fe01d9ab30482!2sGanpat%20University%20(GUNI)!5e0!3m2!1sen!2sin!4v1707123456789!5m2!1sen!2sin"
+                                    src="https://maps.google.com/maps?q=Ganpat%20University&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                     className="absolute inset-0 w-full h-full grayscale-[0.5] hover:grayscale-0 transition-all duration-700"
                                     allowFullScreen=""
                                     loading="lazy"

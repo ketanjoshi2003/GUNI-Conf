@@ -179,54 +179,62 @@ const Navbar = () => {
                     <img
                         src="/logo.png"
                         alt="Ganpat University Logo"
-                        className={`h-12 w-auto transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : ''}`}
+                        className={`h-12 w-auto transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : 'brightness-0'}`}
                     />
                 </Link>
 
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex items-center gap-1 xl:gap-2 lg:ml-12">
-                    {navItems.map((item) => (
-                        <div key={item.name} className="relative group/nav">
-                            {item.isExternal ? (
-                                <a
-                                    href={item.path}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`relative px-3 py-2 flex items-center gap-1 text-sm font-semibold transition-all duration-300 overflow-hidden rounded-lg group hover:bg-gray-100/10 ${useSolidStyle ? 'text-gray-700 hover:text-blue-600' : 'text-white/90 hover:text-white'}`}
-                                >
-                                    <span className="relative z-10">{item.name}</span>
-                                    <ExternalLink size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                                </a>
-                            ) : (
-                                <Link
-                                    to={item.path}
-                                    className={`relative px-3 py-2 flex items-center gap-1 text-sm font-semibold transition-all duration-300 rounded-lg group hover:bg-gray-100/10 ${useSolidStyle ? 'text-gray-700 hover:text-blue-600' : 'text-white/90 hover:text-white'}`}
-                                >
-                                    <span className="relative z-10">{item.name}</span>
-                                    {item.dropdown && <ChevronDown size={14} className="transition-transform group-hover/nav:rotate-180" />}
-                                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-600 transform -translate-x-1/2 group-hover:w-2/3 transition-all duration-300"></span>
-                                </Link>
-                            )}
+                    {navItems.map((item) => {
+                        const isActive = location.pathname === item.path ||
+                            (item.dropdown && item.dropdown.some(sub => location.pathname === sub.path.split('?')[0]));
 
-                            {/* Dropdown Menu */}
-                            {item.dropdown && (
-                                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-64 opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all duration-300 transform translate-y-4 group-hover/nav:translate-y-0">
-                                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden py-2 backdrop-blur-xl">
-                                        {item.dropdown.map((subItem) => (
-                                            <Link
-                                                key={subItem.name}
-                                                to={subItem.path}
-                                                className="block px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 border-l-4 border-transparent hover:border-blue-600"
-                                            >
-                                                {subItem.name}
-                                            </Link>
-                                        ))}
+                        return (
+                            <div key={item.name} className="relative group/nav">
+                                {item.isExternal ? (
+                                    <a
+                                        href={item.path}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`relative px-3 py-2 flex items-center gap-1 text-sm font-semibold transition-all duration-300 overflow-hidden rounded-lg group hover:bg-gray-100/10 ${useSolidStyle ? 'text-gray-700 hover:text-blue-600' : 'text-white/90 hover:text-white'}`}
+                                    >
+                                        <span className="relative z-10">{item.name}</span>
+                                        <ExternalLink size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                                    </a>
+                                ) : (
+                                    <Link
+                                        to={item.path}
+                                        className={`relative px-3 py-2 flex items-center gap-1 text-sm font-semibold transition-all duration-300 rounded-lg group hover:bg-gray-100/10 ${isActive
+                                            ? (useSolidStyle ? 'text-blue-600 bg-blue-50/50' : 'text-white bg-white/20')
+                                            : (useSolidStyle ? 'text-gray-700 hover:text-blue-600' : 'text-white/90 hover:text-white')
+                                            }`}
+                                    >
+                                        <span className="relative z-10">{item.name}</span>
+                                        {item.dropdown && <ChevronDown size={14} className={`transition-transform duration-300 ${activeDropdown === item.name ? 'rotate-180' : 'group-hover/nav:rotate-180'}`} />}
+                                        <span className={`absolute bottom-0 left-1/2 h-0.5 bg-blue-600 transform -translate-x-1/2 transition-all duration-300 ${isActive ? 'w-2/3' : 'w-0 group-hover:w-2/3'}`}></span>
+                                    </Link>
+                                )}
+
+                                {/* Dropdown Menu */}
+                                {item.dropdown && (
+                                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-64 opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all duration-300 transform translate-y-4 group-hover/nav:translate-y-0">
+                                        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden py-2 backdrop-blur-xl">
+                                            {item.dropdown.map((subItem) => (
+                                                <Link
+                                                    key={subItem.name}
+                                                    to={subItem.path}
+                                                    className="block px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 border-l-4 border-transparent hover:border-blue-600"
+                                                >
+                                                    {subItem.name}
+                                                </Link>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                                )}
+                            </div>
+                        );
+                    })}
 
                     <div className="h-6 w-px bg-gray-300/30 mx-2"></div>
 
@@ -258,8 +266,8 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Overlay */}
-            {isOpen && (
-                <div className="lg:hidden fixed inset-0 z-50 bg-gray-950/95 backdrop-blur-2xl animate-fade-in overflow-y-auto">
+            {isOpen && createPortal(
+                <div className="lg:hidden fixed inset-0 z-50 bg-gray-950/95 backdrop-blur-2xl animate-fade-in overflow-y-auto w-full h-full">
                     <div className="p-6 flex flex-col min-h-screen">
                         <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
                             <Link to="/" onClick={() => setIsOpen(false)}>
@@ -333,7 +341,8 @@ const Navbar = () => {
                             <span>Quick Search</span>
                         </button>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Search Overlay */}

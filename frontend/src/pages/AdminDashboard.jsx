@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import axios from 'axios';
-import { Edit2, Trash2, Plus, Save, X, LogOut, Layout, Users, Calendar, Award, Briefcase, Globe, Monitor, Code, Megaphone, MapPin, ChevronDown, ChevronUp, ExternalLink, FileText, Tag, BookOpen, Newspaper, Pin, Settings, PlusCircle, Menu } from 'lucide-react';
+import { Edit2, Trash2, Plus, Save, X, LogOut, Layout, Users, Calendar, Award, Briefcase, Globe, Monitor, Code, Megaphone, MapPin, ChevronDown, ChevronUp, ExternalLink, FileText, Tag, BookOpen, Newspaper, Pin, Settings, PlusCircle, Menu, Search } from 'lucide-react';
 import { advisoryCommitteeData, chairs } from '../data/committeeData';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
@@ -22,9 +22,14 @@ const AdminDashboard = () => {
     const [fees, setFees] = useState([]);
     const [archives, setArchives] = useState([]);
     const [news, setNews] = useState([]);
+    const [acceptedPapers, setAcceptedPapers] = useState([]);
+    const [bestPapers, setBestPapers] = useState([]);
+    const [pubStats, setPubStats] = useState([]);
     const [conferenceInfo, setConferenceInfo] = useState(null);
     const [expandedTypes, setExpandedTypes] = useState({});
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sidebarSearch, setSidebarSearch] = useState('');
 
 
     // Form states
@@ -35,7 +40,7 @@ const AdminDashboard = () => {
 
     const loadData = useCallback(async () => {
         try {
-            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes] = await Promise.all([
+            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes, acceptedRes, bestRes, pubStatsRes] = await Promise.all([
                 api.get('/api/admin/speakers'),
                 api.get('/api/admin/committees'),
                 api.get('/api/admin/important-dates'),
@@ -44,7 +49,10 @@ const AdminDashboard = () => {
                 api.get('/api/admin/registration-fees'),
                 api.get('/api/admin/archive'),
                 api.get('/api/admin/news'),
-                api.get('/api/admin/conference-info')
+                api.get('/api/admin/conference-info'),
+                api.get('/api/admin/accepted-papers'),
+                api.get('/api/admin/best-papers'),
+                api.get('/api/admin/publication-stats')
             ]);
             setSpeakers(speakersRes.data);
             setCommittees(committeesRes.data);
@@ -55,6 +63,9 @@ const AdminDashboard = () => {
             setArchives(archivesRes.data);
             setNews(newsRes.data);
             setConferenceInfo(confRes.data);
+            setAcceptedPapers(await acceptedRes.data);
+            setBestPapers(await bestRes.data);
+            setPubStats(await pubStatsRes.data);
         } catch (error) {
             console.error('Error loading data:', error);
         }
@@ -196,7 +207,10 @@ const AdminDashboard = () => {
             'editions': 'previous-editions',
             'fees': 'registration-fees',
             'archives': 'archive',
-            'news': 'news'
+            'news': 'news',
+            'accepted-papers': 'accepted-papers',
+            'best-papers': 'best-papers',
+            'publication-stats': 'publication-stats'
         };
         return map[activeTab];
     };
@@ -210,6 +224,9 @@ const AdminDashboard = () => {
         { id: 'editions', label: 'Previous Editions', icon: BookOpen },
         { id: 'fees', label: 'Registration Fees', icon: FileText },
         { id: 'archives', label: 'Archives', icon: BookOpen },
+        { id: 'accepted-papers', label: 'Accepted Papers', icon: FileText },
+        { id: 'best-papers', label: 'Best Paper Awards', icon: Award },
+        { id: 'publication-stats', label: 'Publication Stats', icon: Layout },
         { id: 'news', label: 'Latest News', icon: Newspaper }
     ];
 
@@ -287,9 +304,9 @@ const AdminDashboard = () => {
                                             const newLinks = [...(formData.links || []), { name: '', url: '' }];
                                             setFormData({ ...formData, links: newLinks });
                                         }}
-                                        className="text-xs flex items-center gap-1 text-blue-600 font-bold mt-2 hover:text-blue-800"
+                                        className="w-full py-3 flex items-center justify-center gap-2 text-sm text-blue-600 font-bold border-2 border-dashed border-blue-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all group"
                                     >
-                                        <PlusCircle size={14} /> Add Link
+                                        <PlusCircle size={16} className="group-hover:scale-110 transition-transform" /> Add New Link
                                     </button>
                                 </div>
                             ) : (
@@ -381,7 +398,7 @@ const AdminDashboard = () => {
                     { name: 'title', label: 'Title', required: true, fullWidth: true },
                     { name: 'year', label: 'Year', type: 'number' },
                     { name: 'type', label: 'Archive Type', type: 'select', options: ['media-coverage', 'glimpses'] },
-                    { name: 'image', label: 'Image URL' },
+                    { name: 'image', label: 'Image URL (Use absolute path or full URL)', placeholder: 'e.g., https://example.com/image.jpg' },
                     { name: 'link', label: 'External Link' },
                     { name: 'order', label: 'Display Order', type: 'number' }
                 ];
@@ -404,6 +421,29 @@ const AdminDashboard = () => {
                     { name: 'country', label: 'Location/Country' },
                     { name: 'start_date', label: 'Start Date', type: 'date' },
                     { name: 'end_date', label: 'End Date', type: 'date' }
+                ];
+            case 'accepted-papers':
+                return [
+                    { name: 'paperId', label: 'Paper ID', required: true },
+                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true },
+                    { name: 'authors', label: 'Authors', required: true, fullWidth: true },
+                    { name: 'year', label: 'Year', type: 'number', required: true },
+                    { name: 'track', label: 'Track (Optional)' }
+                ];
+            case 'best-papers':
+                return [
+                    { name: 'paperId', label: 'Paper ID', required: true },
+                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true },
+                    { name: 'authors', label: 'Authors', required: true, fullWidth: true },
+                    { name: 'institution', label: 'Institution', fullWidth: true },
+                    { name: 'awardName', label: 'Award Name', required: true },
+                    { name: 'year', label: 'Year', type: 'number', required: true },
+                    { name: 'order', label: 'Display Order', type: 'number' }
+                ];
+            case 'publication-stats':
+                return [
+                    { name: 'year', label: 'Year', type: 'number', required: true },
+                    { name: 'totalSubmissions', label: 'Total Submissions', type: 'number', required: true }
                 ];
             default:
                 return [];
@@ -754,8 +794,7 @@ const AdminDashboard = () => {
                                 data.map((item, index) => (
                                     <tr
                                         key={item._id}
-                                        className="hover:bg-blue-50 transition-all duration-200 animate-fade-in-up hover:shadow-sm"
-                                        style={{ animationDelay: `${index * 50}ms` }}
+                                        className="hover:bg-blue-50 transition-all duration-200 hover:shadow-sm"
                                     >
                                         {columns.map(col => (
                                             <td key={col.key} className="px-4 py-3 text-sm text-gray-800">
@@ -787,17 +826,46 @@ const AdminDashboard = () => {
     };
 
     const getData = () => {
+        let data = [];
         switch (activeTab) {
-            case 'speakers': return speakers;
-            case 'committees': return committees;
-            case 'dates': return dates;
-            case 'topics': return topics;
-            case 'editions': return editions;
-            case 'fees': return fees;
-            case 'archives': return archives;
-            case 'news': return news;
-            default: return [];
+            case 'speakers': data = speakers; break;
+            case 'committees': data = committees; break;
+            case 'dates': data = dates; break;
+            case 'topics': data = topics; break;
+            case 'editions': data = editions; break;
+            case 'fees': data = fees; break;
+            case 'archives': data = archives; break;
+            case 'news': data = news; break;
+            case 'accepted-papers': data = acceptedPapers; break;
+            case 'best-papers': data = bestPapers; break;
+            case 'publication-stats': data = pubStats; break;
+            default: data = [];
         }
+
+        if (!searchQuery) return data;
+
+        const lowerQuery = searchQuery.toLowerCase();
+
+        if (activeTab === 'committees') {
+            // Committees have a nested structure: array of sections, each with a 'members' array
+            return data.map(section => ({
+                ...section,
+                members: section.members.filter(member =>
+                    (member.name && member.name.toLowerCase().includes(lowerQuery)) ||
+                    (member.designation && member.designation.toLowerCase().includes(lowerQuery)) ||
+                    (member.organization && member.organization.toLowerCase().includes(lowerQuery))
+                )
+            })).filter(section =>
+                section.type.toLowerCase().includes(lowerQuery) || section.members.length > 0
+            );
+        }
+
+        // For flat arrays
+        return data.filter(item => {
+            return Object.values(item).some(val =>
+                val && typeof val === 'string' && val.toLowerCase().includes(lowerQuery)
+            );
+        });
     };
 
     const getColumns = () => {
@@ -856,6 +924,7 @@ const AdminDashboard = () => {
                 ];
             case 'archives':
                 return [
+                    { key: 'image', label: 'Image', render: (item) => item.image ? <img src={item.image} alt="Thumbnail" className="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" /> : <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">N/A</div> },
                     { key: 'title', label: 'Title' },
                     { key: 'year', label: 'Year' },
                     { key: 'type', label: 'Type' },
@@ -866,6 +935,27 @@ const AdminDashboard = () => {
                     { key: 'title', label: 'News' },
                     { key: 'date', label: 'Date', render: (item) => item.date ? new Date(item.date).toLocaleDateString() : 'N/A' },
                     { key: 'link', label: 'Link' }
+                ];
+            case 'accepted-papers':
+                return [
+                    { key: 'paperId', label: 'ID' },
+                    { key: 'title', label: 'Title' },
+                    { key: 'authors', label: 'Authors' },
+                    { key: 'year', label: 'Year' }
+                ];
+            case 'best-papers':
+                return [
+                    { key: 'awardName', label: 'Award' },
+                    { key: 'title', label: 'Title' },
+                    { key: 'authors', label: 'Authors' },
+                    { key: 'year', label: 'Year' }
+                ];
+            case 'publication-stats':
+                return [
+                    { key: 'year', label: 'Year' },
+                    { key: 'totalSubmissions', label: 'Total Submissions' },
+                    { key: 'acceptedCount', label: 'Accepted Papers' },
+                    { key: 'rate', label: 'Acceptance Rate' }
                 ];
             default:
                 return [];
@@ -896,8 +986,21 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                <nav className="flex-grow p-4 space-y-1 overflow-y-auto">
-                    {tabs.map(tab => {
+                <div className="px-4 mb-2">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                        <input
+                            type="text"
+                            placeholder="Find setting..."
+                            value={sidebarSearch}
+                            onChange={(e) => setSidebarSearch(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                        />
+                    </div>
+                </div>
+
+                <nav className="flex-grow p-4 space-y-1 overflow-y-auto pt-0">
+                    {tabs.filter(tab => tab.label.toLowerCase().includes(sidebarSearch.toLowerCase())).map(tab => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
                         return (
@@ -940,7 +1043,7 @@ const AdminDashboard = () => {
 
             {/* Main Content Area */}
             <main className="flex-grow lg:ml-64 p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
-                <header className="flex justify-between items-center mb-8">
+                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">
                             {tabs.find(t => t.id === activeTab)?.label}
@@ -948,14 +1051,26 @@ const AdminDashboard = () => {
                         <p className="text-sm text-gray-500 mt-1">Manage {tabs.find(t => t.id === activeTab)?.label.toLowerCase()}</p>
                     </div>
 
-                    {!isAdding && !editingItem && (
-                        <button
-                            onClick={handleAdd}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 flex items-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md"
-                        >
-                            <Plus size={18} />
-                            {activeTab === 'committees' ? 'Add New Section' : 'Add New'}
-                        </button>
+                    {!isAdding && !editingItem && activeTab !== 'settings' && (
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
+                                />
+                            </div>
+                            <button
+                                onClick={handleAdd}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md whitespace-nowrap"
+                            >
+                                <Plus size={18} />
+                                {activeTab === 'committees' ? 'Add New Section' : 'Add New'}
+                            </button>
+                        </div>
                     )}
                 </header>
 

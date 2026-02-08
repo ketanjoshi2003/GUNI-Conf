@@ -424,4 +424,187 @@ router.put('/conference-info', async (req, res) => {
     }
 });
 
+const AcceptedPaper = require('../models/AcceptedPaper');
+const BestPaper = require('../models/BestPaper');
+const PublicationStat = require('../models/PublicationStat');
+
+// Helper to update stats for a given year
+const updateStatsForYear = async (year) => {
+    try {
+        if (!year) return;
+
+        const totalAccepted = await AcceptedPaper.countDocuments({ year });
+        let stat = await PublicationStat.findOne({ year });
+
+        if (!stat) {
+            // If specific stats don't exist yet, we can't update them, 
+            // unless we want to auto-create with 0 submissions? 
+            // Better to only update if a record exists to track submissions.
+            return;
+        }
+
+        stat.acceptedCount = totalAccepted;
+        if (stat.totalSubmissions > 0) {
+            stat.rate = ((totalAccepted / stat.totalSubmissions) * 100).toFixed(0) + '%';
+        } else {
+            stat.rate = '0%';
+        }
+        await stat.save();
+        console.log(`Updated stats for ${year}: ${totalAccepted} accepted, Rate: ${stat.rate}`);
+    } catch (e) {
+        console.error('Error updating stats:', e);
+    }
+};
+
+// ... (existing helper and routes)
+
+// ============ AUTHORS SECTION ROUTES ============
+
+// ---- ACCEPTED PAPERS ----
+router.get('/accepted-papers', async (req, res) => {
+    try {
+        const data = await AcceptedPaper.find().sort({ year: -1, paperId: 1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.post('/accepted-papers', async (req, res) => {
+    try {
+        const newItem = new AcceptedPaper(req.body);
+        const savedItem = await newItem.save();
+        await updateStatsForYear(savedItem.year);
+        emitRefresh(req);
+        res.status(201).json(savedItem);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.put('/accepted-papers/:id', async (req, res) => {
+    try {
+        const item = await AcceptedPaper.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (item) await updateStatsForYear(item.year);
+        emitRefresh(req);
+        res.json(item);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.delete('/accepted-papers/:id', async (req, res) => {
+    try {
+        const item = await AcceptedPaper.findById(req.params.id);
+        if (item) {
+            const year = item.year;
+            await AcceptedPaper.findByIdAndDelete(req.params.id);
+            await updateStatsForYear(year);
+        }
+        emitRefresh(req);
+        res.json({ message: 'Deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+// ---- BEST PAPERS ----
+router.get('/best-papers', async (req, res) => {
+    try {
+        const data = await BestPaper.find().sort({ year: -1, order: 1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.post('/best-papers', async (req, res) => {
+    try {
+        const newItem = new BestPaper(req.body);
+        const savedItem = await newItem.save();
+        emitRefresh(req);
+        res.status(201).json(savedItem);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.put('/best-papers/:id', async (req, res) => {
+    try {
+        const item = await BestPaper.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
+        res.json(item);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.delete('/best-papers/:id', async (req, res) => {
+    try {
+        await BestPaper.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
+        res.json({ message: 'Deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+// ---- PUBLICATION STATS ----
+router.get('/publication-stats', async (req, res) => {
+    try {
+        // Recalculate stats on read? Or assume they are up to date?
+        // Let's assume up to date for performance, but maybe do a quick check? 
+        // For now, return stored data.
+        const data = await PublicationStat.find().sort({ year: -1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.post('/publication-stats', async (req, res) => {
+    try {
+        // User provides year and totalSubmissions
+        const newItem = new PublicationStat(req.body);
+        const savedItem = await newItem.save();
+
+        // Auto-calculate rate immediately
+        await updateStatsForYear(savedItem.year);
+        const updatedItem = await PublicationStat.findById(savedItem._id);
+
+        emitRefresh(req);
+        res.status(201).json(updatedItem);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.put('/publication-stats/:id', async (req, res) => {
+    try {
+        const item = await PublicationStat.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (item) {
+            await updateStatsForYear(item.year);
+            const updatedItem = await PublicationStat.findById(item._id);
+            emitRefresh(req);
+            res.json(updatedItem);
+        } else {
+            res.status(404).json({ message: 'Not found' });
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.delete('/publication-stats/:id', async (req, res) => {
+    try {
+        await PublicationStat.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
+        res.json({ message: 'Deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
