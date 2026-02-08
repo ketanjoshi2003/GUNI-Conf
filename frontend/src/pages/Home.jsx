@@ -236,40 +236,18 @@ const Home = () => {
                             </div>
 
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                                {/* For mobile: 1 column */}
-                                <div className="md:hidden divide-y divide-gray-100">
+                                {/* Topics List */}
+                                <div className="grid md:grid-cols-2">
                                     {filteredTopics.map((topic, idx) => (
-                                        <div key={idx} className="p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0"></span>
-                                            <span className="text-gray-700 font-medium">{topic.title}</span>
+                                        <div
+                                            key={idx}
+                                            className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors animate-fade-in-up border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
+                                            style={{ animationDelay: `${idx * 20}ms` }}
+                                        >
+                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0 mt-2"></span>
+                                            <span className="text-gray-700 font-medium leading-relaxed">{topic.title}</span>
                                         </div>
                                     ))}
-                                </div>
-
-                                {/* For desktop: 2 columns */}
-                                <div className="hidden md:block overflow-x-auto">
-                                    <table className="w-full text-left text-sm text-gray-700">
-                                        <tbody className="divide-y divide-gray-100">
-                                            {pairedTopics.map((row, idx) => (
-                                                <tr key={idx} className={idx === 0 && searchQuery === '' ? "bg-blue-50/80 font-semibold text-gray-900" : "hover:bg-gray-50 transition-colors"}>
-                                                    <td className="p-4 border-r border-gray-100 w-1/2">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
-                                                            {row[0].title}
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-4 w-1/2">
-                                                        {row[1] && (
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 && searchQuery === '' ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
-                                                                {row[1].title}
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
                                 </div>
 
                                 {filteredTopics.length === 0 && (

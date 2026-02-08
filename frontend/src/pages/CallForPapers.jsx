@@ -1,35 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, FileText, CheckCircle2, ChevronRight, Globe } from 'lucide-react';
+import axios from 'axios';
+import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 const CallForPapers = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
-    const tracks = {
-        "Track 1: Communication & Networks": [
-            "Wireless Networks and Communication",
-            "Next Generation Networks",
-            "Ad Hoc Networks, Sensor Network",
-            "Cognitive Radio, MIMO Technologies",
-            "Satellite Communications and Networking",
-            "Green Networking and Smart Grid",
-            "Cloud Communications and Networking"
-        ],
-        "Track 2: Advanced Computing": [
-            "Cyber Physical Systems",
-            "Quantum Computing and Networking",
-            "Social Networks and Crowdsourcing",
-            "Software Defined Networking",
-            "Cognitive Radio and White-space Networking",
-            "Mobile and Ubiquitous computing"
-        ]
+    const [topics, setTopics] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchTopics = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics`);
+            setTopics(response.data);
+        } catch (error) {
+            console.error('Error fetching topics:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Flatten tracks for easier searching if needed, or filter within categories
-    const filterTopics = (category) => {
-        return tracks[category].filter(topic =>
-            topic.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    };
+    useEffect(() => {
+        fetchTopics();
+    }, []);
+
+    useSocketRefresh(fetchTopics);
 
     return (
         <div className="bg-gray-50 min-h-screen pt-32 pb-20">
@@ -64,32 +59,31 @@ const CallForPapers = () => {
                     />
                 </div>
 
-                {/* Tracks Grid */}
-                <div className="grid md:grid-cols-2 gap-8 mb-16">
-                    {Object.keys(tracks).map((category, idx) => {
-                        const filtered = filterTopics(category);
-                        if (filtered.length === 0 && searchTerm) return null;
-
-                        return (
-                            <div key={idx} className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-100 border border-gray-100 hover:border-blue-100 transition-colors group">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${idx === 0 ? 'bg-blue-50 text-blue-600' : 'bg-indigo-50 text-indigo-600'}`}>
-                                        {idx === 0 ? <Globe size={20} /> : <FileText size={20} />}
+                {/* Topics Grid */}
+                <div className="mb-16 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    {loading ? (
+                        <div className="text-center py-20 text-gray-400 italic">Loading topics...</div>
+                    ) : (
+                        <div className="grid md:grid-cols-2">
+                            {topics
+                                .filter(topic => topic.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                                .map((topic, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors animate-fade-in-up border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
+                                        style={{ animationDelay: `${idx * 20}ms` }}
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0 mt-2"></span>
+                                        <span className="text-gray-700 font-medium leading-relaxed">{topic.title}</span>
                                     </div>
-                                    {category}
-                                </h3>
-
-                                <ul className="space-y-3">
-                                    {filtered.map((topic, i) => (
-                                        <li key={i} className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors text-gray-700 group-hover/item">
-                                            <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                                            <span className="font-medium">{topic}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        );
-                    })}
+                                ))}
+                            {topics.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
+                                <div className="col-span-full text-center py-10 text-gray-400 italic">
+                                    No topics found matching "{searchTerm}"
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* CTA Section */}

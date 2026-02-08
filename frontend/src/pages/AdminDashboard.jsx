@@ -376,7 +376,6 @@ const AdminDashboard = () => {
             case 'topics':
                 return [
                     { name: 'title', label: 'Topic Title', required: true, fullWidth: true },
-                    { name: 'track', label: 'Track', type: 'select', options: ['computing', 'communication', 'security', 'general'] },
                     { name: 'order', label: 'Display Order', type: 'number' }
                 ];
             case 'editions':
@@ -906,8 +905,7 @@ const AdminDashboard = () => {
                 ];
             case 'topics':
                 return [
-                    { key: 'title', label: 'Topic' },
-                    { key: 'track', label: 'Track' }
+                    { key: 'title', label: 'Topic' }
                 ];
             case 'editions':
                 return [
