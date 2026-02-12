@@ -32,7 +32,7 @@ const BestPaperAward = () => {
             <div className="container mx-auto px-6 max-w-6xl">
 
                 {/* Hero */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-yellow-100 text-yellow-700 text-sm font-semibold mb-4 flex items-center gap-2 w-fit mx-auto">
                         <Trophy size={14} /> Hall of Fame
                     </span>
@@ -48,15 +48,15 @@ const BestPaperAward = () => {
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Sidebar Tabs */}
-                    <div className="lg:w-64 flex-shrink-0 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="lg:w-64 flex-shrink-0">
                         <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 sticky top-32">
                             {['2024', '2023', '2022', '2021', '2020'].map((year) => (
                                 <button
                                     key={year}
                                     onClick={() => setActiveTab(year)}
                                     className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${activeTab === year
-                                            ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                                            : 'text-gray-500 hover:bg-gray-50 hover:text-blue-600'
+                                        ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                                        : 'text-gray-500 hover:bg-gray-50 hover:text-blue-600'
                                         }`}
                                 >
                                     COMS2-{year}
@@ -67,7 +67,7 @@ const BestPaperAward = () => {
                     </div>
 
                     {/* Content Area */}
-                    <div className="flex-grow animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="flex-grow">
                         {awards[activeTab] ? (
                             <div className="grid gap-6">
                                 {awards[activeTab].map((paper, idx) => (

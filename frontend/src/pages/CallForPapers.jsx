@@ -31,7 +31,7 @@ const CallForPapers = () => {
             <div className="container mx-auto px-6 max-w-6xl">
 
                 {/* Header Section */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Submissions Open
                     </span>
@@ -70,8 +70,7 @@ const CallForPapers = () => {
                                 .map((topic, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors animate-fade-in-up border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
-                                        style={{ animationDelay: `${idx * 20}ms` }}
+                                        className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
                                     >
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0 mt-2"></span>
                                         <span className="text-gray-700 font-medium leading-relaxed">{topic.title}</span>

@@ -7,7 +7,7 @@ const PaperSubmission = () => {
             <div className="container mx-auto px-6 max-w-5xl">
 
                 {/* Header */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Guidelines & Process
                     </span>
@@ -21,7 +21,7 @@ const PaperSubmission = () => {
 
                 <div className="grid md:grid-cols-3 gap-8">
                     {/* Left Column: Guidelines */}
-                    <div className="md:col-span-2 space-y-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="md:col-span-2 space-y-8">
 
                         {/* Submission Link Card */}
                         <div className="bg-white rounded-3xl p-8 shadow-lg border border-blue-100 relative overflow-hidden group">
@@ -86,7 +86,7 @@ const PaperSubmission = () => {
                     </div>
 
                     {/* Right Column: Quick Info */}
-                    <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="space-y-6">
                         <div className="bg-blue-600 rounded-3xl p-6 text-white shadow-xl shadow-blue-200">
                             <h3 className="font-bold text-lg mb-4">Important Note</h3>
                             <p className="text-blue-100 text-sm leading-relaxed mb-4">

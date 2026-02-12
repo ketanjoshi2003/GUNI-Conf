@@ -7,7 +7,7 @@ const AcceptedPapers = () => {
             <div className="container mx-auto px-6 max-w-6xl">
 
                 {/* Hero */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-sm font-semibold mb-4">
                         Results Announced
                     </span>
@@ -22,7 +22,7 @@ const AcceptedPapers = () => {
                 <div className="grid lg:grid-cols-3 gap-8">
 
                     {/* Main Content: Info & Stats */}
-                    <div className="lg:col-span-2 space-y-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="lg:col-span-2 space-y-8">
 
                         {/* Conference Info Card */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
@@ -62,7 +62,7 @@ const AcceptedPapers = () => {
                     </div>
 
                     {/* Sidebar: Stats & Download */}
-                    <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="space-y-6">
 
                         {/* Stats Card */}
                         <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl">

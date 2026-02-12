@@ -52,7 +52,7 @@ const ImportantDates = () => {
         <div className="bg-gray-50 min-h-screen pt-32 pb-20">
             <div className="container mx-auto px-6 max-w-4xl">
 
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Schedule
                     </span>
@@ -70,7 +70,7 @@ const ImportantDates = () => {
 
                     <div className="space-y-12">
                         {events.map((event, index) => (
-                            <div key={index} className={`relative flex items-center md:justify-between group animate-fade-in-up`} style={{ animationDelay: `${index * 0.1}s` }}>
+                            <div key={index} className={`relative flex items-center md:justify-between group`}>
 
                                 {/* Date Box (Left on Desktop for odd, Right for even) */}
                                 <div className={`flex-1 md:text-right pl-20 md:pl-0 md:pr-12 ${index % 2 !== 0 ? 'md:order-1' : ''}`}>

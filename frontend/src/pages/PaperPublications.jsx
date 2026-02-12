@@ -7,7 +7,7 @@ const PaperPublications = () => {
             <div className="container mx-auto px-6 max-w-6xl">
 
                 {/* Hero */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="text-center mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Proceedings & Indexing
                     </span>
@@ -22,7 +22,7 @@ const PaperPublications = () => {
                 <div className="grid lg:grid-cols-2 gap-12 items-start">
 
                     {/* Left: Info & Key Features */}
-                    <div className="space-y-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="space-y-8">
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                             <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                                 <BookOpen className="text-blue-600" />
@@ -63,7 +63,7 @@ const PaperPublications = () => {
                     </div>
 
                     {/* Right: Stats */}
-                    <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="space-y-6">
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                                 <BarChart3 className="text-indigo-600" />
