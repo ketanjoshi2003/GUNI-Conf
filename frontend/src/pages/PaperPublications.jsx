@@ -1,7 +1,9 @@
 import React from 'react';
 import { BookOpen, CheckCircle, BarChart3, ExternalLink } from 'lucide-react';
+import { useYear } from '../context/YearContext';
 
 const PaperPublications = () => {
+    const { selectedYear } = useYear();
     return (
         <div className="bg-gray-50 min-h-screen pt-32 pb-20">
             <div className="container mx-auto px-6 max-w-6xl">
@@ -15,7 +17,7 @@ const PaperPublications = () => {
                         Paper <span className="text-blue-600">Publications</span>
                     </h1>
                     <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
-                        Papers submitted to COMS2-2026 are assessed for originality, scientific contribution, and technical soundness.
+                        Papers submitted to COMS2-{selectedYear} are assessed for originality, scientific contribution, and technical soundness.
                     </p>
                 </div>
 

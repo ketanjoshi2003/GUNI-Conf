@@ -26,6 +26,7 @@ import TouristPlaces from './pages/TouristPlaces';
 import Committees from './pages/Committees';
 import Speakers from './pages/Speakers';
 import Archive from './pages/Archive';
+import { YearProvider } from './context/YearContext';
 
 function AppContent() {
   const location = useLocation();
@@ -78,7 +79,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <YearProvider>
+        <AppContent />
+      </YearProvider>
     </Router>
   );
 }

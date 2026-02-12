@@ -2,11 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { User, Users, Award, Briefcase, Globe, Monitor, Code, Megaphone } from 'lucide-react';
+
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 // v2.0 - Fully database-driven committees (cache-bust: 2026-02-06)
 const Committees = () => {
+
     const { search } = useLocation();
+    const { selectedYear } = useYear();
     const [activeTab, setActiveTab] = useState('advisory');
     const [committees, setCommittees] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,7 +21,7 @@ const Committees = () => {
                 setLoading(true);
             }
             console.log('Fetching committees from API...');
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/committees`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/committees?year=${selectedYear}`);
             console.log(`Received ${response.data.length} committee members`);
             setCommittees(response.data);
         } catch (error) {
@@ -29,7 +33,7 @@ const Committees = () => {
 
     useEffect(() => {
         fetchCommittees();
-    }, [fetchCommittees]);
+    }, [fetchCommittees, selectedYear]);
 
     useSocketRefresh(() => {
         console.log('Committees: Socket refresh triggered - refetching data...');
@@ -164,8 +168,8 @@ const Committees = () => {
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2.5 transition-all duration-300 shadow-sm border ${activeTab === tab.id
-                                                ? 'bg-blue-600 text-white border-blue-600 shadow-blue-200 scale-105'
-                                                : 'bg-white text-gray-600 border-gray-100 hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50/30'
+                                            ? 'bg-blue-600 text-white border-blue-600 shadow-blue-200 scale-105'
+                                            : 'bg-white text-gray-600 border-gray-100 hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50/30'
                                             }`}
                                     >
                                         {tab.icon}

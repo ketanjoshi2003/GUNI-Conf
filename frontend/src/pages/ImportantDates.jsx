@@ -2,14 +2,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 const ImportantDates = () => {
+    const { selectedYear } = useYear();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchDates = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates`);
+
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/important-dates?year=${selectedYear}`);
             if (response.data && response.data.length > 0) {
                 // Map API fields to match the UI component's expected structure
                 const mappedEvents = response.data.map(item => ({
@@ -28,11 +31,12 @@ const ImportantDates = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+
+    }, [selectedYear]);
 
     useEffect(() => {
         fetchDates();
-    }, [fetchDates]);
+    }, [fetchDates, selectedYear]);
 
     useSocketRefresh(() => {
         console.log('ImportantDates: Refreshing data...');

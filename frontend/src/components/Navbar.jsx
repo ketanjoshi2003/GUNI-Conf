@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Menu, X, Search, ChevronDown, ChevronRight, ExternalLink, FileText } from 'lucide-react';
+
+import { Menu, X, Search, ChevronDown, ChevronRight, ExternalLink, FileText, Calendar } from 'lucide-react';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +13,9 @@ const Navbar = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
     const location = useLocation();
+    const { selectedYear, changeYear } = useYear();
 
     // Check if we are on the home page
     const isHome = location.pathname === '/';
@@ -119,7 +123,12 @@ const Navbar = () => {
             path: '/archive',
             dropdown: [
                 { name: 'Media Coverage', path: '/archive?tab=media-coverage' },
-                { name: 'Glimpses', path: '/archive?tab=glimpses' }
+                { name: 'Glimpses', path: '/archive?tab=glimpses' },
+                ...speakerYears.map(year => ({
+                    name: `Edition ${year}`,
+                    onClick: () => changeYear(year),
+                    isActive: selectedYear === parseInt(year)
+                }))
             ]
         },
         { name: 'Contact', path: '/contact' },
@@ -150,7 +159,9 @@ const Navbar = () => {
         allSearchableItems.push({ name: item.name, path: item.path });
         if (item.dropdown) {
             item.dropdown.forEach(sub => {
-                allSearchableItems.push({ name: `${item.name} > ${sub.name}`, path: sub.path });
+                if (sub.path) {
+                    allSearchableItems.push({ name: `${item.name} > ${sub.name}`, path: sub.path });
+                }
             });
         }
     });
@@ -187,7 +198,7 @@ const Navbar = () => {
                 <div className="hidden lg:flex items-center gap-1 xl:gap-2 lg:ml-12">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path ||
-                            (item.dropdown && item.dropdown.some(sub => location.pathname === sub.path.split('?')[0]));
+                            (item.dropdown && item.dropdown.some(sub => sub.path && location.pathname === sub.path.split('?')[0]));
 
                         return (
                             <div key={item.name} className="relative group/nav">
@@ -221,13 +232,23 @@ const Navbar = () => {
                                     <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-64 opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all duration-300 transform translate-y-4 group-hover/nav:translate-y-0">
                                         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden py-2 backdrop-blur-xl">
                                             {item.dropdown.map((subItem) => (
-                                                <Link
-                                                    key={subItem.name}
-                                                    to={subItem.path}
-                                                    className="block px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 border-l-4 border-transparent hover:border-blue-600"
-                                                >
-                                                    {subItem.name}
-                                                </Link>
+                                                subItem.onClick ? (
+                                                    <button
+                                                        key={subItem.name}
+                                                        onClick={subItem.onClick}
+                                                        className={`block w-full text-left px-6 py-2.5 text-sm font-medium transition-all duration-200 border-l-4 border-transparent hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700 ${subItem.isActive ? 'bg-blue-50 text-blue-700 border-blue-600' : 'text-gray-600'}`}
+                                                    >
+                                                        {subItem.name}
+                                                    </button>
+                                                ) : (
+                                                    <Link
+                                                        key={subItem.name}
+                                                        to={subItem.path}
+                                                        className="block px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 border-l-4 border-transparent hover:border-blue-600"
+                                                    >
+                                                        {subItem.name}
+                                                    </Link>
+                                                )
                                             ))}
                                         </div>
                                     </div>
@@ -238,10 +259,14 @@ const Navbar = () => {
 
                     <div className="h-6 w-px bg-gray-300/30 mx-2"></div>
 
+
+
+                    {/* Year Selector Removed - Moved to Archive Dropdown */}
+
                     {/* Search Button */}
                     <button
                         onClick={() => setIsSearchOpen(true)}
-                        className={`ml-2 p-2.5 rounded-full transition-all duration-300 hover:scale-110 ${useSolidStyle ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/20'}`}
+                        className={`ml-1 p-2.5 rounded-full transition-all duration-300 hover:scale-110 ${useSolidStyle ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/20'}`}
                         aria-label="Search"
                     >
                         <Search size={20} />
@@ -313,14 +338,27 @@ const Navbar = () => {
                                     <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeDropdown === item.name ? 'max-h-[600px] mt-2 mb-4' : 'max-h-0'}`}>
                                         <div className="grid grid-cols-1 gap-1 ml-4 pl-4 border-l-2 border-blue-500/50">
                                             {item.dropdown?.map((subItem) => (
-                                                <Link
-                                                    key={subItem.name}
-                                                    to={subItem.path}
-                                                    onClick={() => setIsOpen(false)}
-                                                    className={`block px-5 py-3.5 text-sm rounded-xl transition-all duration-200 ${location.pathname === subItem.path ? 'bg-blue-600/20 text-blue-400 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-                                                >
-                                                    {subItem.name}
-                                                </Link>
+                                                subItem.onClick ? (
+                                                    <button
+                                                        key={subItem.name}
+                                                        onClick={() => {
+                                                            subItem.onClick();
+                                                            setIsOpen(false);
+                                                        }}
+                                                        className={`block w-full text-left px-5 py-3.5 text-sm rounded-xl transition-all duration-200 ${subItem.isActive ? 'bg-blue-600/20 text-blue-400 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                                    >
+                                                        {subItem.name}
+                                                    </button>
+                                                ) : (
+                                                    <Link
+                                                        key={subItem.name}
+                                                        to={subItem.path}
+                                                        onClick={() => setIsOpen(false)}
+                                                        className={`block px-5 py-3.5 text-sm rounded-xl transition-all duration-200 ${location.pathname === subItem.path ? 'bg-blue-600/20 text-blue-400 font-bold' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                                    >
+                                                        {subItem.name}
+                                                    </Link>
+                                                )
                                             ))}
                                         </div>
                                     </div>

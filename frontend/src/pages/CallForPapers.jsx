@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, FileText, CheckCircle2, ChevronRight, Globe } from 'lucide-react';
 import axios from 'axios';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 const CallForPapers = () => {
+    const { selectedYear } = useYear();
     const [searchTerm, setSearchTerm] = useState('');
 
     const [topics, setTopics] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchTopics = async () => {
+    const fetchTopics = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/topics?year=${selectedYear}`);
             setTopics(response.data);
         } catch (error) {
             console.error('Error fetching topics:', error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedYear]);
 
     useEffect(() => {
         fetchTopics();
-    }, []);
+    }, [fetchTopics]);
 
     useSocketRefresh(fetchTopics);
 

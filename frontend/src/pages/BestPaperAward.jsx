@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Trophy, Star, Users, Medal, Quote } from 'lucide-react';
+import { useYear } from '../context/YearContext';
 
 const BestPaperAward = () => {
-    const [activeTab, setActiveTab] = useState('2024');
+    const { selectedYear } = useYear();
+    const activeTab = String(selectedYear);
 
     const awards = {
         '2024': [
@@ -45,27 +47,7 @@ const BestPaperAward = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex flex-col lg:flex-row gap-8">
-
-                    {/* Sidebar Tabs */}
-                    <div className="lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 sticky top-32">
-                            {['2024', '2023', '2022', '2021', '2020'].map((year) => (
-                                <button
-                                    key={year}
-                                    onClick={() => setActiveTab(year)}
-                                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${activeTab === year
-                                        ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                                        : 'text-gray-500 hover:bg-gray-50 hover:text-blue-600'
-                                        }`}
-                                >
-                                    COMS2-{year}
-                                    {activeTab === year && <Star size={16} fill="white" />}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
+                <div className="flex flex-col gap-8">
                     {/* Content Area */}
                     <div className="flex-grow">
                         {awards[activeTab] ? (

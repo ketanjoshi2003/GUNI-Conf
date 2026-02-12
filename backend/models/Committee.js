@@ -8,7 +8,8 @@ const committeeSchema = new mongoose.Schema({
     type: { type: String, required: true },
     section: { type: String },
     order: { type: Number, default: 0 },
-    sectionOrder: { type: Number, default: 0 }
+    sectionOrder: { type: Number, default: 0 },
+    year: { type: Number, default: 2026 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Committee', committeeSchema);

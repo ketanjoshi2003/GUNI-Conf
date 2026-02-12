@@ -2,15 +2,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 const Registration = () => {
+    const { selectedYear } = useYear();
     const navigate = useNavigate();
     const [registrationFees, setRegistrationFees] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchFees = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/registration-fees?year=${selectedYear}`);
             if (response.data && response.data.length > 0) {
                 setRegistrationFees(response.data);
             } else {
@@ -23,7 +25,7 @@ const Registration = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [selectedYear]);
 
     useEffect(() => {
         fetchFees();

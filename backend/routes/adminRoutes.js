@@ -37,8 +37,11 @@ router.get('/speakers', async (req, res) => {
 
 router.get('/committees', async (req, res) => {
     try {
-        const { type } = req.query;
-        const filter = type ? { type } : {};
+        const { type, year } = req.query;
+        let filter = {};
+        if (type) filter.type = type;
+        if (year) filter.year = parseInt(year);
+
         const committees = await Committee.find(filter).sort({ order: 1, name: 1 });
         res.json(committees);
     } catch (error) {
@@ -48,7 +51,9 @@ router.get('/committees', async (req, res) => {
 
 router.get('/important-dates', async (req, res) => {
     try {
-        const dates = await ImportantDate.find().sort({ order: 1, date: 1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const dates = await ImportantDate.find(filter).sort({ order: 1, date: 1 });
         res.json(dates);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -57,7 +62,9 @@ router.get('/important-dates', async (req, res) => {
 
 router.get('/topics', async (req, res) => {
     try {
-        const topics = await Topic.find().sort({ order: 1, title: 1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const topics = await Topic.find(filter).sort({ order: 1, title: 1 });
         res.json(topics);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -75,7 +82,9 @@ router.get('/previous-editions', async (req, res) => {
 
 router.get('/registration-fees', async (req, res) => {
     try {
-        const fees = await RegistrationFee.find().sort({ order: 1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const fees = await RegistrationFee.find(filter).sort({ order: 1 });
         res.json(fees);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -84,8 +93,10 @@ router.get('/registration-fees', async (req, res) => {
 
 router.get('/archive', async (req, res) => {
     try {
-        const { type } = req.query;
-        const filter = type ? { type } : {};
+        const { type, year } = req.query;
+        let filter = {};
+        if (type) filter.type = type;
+        if (year) filter.year = parseInt(year) || year; // Archive year might be string in model? Model says String.
         const archives = await Archive.find(filter);
         res.json(archives);
     } catch (error) {
@@ -95,7 +106,9 @@ router.get('/archive', async (req, res) => {
 
 router.get('/news', async (req, res) => {
     try {
-        const news = await News.find().sort({ createdAt: -1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const news = await News.find(filter).sort({ createdAt: -1 });
         res.json(news);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -463,7 +476,9 @@ const updateStatsForYear = async (year) => {
 // ---- ACCEPTED PAPERS ----
 router.get('/accepted-papers', async (req, res) => {
     try {
-        const data = await AcceptedPaper.find().sort({ year: -1, paperId: 1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const data = await AcceptedPaper.find(filter).sort({ year: -1, paperId: 1 });
         res.json(data);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -512,7 +527,9 @@ router.delete('/accepted-papers/:id', async (req, res) => {
 // ---- BEST PAPERS ----
 router.get('/best-papers', async (req, res) => {
     try {
-        const data = await BestPaper.find().sort({ year: -1, order: 1 });
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const data = await BestPaper.find(filter).sort({ year: -1, order: 1 });
         res.json(data);
     } catch (err) {
         res.status(500).json({ message: err.message });

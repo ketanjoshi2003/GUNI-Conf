@@ -3,11 +3,13 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Calendar, MapPin, Globe, User, Award, Briefcase } from 'lucide-react';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
+import { useYear } from '../context/YearContext';
 
 const Speakers = () => {
+    const { selectedYear } = useYear();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    const year = searchParams.get('year') || '2026';
+    const year = searchParams.get('year') || String(selectedYear);
     const [speakers, setSpeakers] = useState([]);
     const [loading, setLoading] = useState(true);
 
