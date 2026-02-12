@@ -3,6 +3,12 @@ import axios from 'axios';
 import { Calendar, MapPin, ArrowRight, Shield, Network, Wifi, Globe } from 'lucide-react';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
+import img2024 from '../assets/previous-editions/2024.jpg';
+import img2023 from '../assets/previous-editions/2023.jpg';
+import img2022 from '../assets/previous-editions/2022.jpg';
+import img2021 from '../assets/previous-editions/2021.jpg';
+import img2020 from '../assets/previous-editions/2020.jpg';
+
 const HeroBackground = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const imageUrl = "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=70&w=1920&auto=format&fit=crop";
@@ -100,6 +106,14 @@ const Home = () => {
             .catch(err => console.error('Error fetching editions:', err));
     };
 
+    const coverImages = {
+        '2024': img2024,
+        '2023': img2023,
+        '2022': img2022,
+        '2021': img2021,
+        '2020': img2020,
+    };
+
     useEffect(() => {
         fetchCountdownTarget();
         fetchConferenceInfo();
@@ -114,6 +128,13 @@ const Home = () => {
         fetchTopics();
         fetchEditions();
     });
+
+    const formatImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+    };
 
 
 
@@ -269,24 +290,40 @@ const Home = () => {
                             </h3>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {previousEditions.length > 0 ? previousEditions.map((item) => (
-                                    <div key={item._id || item.year} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group border-l-4 border-l-transparent hover:border-l-blue-600">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                {item.year}
+                                    <div key={item._id || item.year} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all group relative overflow-hidden">
+                                        <div className="flex gap-5">
+                                            {/* Book Cover Style Image */}
+                                            <div className="w-24 h-32 md:w-28 md:h-36 flex-shrink-0 rounded-lg overflow-hidden shadow-md border border-gray-200 relative group-hover:scale-105 transition-transform duration-500">
+                                                <img
+                                                    src={formatImageUrl(item.coverImage) || coverImages[item.year] || "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=300&h=400"}
+                                                    alt={`COMS2 ${item.year}`}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                                <div className="absolute bottom-2 left-0 right-0 text-center">
+                                                    <span className="text-white font-bold text-lg drop-shadow-md">{item.year}</span>
+                                                </div>
                                             </div>
-                                            <span className="text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100 uppercase tracking-tight">Scopus Indexed</span>
+
+                                            <div className="flex-grow flex flex-col justify-between py-1">
+                                                <div>
+                                                    <span className="inline-block text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100 uppercase tracking-tight mb-2">Scopus Indexed</span>
+                                                    <h4 className="text-sm md:text-base font-bold text-gray-900 leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
+                                                        {item.title}
+                                                    </h4>
+                                                </div>
+
+                                                <a
+                                                    href={item.link || '#'}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center text-blue-600 text-xs font-bold uppercase tracking-wider group/link mt-2"
+                                                >
+                                                    View Proceedings
+                                                    <ArrowRight size={12} className="ml-1 transform group-hover/link:translate-x-1 transition-transform" />
+                                                </a>
+                                            </div>
                                         </div>
-                                        <p className="text-sm font-medium text-gray-800 leading-snug">
-                                            {item.title}
-                                        </p>
-                                        <a
-                                            href={item.link || '#'}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="mt-3 flex items-center text-blue-600 text-[10px] font-bold uppercase tracking-widest gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            View Proceedings <ArrowRight size={10} />
-                                        </a>
                                     </div>
                                 )) : (
                                     <div className="col-span-full py-10 text-center text-gray-400 italic">No previous editions recorded.</div>

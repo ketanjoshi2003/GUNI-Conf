@@ -37,6 +37,7 @@ const AdminDashboard = () => {
     const [isAdding, setIsAdding] = useState(false);
     const [isCreatingSection, setIsCreatingSection] = useState(false);
     const [formData, setFormData] = useState({});
+    const [isUploadLoading, setIsUploadLoading] = useState(false);
 
     const loadData = useCallback(async () => {
         try {
@@ -94,7 +95,10 @@ const AdminDashboard = () => {
         setIsAdding(true);
         setEditingItem(null);
         setFormData({});
-        if (activeTab === 'committees') setIsCreatingSection(true);
+        if (activeTab === 'committees') {
+            setIsCreatingSection(true);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleEdit = (item) => {
@@ -115,6 +119,11 @@ const AdminDashboard = () => {
 
         setFormData(processedItem);
         setIsAdding(false);
+
+        // Scroll to top for all tabs except inline committee member edits
+        if (activeTab !== 'committees' || isCreatingSection) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const handleCancel = () => {
@@ -215,6 +224,36 @@ const AdminDashboard = () => {
         return map[activeTab];
     };
 
+    const handleFileUpload = async (e, fieldName) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', file);
+
+        setIsUploadLoading(true);
+        try {
+            const res = await api.post('/api/admin/upload', uploadFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setFormData({ ...formData, [fieldName]: res.data.url });
+        } catch (error) {
+            console.error('File upload failed:', error);
+            alert('Failed to upload image');
+        } finally {
+            setIsUploadLoading(false);
+        }
+    };
+
+    const formatImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+    };
+
     const tabs = [
         { id: 'settings', label: 'Hero Settings', icon: Settings },
         { id: 'speakers', label: 'Speakers', icon: Users },
@@ -309,6 +348,44 @@ const AdminDashboard = () => {
                                         <PlusCircle size={16} className="group-hover:scale-110 transition-transform" /> Add New Link
                                     </button>
                                 </div>
+                            ) : field.type === 'image' ? (
+                                <div className="space-y-2">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={formData[field.name] || ''}
+                                            onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                                            className="flex-grow px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Image URL or upload from local..."
+                                        />
+                                        <label className={`cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-all ${isUploadLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                            <Monitor size={16} />
+                                            {isUploadLoading ? '...' : 'Upload'}
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileUpload(e, field.name)}
+                                                disabled={isUploadLoading}
+                                            />
+                                        </label>
+                                    </div>
+                                    {formData[field.name] && (
+                                        <div className="mt-2 relative inline-block">
+                                            <img
+                                                src={formatImageUrl(formData[field.name])}
+                                                alt="Preview"
+                                                className="h-24 w-auto rounded border border-gray-200 shadow-sm"
+                                            />
+                                            <button
+                                                onClick={() => setFormData({ ...formData, [field.name]: '' })}
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <input
                                     type={field.type || 'text'}
@@ -347,7 +424,7 @@ const AdminDashboard = () => {
                     { name: 'topicDescription', label: 'Topic Description', type: 'textarea', fullWidth: true },
                     { name: 'links', label: 'Speaker Links', type: 'links', fullWidth: true },
                     { name: 'bio', label: 'Bio', type: 'textarea', fullWidth: true },
-                    { name: 'image', label: 'Image URL' },
+                    { name: 'image', label: 'Image', type: 'image' },
                     { name: 'order', label: 'Display Order', type: 'number' }
                 ];
             case 'committees':
@@ -383,6 +460,7 @@ const AdminDashboard = () => {
                     { name: 'year', label: 'Year', type: 'number', required: true },
                     { name: 'title', label: 'Title', required: true, fullWidth: true },
                     { name: 'link', label: 'Proceedings Link' },
+                    { name: 'coverImage', label: 'Cover Image', type: 'image' },
                     { name: 'publisher', label: 'Publisher' }
                 ];
             case 'fees':
@@ -397,7 +475,7 @@ const AdminDashboard = () => {
                     { name: 'title', label: 'Title', required: true, fullWidth: true },
                     { name: 'year', label: 'Year', type: 'number' },
                     { name: 'type', label: 'Archive Type', type: 'select', options: ['media-coverage', 'glimpses'] },
-                    { name: 'image', label: 'Image URL (Use absolute path or full URL)', placeholder: 'e.g., https://example.com/image.jpg' },
+                    { name: 'image', label: 'Image', type: 'image' },
                     { name: 'link', label: 'External Link' },
                     { name: 'order', label: 'Display Order', type: 'number' }
                 ];
@@ -516,9 +594,17 @@ const AdminDashboard = () => {
                 setIsAdding(true);
                 setIsCreatingSection(false);
                 setExpandedTypes(prev => ({ ...prev, [item.type]: true }));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 handleEdit(item);
                 setExpandedTypes(prev => ({ ...prev, [item.type]: true }));
+                // Small delay to allow the section to expand before scrolling if it was collapsed
+                setTimeout(() => {
+                    const formElement = document.querySelector(`[ref="inlineFormRef"]`) || inlineFormRef.current;
+                    if (formElement) {
+                        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
             }
         };
 
@@ -871,6 +957,7 @@ const AdminDashboard = () => {
         switch (activeTab) {
             case 'speakers':
                 return [
+                    { key: 'image', label: 'Image', render: (item) => item.image ? <img src={formatImageUrl(item.image)} alt="Speaker" className="w-10 h-10 object-cover rounded-full shadow-sm border border-gray-200" /> : <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-[10px] text-gray-400">N/A</div> },
                     { key: 'name', label: 'Name' },
                     { key: 'designation', label: 'Designation' },
                     { key: 'organization', label: 'Organization' },
@@ -909,6 +996,7 @@ const AdminDashboard = () => {
                 ];
             case 'editions':
                 return [
+                    { key: 'coverImage', label: 'Cover', render: (item) => item.coverImage ? <img src={formatImageUrl(item.coverImage)} alt="Cover" className="w-10 h-14 object-cover rounded shadow-sm border border-gray-200" /> : <div className="w-10 h-14 bg-gray-100 rounded flex items-center justify-center text-[10px] text-gray-400">N/A</div> },
                     { key: 'year', label: 'Year' },
                     { key: 'title', label: 'Title' },
                     { key: 'publisher', label: 'Publisher' }
@@ -922,7 +1010,7 @@ const AdminDashboard = () => {
                 ];
             case 'archives':
                 return [
-                    { key: 'image', label: 'Image', render: (item) => item.image ? <img src={item.image} alt="Thumbnail" className="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" /> : <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">N/A</div> },
+                    { key: 'image', label: 'Image', render: (item) => item.image ? <img src={formatImageUrl(item.image)} alt="Thumbnail" className="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" /> : <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">N/A</div> },
                     { key: 'title', label: 'Title' },
                     { key: 'year', label: 'Year' },
                     { key: 'type', label: 'Type' },
