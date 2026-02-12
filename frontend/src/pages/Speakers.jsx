@@ -45,6 +45,13 @@ const Speakers = () => {
         fetchSpeakers();
     });
 
+    const formatImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+    };
+
     const speakersData = {
         '2026': [], // Pending
         '2025': [
@@ -382,7 +389,7 @@ const Speakers = () => {
                                             <div className="relative p-1 rounded-full bg-gradient-to-tr from-yellow-400 via-orange-500 to-yellow-200">
                                                 <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl transition-transform duration-700 group-hover:scale-105">
                                                     <img
-                                                        src={speaker.image || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop'}
+                                                        src={formatImageUrl(speaker.image) || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop'}
                                                         alt={speaker.name}
                                                         className="w-full h-full object-cover"
                                                     />

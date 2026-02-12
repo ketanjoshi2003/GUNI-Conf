@@ -41,6 +41,13 @@ const Archive = () => {
         fetchArchives();
     });
 
+    const formatImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+    };
+
 
     const mediaItems = archives.filter(item => item.type === 'media-coverage');
     const glimpseItems = archives.filter(item => item.type === 'glimpses');
@@ -98,7 +105,7 @@ const Archive = () => {
                                             </div>
                                             <div className="p-0 flex justify-center bg-gray-100/50 aspect-[3/4]">
                                                 {item.image ? (
-                                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                                                    <img src={formatImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 border-2 border-dashed border-gray-200 m-4 rounded-lg">
                                                         <Newspaper className="w-12 h-12 mb-2 opacity-50" />
@@ -135,7 +142,7 @@ const Archive = () => {
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                         {glimpseItems.map((item, index) => (
                                             <div key={index} className="relative group aspect-square rounded-xl overflow-hidden shadow-lg border border-gray-100">
-                                                <img src={item.image || 'https://via.placeholder.com/400?text=Conference+Glimpses'} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                                <img src={formatImageUrl(item.image) || 'https://via.placeholder.com/400?text=Conference+Glimpses'} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                                     <p className="text-white font-bold text-sm">{item.title}</p>
                                                     <p className="text-gray-300 text-xs">{item.year}</p>

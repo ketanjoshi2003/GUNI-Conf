@@ -9,6 +9,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
+const path = require('path');
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,23 @@ const allowedOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:5174', // Sometimes Vite uses next available port
 ];
+
+// CORS Configuration - Must be before static files
+const corsOptions = {
+    origin: allowedOrigins,
+    optionsSuccessStatus: 200,
+    credentials: true
+};
+app.use(cors(corsOptions));
+
+// Security Middleware - Configured to allow cross-origin images
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(compression());
+
+// Serve Static Files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const io = new Server(server, {
     cors: {
@@ -36,17 +54,8 @@ const PORT = process.env.PORT || 5000;
 // Attach io to app to use in routes
 app.set('io', io);
 
-// Security Middleware
-app.use(helmet());
-app.use(compression());
-
-// CORS Configuration
-const corsOptions = {
-    origin: allowedOrigins,
-    optionsSuccessStatus: 200,
-    credentials: true
-};
-app.use(cors(corsOptions));
+// Attach io to app to use in routes
+app.set('io', io);
 
 // Rate Limiting - Increased for development/testing
 const limiter = rateLimit({

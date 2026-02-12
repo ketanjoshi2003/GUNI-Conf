@@ -10,6 +10,7 @@ const Archive = require('../models/Archive');
 const { protect, admin } = require('../middleware/authMiddleware');
 const News = require('../models/News');
 const Conference = require('../models/Conference');
+const upload = require('../middleware/uploadMiddleware');
 
 // Helper to emit refresh event
 const emitRefresh = (req) => {
@@ -144,6 +145,20 @@ router.get('/conference-info', async (req, res) => {
 
 router.use(protect);
 router.use(admin);
+
+// --- Image Upload ---
+router.post('/upload', upload.single('image'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        // Return relative path to be stored in DB
+        const imagePath = `/uploads/${req.file.filename}`;
+        res.json({ url: imagePath });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // Speakers
 router.post('/speakers', async (req, res) => {
