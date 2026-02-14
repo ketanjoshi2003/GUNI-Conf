@@ -7,7 +7,6 @@ const conferenceSchema = new mongoose.Schema({
   year: { type: String },
   edition: { type: String },
   mode: { type: String },
-  theme: { type: String },
   description: { type: String },
   venue: { type: String },
   state: { type: String },

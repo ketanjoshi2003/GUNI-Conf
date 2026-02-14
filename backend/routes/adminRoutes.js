@@ -10,6 +10,7 @@ const Archive = require('../models/Archive');
 const { protect, admin } = require('../middleware/authMiddleware');
 const News = require('../models/News');
 const Conference = require('../models/Conference');
+const HomeSection = require('../models/HomeSection');
 const upload = require('../middleware/uploadMiddleware');
 
 // Helper to emit refresh event
@@ -130,12 +131,79 @@ router.get('/conference-info', async (req, res) => {
                 venue: 'Ganpat University',
                 country: 'India',
                 start_date: new Date('2026-09-10'),
-                end_date: new Date('2026-09-11'),
-                theme: '7th Edition • Hybrid Mode'
+                end_date: new Date('2026-09-11')
             });
             await conf.save();
         }
         res.json(conf);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Home Sections Routes
+router.get('/home-sections', async (req, res) => {
+    try {
+        let sections = await HomeSection.find().sort({ order: 1 });
+
+        if (sections.length === 0) {
+            const defaults = [
+                { type: 'topics', order: 1, isVisible: true },
+                { type: 'previous-editions', order: 2, isVisible: true },
+                { type: 'about-university', order: 3, isVisible: true }
+            ];
+            await HomeSection.insertMany(defaults);
+            sections = await HomeSection.find().sort({ order: 1 });
+        } else {
+            // Check if crucial defaults are missing (e.g. user added one section and lost the defaults)
+            const defaults = ['topics', 'previous-editions', 'about-university'];
+            const existingTypes = sections.map(s => s.type);
+            const toAdd = [];
+
+            defaults.forEach((type, idx) => {
+                if (!existingTypes.includes(type)) {
+                    toAdd.push({ type, order: idx + 2, isVisible: true }); // Order relative to typical start
+                }
+            });
+
+            if (toAdd.length > 0) {
+                await HomeSection.insertMany(toAdd);
+                sections = await HomeSection.find().sort({ order: 1 });
+            }
+        }
+
+        res.json(sections);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.post('/home-sections', protect, admin, async (req, res) => {
+    try {
+        const section = new HomeSection(req.body);
+        const newSection = await section.save();
+        emitRefresh(req); // Refresh socket
+        res.status(201).json(newSection);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+router.put('/home-sections/:id', protect, admin, async (req, res) => {
+    try {
+        const section = await HomeSection.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        emitRefresh(req);
+        res.json(section);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+router.delete('/home-sections/:id', protect, admin, async (req, res) => {
+    try {
+        await HomeSection.findByIdAndDelete(req.params.id);
+        emitRefresh(req);
+        res.json({ message: 'Section removed' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

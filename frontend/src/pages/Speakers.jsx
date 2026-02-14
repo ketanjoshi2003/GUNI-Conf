@@ -400,13 +400,14 @@ const Speakers = () => {
                                         {/* Bio & Links Section */}
                                         <div className="flex-grow space-y-6">
                                             <div>
-                                                <p className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary">
-                                                    {speaker.bio}
-                                                </p>
+                                                <div
+                                                    className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary prose max-w-none [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                                                    dangerouslySetInnerHTML={{ __html: speaker.bio }}
+                                                />
                                                 {speaker.topicDescription && (
                                                     <div className="mt-6 p-5 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-gray-700 relative">
                                                         <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase tracking-widest shadow-lg">Talk Abstract</div>
-                                                        {speaker.topicDescription}
+                                                        <div dangerouslySetInnerHTML={{ __html: speaker.topicDescription }} />
                                                     </div>
                                                 )}
                                             </div>

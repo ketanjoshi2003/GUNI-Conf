@@ -11,6 +11,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Registration from './pages/Registration';
 import Sponsors from './pages/Sponsors';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 
 // New Pages
@@ -79,6 +80,7 @@ function AppContent() {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <YearProvider>
         <AppContent />
       </YearProvider>

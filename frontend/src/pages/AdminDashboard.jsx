@@ -7,6 +7,9 @@ import { advisoryCommitteeData, chairs } from '../data/committeeData';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css'; // import styles
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -26,7 +29,9 @@ const AdminDashboard = () => {
     const [bestPapers, setBestPapers] = useState([]);
     const [pubStats, setPubStats] = useState([]);
     const [conferenceInfo, setConferenceInfo] = useState(null);
+    const [homeSections, setHomeSections] = useState([]);
     const [expandedTypes, setExpandedTypes] = useState({});
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sidebarSearch, setSidebarSearch] = useState('');
@@ -41,7 +46,7 @@ const AdminDashboard = () => {
 
     const loadData = useCallback(async () => {
         try {
-            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes, acceptedRes, bestRes, pubStatsRes] = await Promise.all([
+            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes, acceptedRes, bestRes, pubStatsRes, homeSectionsRes] = await Promise.all([
                 api.get('/api/admin/speakers'),
                 api.get('/api/admin/committees'),
                 api.get('/api/admin/important-dates'),
@@ -53,7 +58,8 @@ const AdminDashboard = () => {
                 api.get('/api/admin/conference-info'),
                 api.get('/api/admin/accepted-papers'),
                 api.get('/api/admin/best-papers'),
-                api.get('/api/admin/publication-stats')
+                api.get('/api/admin/publication-stats'),
+                api.get('/api/admin/home-sections')
             ]);
             setSpeakers(speakersRes.data);
             setCommittees(committeesRes.data);
@@ -67,6 +73,7 @@ const AdminDashboard = () => {
             setAcceptedPapers(await acceptedRes.data);
             setBestPapers(await bestRes.data);
             setPubStats(await pubStatsRes.data);
+            setHomeSections(await homeSectionsRes.data);
         } catch (error) {
             console.error('Error loading data:', error);
         }
@@ -94,7 +101,11 @@ const AdminDashboard = () => {
     const handleAdd = () => {
         setIsAdding(true);
         setEditingItem(null);
-        setFormData({});
+        if (activeTab === 'home-sections') {
+            setFormData({ isVisible: true });
+        } else {
+            setFormData({});
+        }
         if (activeTab === 'committees') {
             setIsCreatingSection(true);
         }
@@ -219,7 +230,8 @@ const AdminDashboard = () => {
             'news': 'news',
             'accepted-papers': 'accepted-papers',
             'best-papers': 'best-papers',
-            'publication-stats': 'publication-stats'
+            'publication-stats': 'publication-stats',
+            'home-sections': 'home-sections'
         };
         return map[activeTab];
     };
@@ -256,6 +268,7 @@ const AdminDashboard = () => {
 
     const tabs = [
         { id: 'settings', label: 'Hero Settings', icon: Settings },
+        { id: 'home-sections', label: 'Home Page Sections', icon: Layout },
         { id: 'speakers', label: 'Speakers', icon: Users },
         { id: 'committees', label: 'Committees', icon: Users },
         { id: 'dates', label: 'Important Dates', icon: Calendar },
@@ -286,11 +299,20 @@ const AdminDashboard = () => {
                                 {field.label}
                             </label>
                             {field.type === 'textarea' ? (
-                                <textarea
+                                <ReactQuill
+                                    theme="snow"
                                     value={formData[field.name] || ''}
-                                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
+                                    onChange={(value) => setFormData({ ...formData, [field.name]: value })}
+                                    className="h-64 mb-12"
+                                    modules={{
+                                        toolbar: [
+                                            [{ 'header': [1, 2, 3, false] }],
+                                            ['bold', 'italic', 'underline', 'strike'],
+                                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            ['clean']
+                                        ],
+                                    }}
                                 />
                             ) : field.type === 'select' ? (
                                 <select
@@ -385,6 +407,16 @@ const AdminDashboard = () => {
                                             </button>
                                         </div>
                                     )}
+                                </div>
+                            ) : field.type === 'checkbox' ? (
+                                <div className="flex items-center gap-2 mt-6">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData[field.name] || false}
+                                        onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
+                                        className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    {field.description && <span className="text-sm text-gray-500">{field.description}</span>}
                                 </div>
                             ) : (
                                 <input
@@ -493,7 +525,6 @@ const AdminDashboard = () => {
                     { name: 'mode', label: 'Mode (e.g. Hybrid Mode)' },
                     { name: 'name', label: 'Full Conference Title', fullWidth: true },
                     { name: 'description', label: 'Welcome/Intro Description', type: 'textarea', fullWidth: true },
-                    { name: 'theme', label: 'Sub-theme/Tagline', fullWidth: true },
                     { name: 'venue', label: 'Venue/University' },
                     { name: 'country', label: 'Location/Country' },
                     { name: 'start_date', label: 'Start Date', type: 'date' },
@@ -521,6 +552,32 @@ const AdminDashboard = () => {
                 return [
                     { name: 'year', label: 'Year', type: 'number', required: true },
                     { name: 'totalSubmissions', label: 'Total Submissions', type: 'number', required: true }
+                ];
+            case 'home-sections':
+                return [
+                    {
+                        name: 'type',
+                        label: 'Section Type',
+                        type: 'select',
+                        options: [
+                            'about-university',
+                            'speakers',
+                            'committees',
+                            'important-dates',
+                            'topics',
+                            'previous-editions',
+                            'registration-fees',
+                            'archives',
+                            'accepted-papers',
+                            'best-papers',
+                            'publication-stats',
+                            'news'
+                        ],
+                        required: true
+                    },
+                    { name: 'title', label: 'Custom Title (Optional)', fullWidth: true },
+                    { name: 'order', label: 'Order', type: 'number' },
+                    { name: 'isVisible', label: 'Visible', type: 'checkbox' }
                 ];
             default:
                 return [];
@@ -924,6 +981,7 @@ const AdminDashboard = () => {
             case 'accepted-papers': data = acceptedPapers; break;
             case 'best-papers': data = bestPapers; break;
             case 'publication-stats': data = pubStats; break;
+            case 'home-sections': data = homeSections; break;
             default: data = [];
         }
 
@@ -1042,6 +1100,13 @@ const AdminDashboard = () => {
                     { key: 'totalSubmissions', label: 'Total Submissions' },
                     { key: 'acceptedCount', label: 'Accepted Papers' },
                     { key: 'rate', label: 'Acceptance Rate' }
+                ];
+            case 'home-sections':
+                return [
+                    { key: 'type', label: 'Section Type', render: (item) => <span className="capitalize font-medium">{item.type.replace(/-/g, ' ')}</span> },
+                    { key: 'title', label: 'Custom Title', render: (item) => item.title || <span className="text-gray-400 italic">Default</span> },
+                    { key: 'order', label: 'Order' },
+                    { key: 'isVisible', label: 'Status', render: (item) => item.isVisible ? <span className="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold">Visible</span> : <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded text-xs">Hidden</span> }
                 ];
             default:
                 return [];
