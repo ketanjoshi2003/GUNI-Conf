@@ -357,6 +357,7 @@ const Speakers = () => {
                             speakers.map((speaker, index) => (
                                 <div key={index} className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-12 hover:shadow-2xl transition-all duration-500 overflow-hidden relative group">
                                     {/* Session Metadata Header */}
+                                    {/* Session Metadata Header */}
                                     <div className="text-center mb-10 space-y-2">
                                         {speaker.date && (
                                             <p className="text-gray-500 font-medium text-sm tracking-wide">
@@ -368,18 +369,24 @@ const Speakers = () => {
                                                 Time: <span className="text-gray-800 font-bold">{speaker.time}</span>
                                             </p>
                                         )}
-                                        {speaker.sessionTitle && (
+                                        {(speaker.sessionTitle || speaker.topic) && (
                                             <h4 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-700 to-sky-600 bg-clip-text text-transparent italic">
-                                                {speaker.sessionTitle}: {speaker.topic}
+                                                {speaker.sessionTitle}
+                                                {speaker.sessionTitle && speaker.topic && ': '}
+                                                {speaker.topic}
                                             </h4>
                                         )}
                                         <div className="pt-2">
                                             <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">
-                                                Speaker: <span className="text-blue-600">{speaker.name}</span>
+                                                {speaker.designation ? 'Speaker: ' : ''}<span className="text-blue-600">{speaker.name}</span>
                                             </h2>
-                                            <p className="text-lg text-gray-700 font-semibold max-w-2xl mx-auto leading-tight">
-                                                {speaker.title}, {speaker.affiliation}
-                                            </p>
+                                            {(speaker.title || speaker.affiliation) && (
+                                                <p className="text-lg text-gray-700 font-semibold max-w-2xl mx-auto leading-tight">
+                                                    {speaker.title}
+                                                    {speaker.title && speaker.affiliation && ', '}
+                                                    {speaker.affiliation}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -398,13 +405,13 @@ const Speakers = () => {
                                         </div>
 
                                         {/* Bio & Links Section */}
-                                        <div className="flex-grow space-y-6">
+                                        <div className="flex-grow space-y-6 min-w-0 w-full">
                                             <div>
                                                 <div
-                                                    className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary prose max-w-none [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                                                    className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary prose max-w-none break-words min-w-0 w-full [&_p]:mb-4 [&_p]:leading-7 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-gray-900 [&_em]:text-gray-800"
                                                     dangerouslySetInnerHTML={{ __html: speaker.bio }}
                                                 />
-                                                {speaker.topicDescription && (
+                                                {speaker.topicDescription && speaker.topicDescription.replace(/<[^>]+>/g, '').trim().length > 0 && (
                                                     <div className="mt-6 p-5 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-gray-700 relative">
                                                         <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase tracking-widest shadow-lg">Talk Abstract</div>
                                                         <div dangerouslySetInnerHTML={{ __html: speaker.topicDescription }} />
@@ -413,24 +420,26 @@ const Speakers = () => {
                                             </div>
 
                                             {/* Social/Reference Links */}
-                                            <div className="flex flex-wrap gap-x-8 gap-y-4 pt-4 border-t border-gray-100">
-                                                {(speaker.links || []).map((link, lIdx) => (
-                                                    <a
-                                                        key={lIdx}
-                                                        href={link.url}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="group flex flex-col gap-0.5"
-                                                    >
-                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-blue-500 transition-colors">
-                                                            {link.name || 'Official Link'}
-                                                        </span>
-                                                        <span className="text-sky-600 group-hover:text-blue-700 transition-all font-bold text-sm underline decoration-sky-300 decoration-2 underline-offset-4 break-all">
-                                                            {link.url}
-                                                        </span>
-                                                    </a>
-                                                ))}
-                                            </div>
+                                            {speaker.links && speaker.links.length > 0 && (
+                                                <div className="flex flex-wrap gap-x-8 gap-y-4 pt-4 border-t border-gray-100">
+                                                    {speaker.links.map((link, lIdx) => (
+                                                        <a
+                                                            key={lIdx}
+                                                            href={link.url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="group flex flex-col gap-0.5"
+                                                        >
+                                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-blue-500 transition-colors">
+                                                                {link.name || 'Official Link'}
+                                                            </span>
+                                                            <span className="text-sky-600 group-hover:text-blue-700 transition-all font-bold text-sm underline decoration-sky-300 decoration-2 underline-offset-4 break-all">
+                                                                {link.url}
+                                                            </span>
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

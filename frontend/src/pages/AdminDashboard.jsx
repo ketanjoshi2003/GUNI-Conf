@@ -118,13 +118,21 @@ const AdminDashboard = () => {
 
         // Format dates for <input type="date"> using UTC to avoid off-by-one errors
         const processedItem = { ...item };
+        const formFields = getFormFields();
+
         ['date', 'start_date', 'end_date'].forEach(field => {
             if (item[field]) {
-                const d = new Date(item[field]);
-                const y = d.getUTCFullYear();
-                const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-                const day = String(d.getUTCDate()).padStart(2, '0');
-                processedItem[field] = `${y}-${m}-${day}`;
+                const fieldConfig = formFields.find(f => f.name === field);
+                // Only format if the field is explicitly an input type 'date' in the config
+                if (fieldConfig && fieldConfig.type === 'date') {
+                    const d = new Date(item[field]);
+                    if (!isNaN(d.getTime())) {
+                        const y = d.getUTCFullYear();
+                        const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+                        const day = String(d.getUTCDate()).padStart(2, '0');
+                        processedItem[field] = `${y}-${m}-${day}`;
+                    }
+                }
             }
         });
 
