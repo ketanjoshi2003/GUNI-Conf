@@ -16,11 +16,18 @@ const app = express();
 const server = http.createServer(app);
 
 // Relaxed CORS for development to prevent connection issues
+// Relaxed CORS for development to prevent connection issues
 const allowedOrigins = [
-    process.env.CLIENT_URL || 'http://localhost:5173',
+    'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:5174', // Sometimes Vite uses next available port
 ];
+
+// Add production domains from environment variable
+if (process.env.CLIENT_URL) {
+    const productionOrigins = process.env.CLIENT_URL.split(',').map(url => url.trim());
+    allowedOrigins.push(...productionOrigins);
+}
 
 // CORS Configuration - Must be before static files
 const corsOptions = {

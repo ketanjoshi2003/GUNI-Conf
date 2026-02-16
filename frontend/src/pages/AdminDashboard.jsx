@@ -43,6 +43,30 @@ const AdminDashboard = () => {
     const [isCreatingSection, setIsCreatingSection] = useState(false);
     const [formData, setFormData] = useState({});
     const [isUploadLoading, setIsUploadLoading] = useState(false);
+    const [sourceModeFields, setSourceModeFields] = useState({});
+
+    const toggleSourceMode = (fieldName) => {
+        const enteringSourceMode = !sourceModeFields[fieldName];
+
+        if (enteringSourceMode && formData[fieldName]) {
+            // Make the HTML more human-readable before showing it
+            let readableHtml = formData[fieldName]
+                // Replace non-breaking spaces with normal spaces
+                .replace(/&nbsp;/g, ' ')
+                .replace(/\u00A0/g, ' ')
+                // Add line breaks between major tags to avoid one long line
+                .replace(/><(p|div|h[1-6]|ul|ol|li|blockquote|section|hr|table|tr)/g, '>\n<$1')
+                // Trim multiple spaces
+                .replace(/ +/g, ' ');
+
+            setFormData(prev => ({ ...prev, [fieldName]: readableHtml }));
+        }
+
+        setSourceModeFields(prev => ({
+            ...prev,
+            [fieldName]: !prev[fieldName]
+        }));
+    };
 
     const loadData = useCallback(async () => {
         try {
@@ -150,6 +174,7 @@ const AdminDashboard = () => {
         setIsCreatingSection(false);
         setEditingItem(null);
         setFormData({});
+        setSourceModeFields({});
     };
 
     useEffect(() => {
@@ -315,31 +340,58 @@ const AdminDashboard = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                     {fields.map(field => (
                         <div key={field.name} className={field.fullWidth ? 'md:col-span-2' : ''}>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                {field.label}
-                            </label>
                             {field.type === 'textarea' ? (
-                                <>
-                                    <ReactQuill
-                                        theme="snow"
-                                        value={formData[field.name] || ''}
-                                        onChange={(value) => setFormData({ ...formData, [field.name]: value })}
-                                        className="h-64 mb-12"
-                                        modules={{
-                                            toolbar: [
-                                                [{ 'header': [1, 2, 3, false] }],
-                                                ['bold', 'italic', 'underline', 'strike'],
-                                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                                [{ 'color': [] }, { 'background': [] }],
-                                                ['clean']
-                                            ],
-                                        }}
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1 mb-4 flex items-center gap-1">
-                                        <Info size={12} />
-                                        Tip: If pasted text is invisible, select it and click the 'Tx' (Remove Formatting) button, or paste using Ctrl+Shift+V.
-                                    </p>
-                                </>
+                                <div className="space-y-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            {field.label}
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleSourceMode(field.name)}
+                                            className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all border ${sourceModeFields[field.name]
+                                                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                                                : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-600'
+                                                }`}
+                                        >
+                                            <Code size={12} />
+                                            {sourceModeFields[field.name] ? 'Visual Editor' : 'Edit Source'}
+                                        </button>
+                                    </div>
+
+                                    {sourceModeFields[field.name] ? (
+                                        <textarea
+                                            value={formData[field.name] || ''}
+                                            onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                                            className="w-full h-64 p-4 font-mono text-sm border-2 border-blue-50 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none bg-gray-50 transition-all mb-4"
+                                            placeholder="Paste or edit HTML source here..."
+                                        />
+                                    ) : (
+                                        <>
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={formData[field.name] || ''}
+                                                onChange={(value) => setFormData({ ...formData, [field.name]: value })}
+                                                className="h-64 mb-12"
+                                                modules={{
+                                                    toolbar: [
+                                                        [{ 'header': [1, 2, 3, false] }],
+                                                        [{ 'align': [] }],
+                                                        [{ 'indent': '-1' }, { 'indent': '+1' }],
+                                                        ['bold', 'italic', 'underline', 'strike'],
+                                                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                                        [{ 'color': [] }, { 'background': [] }],
+                                                        ['clean']
+                                                    ],
+                                                }}
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1 mb-4 flex items-center gap-1">
+                                                <Info size={12} />
+                                                Tip: Use the "Edit Source" button above to paste raw HTML or edit code directly.
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
                             ) : field.type === 'select' ? (
                                 <select
                                     value={formData[field.name] || ''}
