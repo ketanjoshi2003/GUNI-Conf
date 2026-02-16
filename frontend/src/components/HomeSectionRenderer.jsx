@@ -30,11 +30,11 @@ const HomeSectionRenderer = ({ section, data }) => {
     switch (section.type) {
         case 'welcome':
             return (
-                <section className="space-y-6 text-gray-700 leading-relaxed text-justify text-base">
+                <section className="space-y-6 text-gray-700 leading-relaxed text-base">
                     <SectionHeader title={section.title || `Welcome to ${conferenceInfo?.short_name || 'COMS2'} ${conferenceInfo?.year || ''}`} />
                     {conferenceInfo?.description ? (
                         <div
-                            className="text-justify [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                            className="conference-description [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
                             dangerouslySetInnerHTML={{ __html: conferenceInfo.description }}
                         />
                     ) : (
@@ -232,15 +232,153 @@ const HomeSectionRenderer = ({ section, data }) => {
 
         // Add basics for other types if needed, using generic placeholders or lists
         case 'committees':
+            // Group committees by type
+            const groupedCommittees = committees.reduce((acc, member) => {
+                const type = member.type || 'Other';
+                if (!acc[type]) {
+                    acc[type] = {
+                        members: [],
+                        sectionOrder: member.sectionOrder || 99
+                    };
+                }
+                acc[type].members.push(member);
+                return acc;
+            }, {});
+
+            // Sort sections
+            const sortedSections = Object.entries(groupedCommittees)
+                .sort((a, b) => (a[1].sectionOrder || 0) - (b[1].sectionOrder || 0));
+
+            return (
+                <section>
+                    <SectionHeader title={section.title || 'Committees'} />
+                    <div className="space-y-8">
+                        {sortedSections.map(([type, group]) => (
+                            <div key={type} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden text-center">
+                                <div className="bg-blue-50/50 px-4 py-3 border-b border-gray-100">
+                                    <h4 className="font-bold text-blue-900">{type}</h4>
+                                </div>
+                                <div className="p-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {group.members
+                                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                                        .map((member, idx) => (
+                                            <div key={member._id || idx} className="flex flex-col items-center">
+                                                <div className="font-bold text-gray-900">{member.name}</div>
+                                                <div className="text-sm text-gray-500">{member.designation}</div>
+                                                {member.organization && (
+                                                    <div className="text-xs text-blue-600 font-medium mt-1">{member.organization}</div>
+                                                )}
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-8 text-center">
+                        <a href="/committees" className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-full text-blue-600 font-bold text-sm hover:bg-blue-50 transition-all shadow-sm hover:shadow">
+                            View All Committees <ArrowRight size={16} />
+                        </a>
+                    </div>
+                </section>
+            );
+
         case 'archives':
+            return (
+                <section>
+                    <SectionHeader title={section.title || 'Archives'} />
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {archives.map((item) => (
+                            <div key={item._id} className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all border border-gray-100">
+                                <div className="aspect-video bg-gray-100 overflow-hidden">
+                                    {item.image ? (
+                                        <img src={formatImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                            <FileText size={48} opacity={0.2} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-4">
+                                    <div className="text-xs font-bold text-blue-600 mb-1 uppercase tracking-wider">{item.type} • {item.year}</div>
+                                    <h4 className="font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">{item.title}</h4>
+                                    {item.link && (
+                                        <a href={item.link} target="_blank" className="mt-4 block text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-blue-600">
+                                            View Details &rarr;
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+
         case 'accepted-papers':
+            return (
+                <section>
+                    <SectionHeader title={section.title || 'Accepted Papers'} />
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+                                    <tr>
+                                        <th className="px-6 py-3">Paper ID</th>
+                                        <th className="px-6 py-3">Title</th>
+                                        <th className="px-6 py-3">Authors</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {acceptedPapers.slice(0, 10).map((paper) => (
+                                        <tr key={paper._id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 font-bold text-blue-600">#{paper.paperId}</td>
+                                            <td className="px-6 py-4 font-medium text-gray-900">{paper.title}</td>
+                                            <td className="px-6 py-4 text-gray-600">{paper.authors}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {acceptedPapers.length > 10 && (
+                            <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 text-center">
+                                <a href="/accepted-papers" className="text-blue-600 text-xs font-bold uppercase tracking-widest hover:underline">View All Papers</a>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            );
+
         case 'best-papers':
+            return (
+                <section>
+                    <SectionHeader title={section.title || 'Best Paper Awards'} />
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {bestPapers.map((paper) => (
+                            <div key={paper._id} className="relative bg-gradient-to-br from-white to-yellow-50/50 p-6 rounded-xl border border-yellow-100 shadow-sm hover:shadow-md transition-all">
+                                <div className="absolute top-0 right-0 p-3 text-yellow-500">
+                                    <Award size={24} />
+                                </div>
+                                <div className="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-2">{paper.awardName}</div>
+                                <h4 className="font-bold text-gray-900 mb-2 leading-tight">{paper.title}</h4>
+                                <p className="text-sm text-gray-600 mb-1">{paper.authors}</p>
+                                {paper.institution && <p className="text-xs text-gray-400 italic">{paper.institution}</p>}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+
         case 'publication-stats':
             return (
                 <section>
-                    <SectionHeader title={section.title || section.type.replace(/-/g, ' ').toUpperCase()} />
-                    <div className="p-8 bg-gray-50 rounded-xl text-center text-gray-500 italic border border-dashed border-gray-300">
-                        Content for {section.type} will be displayed here.
+                    <SectionHeader title={section.title || 'Publication Stats'} />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {pubStats.map((stat) => (
+                            <div key={stat._id} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center group hover:border-blue-200 transition-all">
+                                <div className="text-3xl font-black text-blue-600 mb-1 group-hover:scale-110 transition-transform">{stat.acceptedCount}</div>
+                                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Accepted Papers</div>
+                                <div className="mt-2 text-[10px] text-gray-300">{stat.year} • {stat.totalSubmissions} Submissions</div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             );

@@ -74,8 +74,9 @@ const Committees = () => {
         return { icon: <Users className="w-5 h-5" />, tab: tabId };
     };
 
+    // Trim whitespace from database types to ensuring matching
     const groupedData = committees.reduce((acc, member) => {
-        const type = member.type || 'Other';
+        const type = (member.type || 'Other').trim();
         if (!acc[type]) {
             acc[type] = {
                 members: [],
@@ -92,7 +93,7 @@ const Committees = () => {
         const icon = group.meta.icon;
 
         return (
-            <div key={type} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all ${isLongList ? 'md:col-span-2' : ''}`}>
+            <div key={type} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all animate-fade-in-up ${isLongList ? 'md:col-span-2' : ''}`}>
                 <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-3 border-b border-gray-100 italic">
                     <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
                         {icon}
@@ -126,7 +127,7 @@ const Committees = () => {
             <div className="container mx-auto px-6">
                 <div className="mb-12 text-center">
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-                        Committees
+                        Committees <span className="text-blue-600">{selectedYear}</span>
                     </h1>
                     <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
                 </div>
@@ -194,7 +195,7 @@ const Committees = () => {
 
                                 {Object.entries(groupedData).filter(([_, group]) => group.meta.tab === activeTab).length === 0 && (
                                     <div className="md:col-span-2 text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
-                                        <p className="text-gray-400 italic">No members found for this section.</p>
+                                        <p className="text-gray-400 italic">No members found for this section in {selectedYear}.</p>
                                     </div>
                                 )}
                             </div>

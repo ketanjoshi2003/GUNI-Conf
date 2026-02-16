@@ -9,7 +9,10 @@ export const YearProvider = ({ children }) => {
     useEffect(() => {
         const storedYear = localStorage.getItem('selectedYear');
         if (storedYear) {
-            setSelectedYear(parseInt(storedYear));
+            const yearNum = parseInt(storedYear);
+            if (!isNaN(yearNum)) {
+                setSelectedYear(yearNum);
+            }
         }
     }, []);
 

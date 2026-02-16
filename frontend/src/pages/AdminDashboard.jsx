@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import axios from 'axios';
-import { Edit2, Trash2, Plus, Save, X, LogOut, Layout, Users, Calendar, Award, Briefcase, Globe, Monitor, Code, Megaphone, MapPin, ChevronDown, ChevronUp, ExternalLink, FileText, Tag, BookOpen, Newspaper, Pin, Settings, PlusCircle, Menu, Search } from 'lucide-react';
+import { Edit2, Trash2, Plus, Save, X, LogOut, Layout, Users, Calendar, Award, Briefcase, Globe, Monitor, Code, Megaphone, MapPin, ChevronDown, ChevronUp, ExternalLink, FileText, Tag, BookOpen, Newspaper, Pin, Settings, PlusCircle, Menu, Search, Info } from 'lucide-react';
 import { advisoryCommitteeData, chairs } from '../data/committeeData';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
@@ -193,15 +193,27 @@ const AdminDashboard = () => {
 
             console.log('--- SAVE INITIATED ---');
             console.log('Action:', isAdding ? 'Adding' : 'Editing');
-            console.log('Data to send:', formData);
+
+            // Trim string values in formData to avoid whitespace issues
+            const cleanedData = { ...formData };
+            Object.keys(cleanedData).forEach(key => {
+                if (typeof cleanedData[key] === 'string') {
+                    cleanedData[key] = cleanedData[key].trim()
+                        // Replace non-breaking spaces with normal spaces to prevent layout issues
+                        .replace(/&nbsp;/g, ' ')
+                        .replace(/\u00A0/g, ' ');
+                }
+            });
+
+            console.log('Data to send:', cleanedData);
 
             let res;
             if (activeTab === 'settings') {
-                res = await api.put('/api/admin/conference-info', formData);
+                res = await api.put('/api/admin/conference-info', cleanedData);
             } else if (isAdding) {
-                res = await api.post(`/api/admin/${endpoint}`, formData);
+                res = await api.post(`/api/admin/${endpoint}`, cleanedData);
             } else {
-                res = await api.put(`/api/admin/${endpoint}/${editingItem}`, formData);
+                res = await api.put(`/api/admin/${endpoint}/${editingItem}`, cleanedData);
             }
 
             console.log('Save response received:', res.data);
@@ -307,21 +319,27 @@ const AdminDashboard = () => {
                                 {field.label}
                             </label>
                             {field.type === 'textarea' ? (
-                                <ReactQuill
-                                    theme="snow"
-                                    value={formData[field.name] || ''}
-                                    onChange={(value) => setFormData({ ...formData, [field.name]: value })}
-                                    className="h-64 mb-12"
-                                    modules={{
-                                        toolbar: [
-                                            [{ 'header': [1, 2, 3, false] }],
-                                            ['bold', 'italic', 'underline', 'strike'],
-                                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                            [{ 'color': [] }, { 'background': [] }],
-                                            ['clean']
-                                        ],
-                                    }}
-                                />
+                                <>
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={formData[field.name] || ''}
+                                        onChange={(value) => setFormData({ ...formData, [field.name]: value })}
+                                        className="h-64 mb-12"
+                                        modules={{
+                                            toolbar: [
+                                                [{ 'header': [1, 2, 3, false] }],
+                                                ['bold', 'italic', 'underline', 'strike'],
+                                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                                [{ 'color': [] }, { 'background': [] }],
+                                                ['clean']
+                                            ],
+                                        }}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1 mb-4 flex items-center gap-1">
+                                        <Info size={12} />
+                                        Tip: If pasted text is invisible, select it and click the 'Tx' (Remove Formatting) button, or paste using Ctrl+Shift+V.
+                                    </p>
+                                </>
                             ) : field.type === 'select' ? (
                                 <select
                                     value={formData[field.name] || ''}

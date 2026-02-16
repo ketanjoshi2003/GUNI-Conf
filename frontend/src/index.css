@@ -66,3 +66,24 @@
 .glass {
   @apply bg-white/70 backdrop-blur-md border border-white/20;
 }
+
+/* Fix invisible white text in editor */
+.ql-editor span[style*="color: rgb(255, 255, 255)"],
+.ql-editor span[style*="color: #ffffff"],
+.ql-editor span[style*="color: white"] {
+  color: inherit !important;
+}
+
+/* Fix explicit white text on frontend description and force wrapping */
+.conference-description,
+.conference-description * {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+.conference-description span[style*="color: rgb(255, 255, 255)"],
+.conference-description span[style*="color: #ffffff"],
+.conference-description span[style*="color: white"] {
+  color: inherit !important;
+}
