@@ -73,6 +73,23 @@ const Navbar = () => {
         fetchCustomCommittees();
     }, [fetchSpeakerYears, fetchCustomCommittees]);
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed'; // Required for iOS
+            document.body.style.width = '100%';
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        };
+    }, [isOpen]);
+
     useSocketRefresh(() => {
         console.log('Navbar: Refreshing dynamic content...');
         fetchSpeakerYears();
@@ -194,7 +211,7 @@ const Navbar = () => {
                     <img
                         src="/logo.png"
                         alt="Ganpat University Logo"
-                        className={`h-12 w-auto transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : 'brightness-0'}`}
+                        className={`h-10 md:h-12 w-auto max-w-[160px] md:max-w-none transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : 'brightness-0'}`}
                     />
                 </Link>
 
@@ -296,9 +313,9 @@ const Navbar = () => {
 
             {/* Mobile Menu Overlay */}
             {isOpen && createPortal(
-                <div className="lg:hidden fixed inset-0 z-50 bg-gray-950/95 backdrop-blur-2xl animate-fade-in overflow-y-auto w-full h-full">
-                    <div className="p-6 flex flex-col min-h-screen">
-                        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
+                <div className="lg:hidden fixed inset-0 z-50 bg-gray-950/95 backdrop-blur-2xl animate-fade-in w-full h-full overflow-y-auto overscroll-contain">
+                    <div className="min-h-full p-6 flex flex-col">
+                        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10 shrink-0">
                             <Link to="/" onClick={() => setIsOpen(false)}>
                                 <img src="/logo.png" alt="Logo" className="h-10 w-auto brightness-0 invert" />
                             </Link>

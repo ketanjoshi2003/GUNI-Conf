@@ -22,7 +22,7 @@ const HomeSectionRenderer = ({ section, data }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const SectionHeader = ({ title }) => (
-        <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 mb-6">
+        <h3 className="text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 mb-6 break-words">
             {title}
         </h3>
     );
@@ -30,11 +30,11 @@ const HomeSectionRenderer = ({ section, data }) => {
     switch (section.type) {
         case 'welcome':
             return (
-                <section className="space-y-6 text-gray-700 leading-relaxed text-base">
+                <section className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base break-words overflow-hidden w-full">
                     <SectionHeader title={section.title || `Welcome to ${conferenceInfo?.short_name || 'COMS2'} ${conferenceInfo?.year || ''}`} />
                     {conferenceInfo?.description ? (
                         <div
-                            className="conference-description [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                            className="conference-description w-full overflow-hidden [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
                             dangerouslySetInnerHTML={{ __html: conferenceInfo.description }}
                         />
                     ) : (
@@ -85,13 +85,13 @@ const HomeSectionRenderer = ({ section, data }) => {
             const filteredTopics = topics.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
             return (
                 <section>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
                         <SectionHeader title={section.title || 'Topics of Interest'} />
-                        <div className="flex items-center gap-2 w-full md:w-auto">
-                            <span className="text-sm text-gray-600">Search:</span>
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <span className="text-sm text-gray-600 shrink-0">Search:</span>
                             <input
                                 type="text"
-                                className="flex-grow md:flex-none border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                className="flex-grow sm:flex-none border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all min-w-0"
                                 placeholder="Filter..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -117,24 +117,24 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Previous Editions (Springer CCIS Series)'} />
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {previousEditions.map((item) => (
-                            <div key={item._id || item.year} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all group relative overflow-hidden">
-                                <div className="flex gap-5">
-                                    <div className="w-24 h-32 md:w-28 md:h-36 flex-shrink-0 rounded-lg overflow-hidden shadow-md border border-gray-200 relative group-hover:scale-105 transition-transform duration-500">
+                            <div key={item._id || item.year} className="bg-white p-3 md:p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all group relative overflow-hidden">
+                                <div className="flex gap-3 md:gap-5">
+                                    <div className="w-20 h-28 md:w-28 md:h-36 flex-shrink-0 rounded-lg overflow-hidden shadow-md border border-gray-200 relative group-hover:scale-105 transition-transform duration-500">
                                         <img
                                             src={formatImageUrl(item.coverImage) || coverImages[item.year]}
                                             alt={`COMS2 ${item.year}`}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    <div className="flex-grow flex flex-col justify-between py-1">
-                                        <div>
-                                            <span className="inline-block text-[10px] font-bold px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100 uppercase tracking-tight mb-2">Scopus Indexed</span>
-                                            <h4 className="text-sm md:text-base font-bold text-gray-900 leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors">
+                                    <div className="flex-grow flex flex-col justify-between py-1 min-w-0">
+                                        <div className="min-w-0">
+                                            <span className="inline-block text-[9px] font-bold px-2 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-100 uppercase tracking-tight mb-2">Scopus Indexed</span>
+                                            <h4 className="text-xs md:text-base font-bold text-gray-900 leading-tight line-clamp-3 group-hover:text-blue-600 transition-colors break-words">
                                                 {item.title}
                                             </h4>
                                         </div>
-                                        <a href={item.link || '#'} target="_blank" className="inline-flex items-center text-blue-600 text-xs font-bold uppercase tracking-wider group/link mt-2">
-                                            View Proceedings <ArrowRight size={12} className="ml-1" />
+                                        <a href={item.link || '#'} target="_blank" className="inline-flex items-center text-blue-600 text-[10px] md:text-xs font-bold uppercase tracking-wider group/link mt-2">
+                                            View Proceedings <ArrowRight size={10} className="ml-1" />
                                         </a>
                                     </div>
                                 </div>
@@ -169,13 +169,13 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Important Dates'} />
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         {importantDates.map((item, idx) => (
-                            <div key={item._id} className={`p-4 flex items-center justify-between border-b border-gray-50 last:border-0 hover:bg-gray-50`}>
-                                <span className="font-medium text-gray-700">{item.event}</span>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                            <div key={item._id} className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-50 last:border-0 hover:bg-gray-50 gap-2`}>
+                                <span className="font-medium text-gray-700 text-sm md:text-base">{item.event}</span>
+                                <div className="flex items-center gap-3 self-end sm:self-auto">
+                                    <span className="text-xs md:text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
                                         {new Date(item.date).toLocaleDateString()}
                                     </span>
-                                    {item.isPinned && <Pin size={16} className="text-red-500 fill-current" />}
+                                    {item.isPinned && <Pin size={14} className="text-red-500 fill-current" />}
                                 </div>
                             </div>
                         ))}
@@ -189,19 +189,19 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Registration Fees'} />
                     <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+                            <thead className="bg-gray-50 text-gray-700 uppercase text-[10px] md:text-xs">
                                 <tr>
-                                    <th className="px-6 py-3">Category</th>
-                                    <th className="px-6 py-3">Indian (INR)</th>
-                                    <th className="px-6 py-3">Foreign (USD)</th>
+                                    <th className="px-3 md:px-6 py-3">Category</th>
+                                    <th className="px-3 md:px-6 py-3">Indian (INR)</th>
+                                    <th className="px-3 md:px-6 py-3">Foreign (USD)</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {registrationFees.map((fee) => (
-                                    <tr key={fee._id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{fee.type}</td>
-                                        <td className="px-6 py-4 text-gray-600">{fee.indian}</td>
-                                        <td className="px-6 py-4 text-gray-600">{fee.foreign}</td>
+                                    <tr key={fee._id} className="hover:bg-gray-50 text-[11px] md:text-sm">
+                                        <td className="px-3 md:px-6 py-4 font-medium text-gray-900">{fee.type}</td>
+                                        <td className="px-3 md:px-6 py-4 text-gray-600">{fee.indian}</td>
+                                        <td className="px-3 md:px-6 py-4 text-gray-600">{fee.foreign}</td>
                                     </tr>
                                 ))}
                             </tbody>

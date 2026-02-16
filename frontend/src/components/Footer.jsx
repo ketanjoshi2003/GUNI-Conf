@@ -182,7 +182,7 @@ const Footer = () => {
                                 <img
                                     src="https://s11.flagcounter.com/count2/JO2k/bg_0F172A/txt_FFFFFF/border_334155/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/"
                                     alt="Flag Counter"
-                                    className="block opacity-90 group-hover:opacity-100 transition-opacity"
+                                    className="block opacity-90 group-hover:opacity-100 transition-opacity max-w-full h-auto"
                                 />
                             </div>
                         </div>

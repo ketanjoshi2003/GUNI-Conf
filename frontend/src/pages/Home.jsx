@@ -22,7 +22,7 @@ const HeroBackground = () => {
 
     return (
         <div
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed transition-all duration-300 ease-out ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105 blur-sm'}`}
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat md:bg-fixed transition-all duration-300 ease-out ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105 blur-sm'}`}
             style={{
                 backgroundImage: `url("${imageUrl}")`,
                 backgroundColor: '#0f172a'
@@ -169,15 +169,15 @@ const Home = () => {
                         </div>
 
                         {/* Countdown in Hero */}
-                        <div className="flex gap-3 sm:gap-4 lg:gap-8 justify-center flex-wrap px-4">
+                        <div className="flex gap-2 sm:gap-4 lg:gap-8 justify-center flex-wrap px-4">
                             {['Days', 'Hours', 'Minutes', 'Seconds'].map((label, idx) => {
                                 const value = Object.values(timeLeft)[idx];
                                 return (
                                     <div key={label} className="flex flex-col items-center group">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 flex items-center justify-center text-2xl sm:text-3xl lg:text-5xl font-bold rounded-xl lg:rounded-2xl border border-white/30 bg-white/10 text-white relative backdrop-blur-sm">
+                                        <div className="w-14 h-14 sm:w-20 sm:h-20 lg:w-28 lg:h-28 flex items-center justify-center text-xl sm:text-3xl lg:text-5xl font-bold rounded-xl lg:rounded-2xl border border-white/30 bg-white/10 text-white relative backdrop-blur-sm">
                                             {String(value).padStart(2, '0')}
                                         </div>
-                                        <span className="text-sky-200 font-bold text-[8px] lg:text-xs uppercase mt-2 lg:mt-3 tracking-widest">{label}</span>
+                                        <span className="text-sky-200 font-bold text-[7px] lg:text-xs uppercase mt-2 lg:mt-3 tracking-widest">{label}</span>
                                     </div>
                                 );
                             })}
@@ -186,10 +186,8 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 py-12">
-                <div className="grid lg:grid-cols-3 gap-12">
-
-                    {/* LEFT COLUMN (Main Content) */}
+            <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-12 overflow-hidden">
+                <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
                     <div className="lg:col-span-3 space-y-12">
                         {/* Static Welcome Section */}
                         <HomeSectionRenderer

@@ -9,12 +9,17 @@
 }
 
 @layer base {
-  html {
+
+  html,
+  body {
+    @apply overflow-x-hidden;
+    width: 100%;
+    position: relative;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 font-sans overflow-x-hidden;
+    @apply bg-gray-50 text-gray-900 font-sans;
   }
 
   ::selection {
@@ -77,13 +82,33 @@
 /* Fix explicit white text on frontend description and force wrapping */
 .conference-description,
 .conference-description * {
-  overflow-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
   word-wrap: break-word !important;
+  word-break: normal !important;
   white-space: normal !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.conference-description span[style*="color: rgb(255, 255, 255)"],
-.conference-description span[style*="color: #ffffff"],
-.conference-description span[style*="color: white"] {
-  color: inherit !important;
+/* Specific fix for elements that might have inline widths */
+.conference-description p,
+.conference-description span,
+.conference-description div,
+.conference-description table {
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.conference-description img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem;
+  display: block;
+  margin: 1rem 0;
+}
+
+/* Ensure no horizontal scrolling on mobile */
+#root {
+  width: 100%;
+  overflow-x: hidden;
 }
