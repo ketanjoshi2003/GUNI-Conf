@@ -45,7 +45,10 @@ const Committees = () => {
         const tab = query.get('tab');
         if (tab) {
             setActiveTab(tab);
+        } else {
+            setActiveTab('advisory');
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [search]);
 
     // Metadata mapping for database types to tabs and icons
