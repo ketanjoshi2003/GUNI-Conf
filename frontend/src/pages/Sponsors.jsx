@@ -73,14 +73,14 @@ const Sponsors = () => {
     ];
 
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-6 font-sans">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-cyan-500 mb-6 uppercase tracking-tight">
-                        Exclusive Sponsorship Opportunities
+        <div className="pt-32 pb-20 bg-gray-50 min-h-screen overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 font-sans">
+                <div className="text-center mb-10 md:mb-16">
+                    <h1 className="text-3xl md:text-5xl font-extrabold text-cyan-500 mb-6 uppercase tracking-tight break-words">
+                        Sponsorship Opportunities
                     </h1>
-                    <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed italic">
-                        If your company, institute is interested in a conference sponsorship, then the following opportunities are for you !
+                    <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed italic px-2 break-words">
+                        If your company, institute is interested in a conference sponsorship, then the following opportunities are for you!
                     </p>
                 </div>
 
@@ -118,18 +118,18 @@ const Sponsors = () => {
                 {/* Mobile/Card View */}
                 <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-8">
                     {sponsorshipLevels.map((level, idx) => (
-                        <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
-                            <div className={`${level.color} p-6 text-white`}>
-                                <h3 className="text-2xl font-bold">{level.name}</h3>
-                                {level.subName && <p className="text-sm opacity-90 font-medium mb-1">{level.subName}</p>}
-                                <p className="text-xl font-black mt-2">{level.price}</p>
+                        <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 min-w-0">
+                            <div className={`${level.color} p-5 md:p-6 text-white`}>
+                                <h3 className="text-xl md:text-2xl font-bold break-words">{level.name}</h3>
+                                {level.subName && <p className="text-sm opacity-90 font-medium mb-1 break-words">{level.subName}</p>}
+                                <p className="text-lg md:text-xl font-black mt-2 break-words">{level.price}</p>
                             </div>
-                            <div className="p-6">
+                            <div className="p-5 md:p-6">
                                 <ul className="space-y-4">
                                     {level.features.map((feature, fIdx) => (
                                         <li key={fIdx} className="flex items-start text-sm text-gray-600">
                                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 mr-3 shrink-0"></span>
-                                            {feature}
+                                            <span className="break-words min-w-0">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>

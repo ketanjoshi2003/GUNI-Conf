@@ -30,18 +30,18 @@ const BestPaperAward = () => {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-6xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Hero */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-yellow-100 text-yellow-700 text-sm font-semibold mb-4 flex items-center gap-2 w-fit mx-auto">
                         <Trophy size={14} /> Hall of Fame
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Best Paper <span className="text-blue-600">Awards</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                    <p className="max-w-2xl mx-auto text-gray-600 text-base md:text-lg break-words px-2">
                         Recognizing excellence in research and innovation at International Conference COMS2.
                     </p>
                 </div>
@@ -53,8 +53,8 @@ const BestPaperAward = () => {
                         {awards[activeTab] ? (
                             <div className="grid gap-6">
                                 {awards[activeTab].map((paper, idx) => (
-                                    <div key={idx} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden group">
-                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <div key={idx} className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden group min-w-0">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity hidden sm:block">
                                             <Medal size={80} className="text-yellow-500 transform rotate-12" />
                                         </div>
 
@@ -78,7 +78,7 @@ const BestPaperAward = () => {
                                                 <span className="font-medium text-sm">{paper.authors}</span>
                                             </div>
 
-                                            <div className="pl-8 text-xs text-gray-400 italic">
+                                            <div className="pl-6 md:pl-8 text-xs text-gray-400 italic break-words min-w-0">
                                                 {paper.institution}
                                             </div>
                                         </div>

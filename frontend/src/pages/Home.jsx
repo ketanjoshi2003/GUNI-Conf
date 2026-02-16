@@ -132,39 +132,39 @@ const Home = () => {
                 <HeroBackground />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-blue-900/70"></div>
 
-                <div className="relative z-10 container mx-auto px-4 md:px-6 py-20">
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 py-20">
                     <div className="animate-fade-in-up">
                         <span className="inline-block py-1 px-3 rounded-full bg-blue-500/30 border border-blue-400 text-[10px] md:text-sm font-semibold mb-4 backdrop-blur-sm">
-                            {conferenceInfo?.edition || '7th Edition'} • {conferenceInfo?.mode || 'Hybrid Mode'}
+                            {conferenceInfo?.edition || 'Edition'} • {conferenceInfo?.mode || 'Mode'}
                         </span>
-                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 leading-tight tracking-tight">
-                            {conferenceInfo?.short_name || 'COMS2'} <span className="text-sky-400">{conferenceInfo?.year || '2026'}</span>
+                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 leading-tight tracking-tight break-words">
+                            {conferenceInfo?.short_name || 'Conference'} <span className="text-sky-400">{conferenceInfo?.year || ''}</span>
                         </h1>
-                        <p className="text-base sm:text-lg lg:text-2xl font-light mb-8 max-w-3xl mx-auto text-gray-200 px-4">
-                            {conferenceInfo?.name || 'International Conference on Computing, Communication and Security'}
+                        <p className="text-base sm:text-lg lg:text-2xl font-light mb-8 max-w-3xl mx-auto text-gray-200 px-2 sm:px-4 break-words">
+                            {conferenceInfo?.name || 'Loading Conference Details...'}
                         </p>
-                        <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 justify-center items-center mb-12 px-4">
-                            <div className="flex items-center gap-2 text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-full max-w-sm lg:w-auto justify-center">
-                                <Calendar className="w-4 h-4 lg:w-5 lg:h-5 text-sky-400" />
-                                <span>
+                        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 justify-center items-center mb-12 px-2 sm:px-4">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-3 sm:px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-fit max-w-[95vw] lg:w-auto justify-center">
+                                <Calendar className="w-3.5 h-3.5 lg:w-5 lg:h-5 text-sky-400 shrink-0" />
+                                <span className="text-center sm:text-left">
                                     {(() => {
-                                        if (!conferenceInfo?.start_date || !conferenceInfo?.end_date) return 'Sept 10-11, 2026';
+                                        if (!conferenceInfo?.start_date || !conferenceInfo?.end_date) return 'Dates To Be Announced';
                                         const s = new Date(conferenceInfo.start_date);
                                         const e = new Date(conferenceInfo.end_date);
-                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                         const month = months[s.getUTCMonth()];
                                         const sDay = s.getUTCDate();
                                         const eDay = e.getUTCDate();
                                         const year = e.getUTCFullYear();
 
                                         if (sDay === eDay) return `${month} ${sDay}, ${year}`;
-                                        return `${month} ${sDay}-${eDay}, ${year}`;
+                                        return `${month} ${sDay} - ${eDay}, ${year}`;
                                     })()}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-full max-w-sm lg:w-auto justify-center">
-                                <MapPin className="w-4 h-4 lg:w-5 lg:h-5 text-red-400" />
-                                <span>{conferenceInfo?.venue || 'Ganpat University'}, {conferenceInfo?.country || 'India'}</span>
+                            <div className="flex items-center gap-2 text-xs sm:text-sm lg:text-lg font-medium bg-white/10 backdrop-blur-sm px-3 sm:px-4 lg:px-6 py-2 lg:py-3 rounded-xl border border-white/20 w-fit max-w-[95vw] lg:w-auto justify-center min-w-0">
+                                <MapPin className="w-3.5 h-3.5 lg:w-5 lg:h-5 text-red-400 shrink-0" />
+                                <span className="text-center sm:text-left leading-tight break-words min-w-0">{conferenceInfo?.venue || 'Venue'}, {conferenceInfo?.country || 'Country'}</span>
                             </div>
                         </div>
 
@@ -186,9 +186,9 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-12 overflow-hidden">
-                <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
-                    <div className="lg:col-span-3 space-y-12">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 overflow-x-visible">
+                <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 lg:gap-12">
+                    <div className="w-full lg:col-span-3 space-y-12">
                         {/* Static Welcome Section */}
                         <HomeSectionRenderer
                             section={{ type: 'welcome' }}
@@ -233,7 +233,7 @@ const Home = () => {
                                 />
                                 <HomeSectionRenderer
                                     section={{ type: 'about-university' }}
-                                    data={{}}
+                                    data={{ conferenceInfo }}
                                 />
                             </>
                         )}

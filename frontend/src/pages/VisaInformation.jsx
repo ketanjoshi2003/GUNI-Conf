@@ -3,16 +3,16 @@ import { Calendar, MapPin, Wifi, Globe, ExternalLink, Mail, FileText, CheckCircl
 
 const VisaInformation = () => {
     return (
-        <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-16 text-center animate-fade-in-up">
+        <div className="bg-gray-50 min-h-screen pt-28 pb-12 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="mb-10 md:mb-16 text-center animate-fade-in-up">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Travel Essentials
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Visa <span className="text-blue-600">Information</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                    <p className="max-w-2xl mx-auto text-gray-600 text-base md:text-lg px-2 break-words">
                         Important guidelines for international delegates attending COMS2 2026.
                     </p>
                 </div>
@@ -22,9 +22,9 @@ const VisaInformation = () => {
                     <div className="w-full space-y-8">
 
                         {/* Requirements Card */}
-                        <section className="bg-white rounded-xl shadow-md border border-gray-100 p-8 hover:shadow-lg transition-shadow">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 border-b pb-4">
-                                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                        <section className="bg-white rounded-xl shadow-md border border-gray-100 p-5 md:p-8 hover:shadow-lg transition-shadow min-w-0">
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 border-b pb-4 break-words">
+                                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg flex-shrink-0">
                                     <FileText className="w-6 h-6" />
                                 </div>
                                 Visa Requirements and Application
@@ -59,9 +59,9 @@ const VisaInformation = () => {
                         </section>
 
                         {/* Invitation Letter Card */}
-                        <section className="bg-white rounded-xl shadow-md border border-gray-100 p-8 hover:shadow-lg transition-shadow">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 border-b pb-4">
-                                <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+                        <section className="bg-white rounded-xl shadow-md border border-gray-100 p-5 md:p-8 hover:shadow-lg transition-shadow min-w-0">
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 border-b pb-4 break-words">
+                                <div className="p-2 bg-green-100 text-green-600 rounded-lg flex-shrink-0">
                                     <Mail className="w-6 h-6" />
                                 </div>
                                 Invitation Letter Request
@@ -104,12 +104,12 @@ const VisaInformation = () => {
                                             <p className="font-bold text-lg">Dr. Nirbhay Chaubey</p>
                                             <p className="text-sm text-gray-500">Organizing Chair, COMS2</p>
                                         </div>
-                                        <div className="flex flex-col gap-1">
-                                            <a href="mailto:nirbhay.chaubey@ganpatuniversity.ac.in" className="text-blue-600 hover:underline flex items-center gap-2 text-sm">
-                                                <Mail className="w-4 h-4" /> nirbhay.chaubey@ganpatuniversity.ac.in
+                                        <div className="flex flex-col gap-1 min-w-0 w-full overflow-hidden">
+                                            <a href="mailto:nirbhay.chaubey@ganpatuniversity.ac.in" className="text-blue-600 hover:underline flex items-center gap-2 text-sm break-all">
+                                                <Mail className="w-4 h-4 flex-shrink-0" /> nirbhay.chaubey@ganpatuniversity.ac.in
                                             </a>
-                                            <a href="mailto:dean.s@ganpatuniversity.ac.in" className="text-blue-600 hover:underline flex items-center gap-2 text-sm">
-                                                <Mail className="w-4 h-4" /> dean.s@ganpatuniversity.ac.in
+                                            <a href="mailto:dean.s@ganpatuniversity.ac.in" className="text-blue-600 hover:underline flex items-center gap-2 text-sm break-all">
+                                                <Mail className="w-4 h-4 flex-shrink-0" /> dean.s@ganpatuniversity.ac.in
                                             </a>
                                         </div>
                                     </div>

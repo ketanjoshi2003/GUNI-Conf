@@ -11,6 +11,9 @@ const { protect, admin } = require('../middleware/authMiddleware');
 const News = require('../models/News');
 const Conference = require('../models/Conference');
 const HomeSection = require('../models/HomeSection');
+const AcceptedPaper = require('../models/AcceptedPaper');
+const BestPaper = require('../models/BestPaper');
+const PublicationStat = require('../models/PublicationStat');
 const upload = require('../middleware/uploadMiddleware');
 
 // Helper to emit refresh event
@@ -175,6 +178,38 @@ router.get('/home-sections', async (req, res) => {
         res.json(sections);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// ---- PUBLIC AUTHORS DATA ----
+router.get('/accepted-papers', async (req, res) => {
+    try {
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const data = await AcceptedPaper.find(filter).sort({ year: -1, paperId: 1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/best-papers', async (req, res) => {
+    try {
+        const { year } = req.query;
+        const filter = year ? { year: parseInt(year) } : {};
+        const data = await BestPaper.find(filter).sort({ year: -1, order: 1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/publication-stats', async (req, res) => {
+    try {
+        const data = await PublicationStat.find().sort({ year: -1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -520,9 +555,7 @@ router.put('/conference-info', async (req, res) => {
     }
 });
 
-const AcceptedPaper = require('../models/AcceptedPaper');
-const BestPaper = require('../models/BestPaper');
-const PublicationStat = require('../models/PublicationStat');
+// (Moved imports to top)
 
 // Helper to update stats for a given year
 const updateStatsForYear = async (year) => {
@@ -557,16 +590,6 @@ const updateStatsForYear = async (year) => {
 // ============ AUTHORS SECTION ROUTES ============
 
 // ---- ACCEPTED PAPERS ----
-router.get('/accepted-papers', async (req, res) => {
-    try {
-        const { year } = req.query;
-        const filter = year ? { year: parseInt(year) } : {};
-        const data = await AcceptedPaper.find(filter).sort({ year: -1, paperId: 1 });
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
 
 router.post('/accepted-papers', async (req, res) => {
     try {
@@ -608,16 +631,6 @@ router.delete('/accepted-papers/:id', async (req, res) => {
 
 
 // ---- BEST PAPERS ----
-router.get('/best-papers', async (req, res) => {
-    try {
-        const { year } = req.query;
-        const filter = year ? { year: parseInt(year) } : {};
-        const data = await BestPaper.find(filter).sort({ year: -1, order: 1 });
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
 
 router.post('/best-papers', async (req, res) => {
     try {
@@ -652,17 +665,6 @@ router.delete('/best-papers/:id', async (req, res) => {
 
 
 // ---- PUBLICATION STATS ----
-router.get('/publication-stats', async (req, res) => {
-    try {
-        // Recalculate stats on read? Or assume they are up to date?
-        // Let's assume up to date for performance, but maybe do a quick check? 
-        // For now, return stored data.
-        const data = await PublicationStat.find().sort({ year: -1 });
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
 
 router.post('/publication-stats', async (req, res) => {
     try {

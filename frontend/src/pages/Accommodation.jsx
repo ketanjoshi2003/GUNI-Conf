@@ -72,18 +72,18 @@ const Accommodation = () => {
     ];
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-28 pb-20">
-            <div className="container mx-auto px-6 max-w-7xl">
+        <div className="bg-gray-50 min-h-screen pt-28 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Hero */}
-                <div className="text-center mb-16 animate-fade-in-up">
+                <div className="mb-10 md:mb-16 text-center animate-fade-in-up">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Plan Your Stay
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Accommodation <span className="text-blue-600">Options</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                    <p className="max-w-2xl mx-auto text-gray-600 text-base md:text-lg px-2 break-words">
                         Curated list of comfortable stay options near the venue and in nearby cities.
                     </p>
                 </div>
@@ -106,7 +106,7 @@ const Accommodation = () => {
                                 </div>
                             </div>
 
-                            <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-blue-600 transition-colors">
+                            <h3 className="text-xl font-bold text-gray-900 mb-3 md:line-clamp-2 md:min-h-[3.5rem] group-hover:text-blue-600 transition-colors break-words">
                                 {hotel.name}
                             </h3>
 

@@ -66,34 +66,36 @@ const TouristPlaces = () => {
     ];
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-16 text-center animate-fade-in-up">
+        <div className="bg-gray-50 min-h-screen pt-28 pb-12 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="mb-10 md:mb-16 text-center animate-fade-in-up">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Discover Gujarat
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Tourist <span className="text-blue-600">Attractions</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                    <p className="max-w-2xl mx-auto text-gray-600 text-base md:text-lg px-2 break-words">
                         Explore the rich heritage and scenic beauty of Gujarat near the venue.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {places.map((place, idx) => (
-                        <div key={idx} className="group bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                            <div className="relative h-64 overflow-hidden">
+                        <div key={idx} className="group bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 min-w-0">
+                            <div className="relative h-48 md:h-64 overflow-hidden">
                                 <img
                                     src={place.image}
                                     alt={place.name}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-90"></div>
-                                <div className="absolute bottom-0 left-0 p-6 w-full">
-                                    <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors">{place.name}</h3>
-                                    <div className="flex items-center gap-2 text-gray-300 text-sm font-medium">
-                                        <MapPin className="w-4 h-4 text-red-500" />
+                                <div className="absolute bottom-0 left-0 p-5 md:p-6 w-full">
+                                    <h3 className="text-xl md:text-2xl font-bold text-white mb-1 group-hover:text-blue-300 transition-colors break-words">
+                                        {place.name}
+                                    </h3>
+                                    <div className="flex items-center gap-2 text-gray-300 text-xs md:text-sm font-medium break-words">
+                                        <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
                                         {place.location}
                                     </div>
                                 </div>

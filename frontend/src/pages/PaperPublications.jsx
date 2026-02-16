@@ -5,27 +5,27 @@ import { useYear } from '../context/YearContext';
 const PaperPublications = () => {
     const { selectedYear } = useYear();
     return (
-        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-6xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Hero */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Proceedings & Indexing
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Paper <span className="text-blue-600">Publications</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
+                    <p className="max-w-3xl mx-auto text-gray-600 text-base md:text-lg leading-relaxed break-words px-2">
                         Papers submitted to COMS2-{selectedYear} are assessed for originality, scientific contribution, and technical soundness.
                     </p>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12 items-start">
+                <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start overflow-x-visible">
 
                     {/* Left: Info & Key Features */}
-                    <div className="space-y-8">
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                    <div className="space-y-8 overflow-x-visible">
+                        <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100 min-w-0">
                             <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                                 <BookOpen className="text-blue-600" />
                                 Publishing Partner
@@ -65,8 +65,8 @@ const PaperPublications = () => {
                     </div>
 
                     {/* Right: Stats */}
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                    <div className="space-y-6 overflow-x-visible">
+                        <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100 min-w-0">
                             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                                 <BarChart3 className="text-indigo-600" />
                                 Acceptance Statistics

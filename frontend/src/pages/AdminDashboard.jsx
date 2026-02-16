@@ -7,8 +7,23 @@ import { advisoryCommitteeData, chairs } from '../data/committeeData';
 import { useSocketRefresh } from '../hooks/useSocketRefresh';
 
 
-import ReactQuill from 'react-quill-new';
+import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'; // import styles
+
+// Enable inline styles for colors and alignment so they appear correctly on the frontend
+const BackgroundStyle = Quill.import('attributors/style/background');
+const ColorStyle = Quill.import('attributors/style/color');
+const AlignStyle = Quill.import('attributors/style/align');
+const DirectionStyle = Quill.import('attributors/style/direction');
+const FontStyle = Quill.import('attributors/style/font');
+const SizeStyle = Quill.import('attributors/style/size');
+
+Quill.register(BackgroundStyle, true);
+Quill.register(ColorStyle, true);
+Quill.register(AlignStyle, true);
+Quill.register(DirectionStyle, true);
+Quill.register(FontStyle, true);
+Quill.register(SizeStyle, true);
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -51,13 +66,14 @@ const AdminDashboard = () => {
         if (enteringSourceMode && formData[fieldName]) {
             // Make the HTML more human-readable before showing it
             let readableHtml = formData[fieldName]
-                // Replace non-breaking spaces with normal spaces
+                // Replace non-breaking spaces with normal spaces for readability
                 .replace(/&nbsp;/g, ' ')
                 .replace(/\u00A0/g, ' ')
-                // Add line breaks between major tags to avoid one long line
-                .replace(/><(p|div|h[1-6]|ul|ol|li|blockquote|section|hr|table|tr)/g, '>\n<$1')
-                // Trim multiple spaces
-                .replace(/ +/g, ' ');
+                // Add line breaks between tags to avoid one long line
+                .replace(/>\s*</g, '>\n<')
+                // Trim multiple empty newlines
+                .replace(/\n\s*\n/g, '\n')
+                .trim();
 
             setFormData(prev => ({ ...prev, [fieldName]: readableHtml }));
         }
@@ -70,7 +86,7 @@ const AdminDashboard = () => {
 
     const loadData = useCallback(async () => {
         try {
-            const [speakersRes, committeesRes, datesRes, topicsRes, editionsRes, feesRes, archivesRes, newsRes, confRes, acceptedRes, bestRes, pubStatsRes, homeSectionsRes] = await Promise.all([
+            const results = await Promise.allSettled([
                 api.get('/api/admin/speakers'),
                 api.get('/api/admin/committees'),
                 api.get('/api/admin/important-dates'),
@@ -85,21 +101,46 @@ const AdminDashboard = () => {
                 api.get('/api/admin/publication-stats'),
                 api.get('/api/admin/home-sections')
             ]);
-            setSpeakers(speakersRes.data);
-            setCommittees(committeesRes.data);
-            setDates(datesRes.data);
-            setTopics(topicsRes.data);
-            setEditions(editionsRes.data);
-            setFees(feesRes.data);
-            setArchives(archivesRes.data);
-            setNews(newsRes.data);
-            setConferenceInfo(confRes.data);
-            setAcceptedPapers(await acceptedRes.data);
-            setBestPapers(await bestRes.data);
-            setPubStats(await pubStatsRes.data);
-            setHomeSections(await homeSectionsRes.data);
+
+            const [
+                speakersRes,
+                committeesRes,
+                datesRes,
+                topicsRes,
+                editionsRes,
+                feesRes,
+                archivesRes,
+                newsRes,
+                confRes,
+                acceptedRes,
+                bestRes,
+                pubStatsRes,
+                homeSectionsRes
+            ] = results;
+
+            if (speakersRes.status === 'fulfilled') setSpeakers(speakersRes.value.data);
+            if (committeesRes.status === 'fulfilled') setCommittees(committeesRes.value.data);
+            if (datesRes.status === 'fulfilled') setDates(datesRes.value.data);
+            if (topicsRes.status === 'fulfilled') setTopics(topicsRes.value.data);
+            if (editionsRes.status === 'fulfilled') setEditions(editionsRes.value.data);
+            if (feesRes.status === 'fulfilled') setFees(feesRes.value.data);
+            if (archivesRes.status === 'fulfilled') setArchives(archivesRes.value.data);
+            if (newsRes.status === 'fulfilled') setNews(newsRes.value.data);
+            if (confRes.status === 'fulfilled') setConferenceInfo(confRes.value.data);
+            if (acceptedRes.status === 'fulfilled') setAcceptedPapers(acceptedRes.value.data);
+            if (bestRes.status === 'fulfilled') setBestPapers(bestRes.value.data);
+            if (pubStatsRes.status === 'fulfilled') setPubStats(pubStatsRes.value.data);
+            if (homeSectionsRes.status === 'fulfilled') setHomeSections(homeSectionsRes.value.data);
+
+            // Log errors for rejected promises
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    console.error(`Error loading data for index ${index}:`, result.reason);
+                }
+            });
+
         } catch (error) {
-            console.error('Error loading data:', error);
+            console.error('Unexpected error loading data:', error);
         }
     }, [user?.token]);
 
@@ -212,6 +253,28 @@ const AdminDashboard = () => {
         loadData();
     }, [navigate, loadData]);
 
+    // Populate form data for Settings tab
+    useEffect(() => {
+        if (activeTab === 'settings' && conferenceInfo) {
+            // Format dates for input type="date"
+            const processedInfo = { ...conferenceInfo };
+            const formFields = getFormFields();
+
+            ['start_date', 'end_date'].forEach(field => {
+                if (conferenceInfo[field]) {
+                    const d = new Date(conferenceInfo[field]);
+                    if (!isNaN(d.getTime())) {
+                        const y = d.getUTCFullYear();
+                        const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+                        const day = String(d.getUTCDate()).padStart(2, '0');
+                        processedInfo[field] = `${y}-${m}-${day}`;
+                    }
+                }
+            });
+            setFormData(processedInfo);
+        }
+    }, [activeTab, conferenceInfo]);
+
     const handleSave = async () => {
         try {
             const endpoint = getEndpoint();
@@ -219,14 +282,23 @@ const AdminDashboard = () => {
             console.log('--- SAVE INITIATED ---');
             console.log('Action:', isAdding ? 'Adding' : 'Editing');
 
-            // Trim string values in formData to avoid whitespace issues
+            // Cleanup data before sending
+            const formFields = getFormFields();
             const cleanedData = { ...formData };
             Object.keys(cleanedData).forEach(key => {
                 if (typeof cleanedData[key] === 'string') {
-                    cleanedData[key] = cleanedData[key].trim()
-                        // Replace non-breaking spaces with normal spaces to prevent layout issues
-                        .replace(/&nbsp;/g, ' ')
-                        .replace(/\u00A0/g, ' ');
+                    const fieldConfig = formFields.find(f => f.name === key);
+                    const isHtmlField = fieldConfig && fieldConfig.type === 'textarea';
+
+                    if (isHtmlField) {
+                        // For HTML fields, we only trim the outer edges
+                        cleanedData[key] = cleanedData[key].trim();
+                    } else {
+                        // For normal text fields, we clean up weird spaces/entities
+                        cleanedData[key] = cleanedData[key].trim()
+                            .replace(/&nbsp;/g, ' ')
+                            .replace(/\u00A0/g, ' ');
+                    }
                 }
             });
 
@@ -234,7 +306,8 @@ const AdminDashboard = () => {
 
             let res;
             if (activeTab === 'settings') {
-                res = await api.put('/api/admin/conference-info', cleanedData);
+                const { _id, ...settingsData } = cleanedData;
+                res = await api.put('/api/admin/conference-info', settingsData);
             } else if (isAdding) {
                 res = await api.post(`/api/admin/${endpoint}`, cleanedData);
             } else {
@@ -340,6 +413,11 @@ const AdminDashboard = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                     {fields.map(field => (
                         <div key={field.name} className={field.fullWidth ? 'md:col-span-2' : ''}>
+                            {field.type !== 'textarea' && field.type !== 'checkbox' && (
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {field.label}
+                                </label>
+                            )}
                             {field.type === 'textarea' ? (
                                 <div className="space-y-1">
                                     <div className="flex justify-between items-center mb-1">
@@ -363,8 +441,9 @@ const AdminDashboard = () => {
                                         <textarea
                                             value={formData[field.name] || ''}
                                             onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                                            className="w-full h-64 p-4 font-mono text-sm border-2 border-blue-50 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none bg-gray-50 transition-all mb-4"
+                                            className="w-full h-80 p-4 font-mono text-[13px] leading-relaxed border-2 border-blue-100 rounded-xl shadow-inner focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none bg-slate-50 text-slate-800 transition-all mb-4"
                                             placeholder="Paste or edit HTML source here..."
+                                            spellCheck="false"
                                         />
                                     ) : (
                                         <>
@@ -487,14 +566,17 @@ const AdminDashboard = () => {
                                     )}
                                 </div>
                             ) : field.type === 'checkbox' ? (
-                                <div className="flex items-center gap-2 mt-6">
+                                <div className="flex items-center gap-2 mt-8">
                                     <input
                                         type="checkbox"
                                         checked={formData[field.name] || false}
                                         onChange={(e) => setFormData({ ...formData, [field.name]: e.target.checked })}
                                         className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                     />
-                                    {field.description && <span className="text-sm text-gray-500">{field.description}</span>}
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-700">{field.label}</span>
+                                        {field.description && <span className="text-xs text-gray-500">{field.description}</span>}
+                                    </div>
                                 </div>
                             ) : (
                                 <input
@@ -502,6 +584,7 @@ const AdminDashboard = () => {
                                     value={formData[field.name] || ''}
                                     onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    placeholder={field.placeholder || ''}
                                 />
                             )}
                         </div>
@@ -523,113 +606,115 @@ const AdminDashboard = () => {
         switch (activeTab) {
             case 'speakers':
                 return [
-                    { name: 'name', label: 'Name', required: true },
-                    { name: 'designation', label: 'Designation', required: true },
-                    { name: 'organization', label: 'Organization', required: true },
-                    { name: 'year', label: 'Year', type: 'number', required: true },
-                    { name: 'sessionTitle', label: 'Session Title (e.g. Plenary Session Talk 1)', fullWidth: true },
-                    { name: 'date', label: 'Session Date (e.g. 12th Sept 2025)' },
-                    { name: 'time', label: 'Session Time (e.g. 09:30 A.M. IST)' },
-                    { name: 'topic', label: 'Talk Topic', fullWidth: true },
-                    { name: 'topicDescription', label: 'Topic Description', type: 'textarea', fullWidth: true },
+                    { name: 'name', label: 'Name', required: true, placeholder: 'e.g. Dr. John Doe' },
+                    { name: 'designation', label: 'Designation', required: true, placeholder: 'e.g. Professor' },
+                    { name: 'organization', label: 'Organization', required: true, placeholder: 'e.g. MIT, USA' },
+                    { name: 'year', label: 'Year', type: 'number', required: true, placeholder: 'e.g. 2026' },
+                    { name: 'sessionTitle', label: 'Session Title', fullWidth: true, placeholder: 'e.g. Plenary Session Talk 1' },
+                    { name: 'date', label: 'Session Date', placeholder: 'e.g. 12th Sept 2025' },
+                    { name: 'time', label: 'Session Time', placeholder: 'e.g. 09:30 A.M. IST' },
+                    { name: 'topic', label: 'Talk Topic', fullWidth: true, placeholder: 'e.g. Future of AI Security' },
+                    { name: 'topicDescription', label: 'Topic Description', type: 'textarea', fullWidth: true, placeholder: 'Brief description of the talk...' },
                     { name: 'links', label: 'Speaker Links', type: 'links', fullWidth: true },
-                    { name: 'bio', label: 'Bio', type: 'textarea', fullWidth: true },
+                    { name: 'bio', label: 'Bio', type: 'textarea', fullWidth: true, placeholder: 'Speaker biography...' },
                     { name: 'image', label: 'Image', type: 'image' },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'order', label: 'Display Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'committees':
                 if (isCreatingSection && !editingItem) {
                     return [
-                        { name: 'type', label: 'Section Title (e.g. Technical Program Committee)', required: true, fullWidth: true },
-                        { name: 'sectionOrder', label: 'Section Display Order', type: 'number' }
+                        { name: 'type', label: 'Section Title', required: true, fullWidth: true, placeholder: 'e.g. Technical Program Committee' },
+                        { name: 'sectionOrder', label: 'Section Display Order', type: 'number', placeholder: 'e.g. 1' }
                     ];
                 }
                 return [
                     { name: 'type', label: 'Section Title / Type', required: true, fullWidth: true, disabled: true },
-                    { name: 'sectionOrder', label: 'Section Order', type: 'number' },
-                    { name: 'name', label: 'Member Name', required: true },
-                    { name: 'designation', label: 'Designation', required: true },
-                    { name: 'organization', label: 'Organization' },
-                    { name: 'order', label: 'Member Order in Section', type: 'number' }
+                    { name: 'sectionOrder', label: 'Section Order', type: 'number', placeholder: 'e.g. 1' },
+                    { name: 'name', label: 'Member Name', required: true, placeholder: 'e.g. Dr. Jane Doe' },
+                    { name: 'designation', label: 'Designation', required: true, placeholder: 'e.g. Associate Professor' },
+                    { name: 'organization', label: 'Organization', placeholder: 'e.g. Stanford University' },
+                    { name: 'order', label: 'Member Order in Section', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'dates':
                 return [
-                    { name: 'event', label: 'Event', required: true },
+                    { name: 'event', label: 'Event', required: true, placeholder: 'e.g. Paper Submission Deadline' },
                     { name: 'date', label: 'Date', type: 'date', required: true },
-                    { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
+                    { name: 'description', label: 'Description', type: 'textarea', fullWidth: true, placeholder: 'Additional details about the event...' },
                     { name: 'isPinned', label: 'Pin for Countdown', type: 'checkbox', description: 'Show this date in the website countdown' },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'order', label: 'Display Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'topics':
                 return [
-                    { name: 'title', label: 'Topic Title', required: true, fullWidth: true },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'title', label: 'Topic Title', required: true, fullWidth: true, placeholder: 'e.g. Cloud Computing' },
+                    { name: 'order', label: 'Display Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'editions':
                 return [
-                    { name: 'year', label: 'Year', type: 'number', required: true },
-                    { name: 'title', label: 'Title', required: true, fullWidth: true },
-                    { name: 'link', label: 'Proceedings Link' },
+                    { name: 'year', label: 'Year', type: 'number', required: true, placeholder: 'e.g. 2025' },
+                    { name: 'title', label: 'Title', required: true, fullWidth: true, placeholder: 'e.g. COMS2 2025' },
+                    { name: 'link', label: 'Proceedings Link', placeholder: 'e.g. https://springer.com/...' },
                     { name: 'coverImage', label: 'Cover Image', type: 'image' },
-                    { name: 'publisher', label: 'Publisher' }
+                    { name: 'publisher', label: 'Publisher', placeholder: 'e.g. Springer' }
                 ];
             case 'fees':
                 return [
-                    { name: 'type', label: 'Registration Type', required: true, fullWidth: true },
-                    { name: 'indian', label: 'Indian Fees (INR)', required: true },
-                    { name: 'foreign', label: 'Foreign Fees (USD)', required: true },
-                    { name: 'order', label: 'Order', type: 'number' }
+                    { name: 'type', label: 'Registration Type', required: true, fullWidth: true, placeholder: 'e.g. Author Registration' },
+                    { name: 'indian', label: 'Indian Fees (INR)', required: true, placeholder: 'e.g. 8000' },
+                    { name: 'foreign', label: 'Foreign Fees (USD)', required: true, placeholder: 'e.g. 300' },
+                    { name: 'order', label: 'Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'archives':
                 return [
-                    { name: 'title', label: 'Title', required: true, fullWidth: true },
-                    { name: 'year', label: 'Year', type: 'number' },
+                    { name: 'title', label: 'Title', required: true, fullWidth: true, placeholder: 'e.g. Keynote Speech 2024' },
+                    { name: 'year', label: 'Year', type: 'number', placeholder: 'e.g. 2024' },
                     { name: 'type', label: 'Archive Type', type: 'select', options: ['media-coverage', 'glimpses'] },
                     { name: 'image', label: 'Image', type: 'image' },
-                    { name: 'link', label: 'External Link' },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'link', label: 'External Link', placeholder: 'e.g. https://youtube.com/...' },
+                    { name: 'order', label: 'Display Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'news':
                 return [
-                    { name: 'title', label: 'News Title', required: true, fullWidth: true },
-                    { name: 'link', label: 'Link (Optional)', fullWidth: true },
+                    { name: 'title', label: 'News Title', required: true, fullWidth: true, placeholder: 'e.g. Registration deadline extended' },
+                    { name: 'link', label: 'Link (Optional)', fullWidth: true, placeholder: 'e.g. https://google.com or /register (leave empty for no link)' },
                     { name: 'date', label: 'Display Date', type: 'date' }
                 ];
             case 'settings':
                 return [
-                    { name: 'short_name', label: 'Short Name (e.g. COMS2)' },
-                    { name: 'year', label: 'Year (e.g. 2026)' },
-                    { name: 'edition', label: 'Edition Label (e.g. 7th Edition)' },
-                    { name: 'mode', label: 'Mode (e.g. Hybrid Mode)' },
-                    { name: 'name', label: 'Full Conference Title', fullWidth: true },
-                    { name: 'description', label: 'Welcome/Intro Description', type: 'textarea', fullWidth: true },
-                    { name: 'venue', label: 'Venue/University' },
-                    { name: 'country', label: 'Location/Country' },
+                    { name: 'short_name', label: 'Short Name', placeholder: 'e.g. COMS2' },
+                    { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
+                    { name: 'edition', label: 'Edition Label', placeholder: 'e.g. 7th Edition' },
+                    { name: 'mode', label: 'Mode', placeholder: 'e.g. Hybrid Mode' },
+                    { name: 'name', label: 'Full Conference Title', placeholder: 'e.g. COMS2 – International Conference...', fullWidth: true },
                     { name: 'start_date', label: 'Start Date', type: 'date' },
-                    { name: 'end_date', label: 'End Date', type: 'date' }
+                    { name: 'end_date', label: 'End Date', type: 'date' },
+                    { name: 'description', label: 'Welcome/Intro Description', type: 'textarea', fullWidth: true, placeholder: 'Enter introduction text here...' },
+                    { name: 'university_about', label: 'About University Content', type: 'textarea', fullWidth: true, placeholder: 'Enter details about Ganpat University...' },
+                    { name: 'university_video', label: 'University Video URL (YouTube Embed)', fullWidth: true, placeholder: 'e.g. https://www.youtube.com/embed/...' },
+                    { name: 'venue', label: 'Venue/University', placeholder: 'e.g. Ganpat University' },
+                    { name: 'country', label: 'Location/Country', placeholder: 'e.g. India' }
                 ];
             case 'accepted-papers':
                 return [
-                    { name: 'paperId', label: 'Paper ID', required: true },
-                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true },
-                    { name: 'authors', label: 'Authors', required: true, fullWidth: true },
-                    { name: 'year', label: 'Year', type: 'number', required: true },
-                    { name: 'track', label: 'Track (Optional)' }
+                    { name: 'paperId', label: 'Paper ID', required: true, placeholder: 'e.g. 101' },
+                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true, placeholder: 'e.g. Deep Learning for Consumers' },
+                    { name: 'authors', label: 'Authors', required: true, fullWidth: true, placeholder: 'e.g. John Doe, Jane Smith' },
+                    { name: 'year', label: 'Year', type: 'number', required: true, placeholder: 'e.g. 2026' },
+                    { name: 'track', label: 'Track (Optional)', placeholder: 'e.g. Track 1: AI' }
                 ];
             case 'best-papers':
                 return [
-                    { name: 'paperId', label: 'Paper ID', required: true },
-                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true },
-                    { name: 'authors', label: 'Authors', required: true, fullWidth: true },
-                    { name: 'institution', label: 'Institution', fullWidth: true },
-                    { name: 'awardName', label: 'Award Name', required: true },
-                    { name: 'year', label: 'Year', type: 'number', required: true },
-                    { name: 'order', label: 'Display Order', type: 'number' }
+                    { name: 'paperId', label: 'Paper ID', required: true, placeholder: 'e.g. 205' },
+                    { name: 'title', label: 'Paper Title', required: true, fullWidth: true, placeholder: 'e.g. Advancements in Quantum Computing' },
+                    { name: 'authors', label: 'Authors', required: true, fullWidth: true, placeholder: 'e.g. Alice Johnson' },
+                    { name: 'institution', label: 'Institution', fullWidth: true, placeholder: 'e.g. Harvard University' },
+                    { name: 'awardName', label: 'Award Name', required: true, placeholder: 'e.g. Best Student Paper' },
+                    { name: 'year', label: 'Year', type: 'number', required: true, placeholder: 'e.g. 2026' },
+                    { name: 'order', label: 'Display Order', type: 'number', placeholder: 'e.g. 1' }
                 ];
             case 'publication-stats':
                 return [
-                    { name: 'year', label: 'Year', type: 'number', required: true },
-                    { name: 'totalSubmissions', label: 'Total Submissions', type: 'number', required: true }
+                    { name: 'year', label: 'Year', type: 'number', required: true, placeholder: 'e.g. 2026' },
+                    { name: 'totalSubmissions', label: 'Total Submissions', type: 'number', required: true, placeholder: 'e.g. 450' }
                 ];
             case 'home-sections':
                 return [
@@ -653,9 +738,9 @@ const AdminDashboard = () => {
                         ],
                         required: true
                     },
-                    { name: 'title', label: 'Custom Title (Optional)', fullWidth: true },
-                    { name: 'order', label: 'Order', type: 'number' },
-                    { name: 'isVisible', label: 'Visible', type: 'checkbox' }
+                    { name: 'title', label: 'Custom Title (Optional)', fullWidth: true, placeholder: 'e.g. Featured Keynotes' },
+                    { name: 'order', label: 'Order', type: 'number', placeholder: 'e.g. 1' },
+                    { name: 'isVisible', label: 'Visible', type: 'checkbox', description: 'Show this section on the home page' }
                 ];
             default:
                 return [];
@@ -1097,7 +1182,8 @@ const AdminDashboard = () => {
                     { key: 'name', label: 'Name' },
                     { key: 'designation', label: 'Designation' },
                     { key: 'organization', label: 'Organization' },
-                    { key: 'year', label: 'Year' }
+                    { key: 'year', label: 'Year' },
+                    { key: 'order', label: 'Order' }
                 ];
             case 'committees':
                 return [
@@ -1124,11 +1210,13 @@ const AdminDashboard = () => {
                                 )}
                             </div>
                         )
-                    }
+                    },
+                    { key: 'order', label: 'Order' }
                 ];
             case 'topics':
                 return [
-                    { key: 'title', label: 'Topic' }
+                    { key: 'title', label: 'Topic' },
+                    { key: 'order', label: 'Order' }
                 ];
             case 'editions':
                 return [
@@ -1170,7 +1258,8 @@ const AdminDashboard = () => {
                     { key: 'awardName', label: 'Award' },
                     { key: 'title', label: 'Title' },
                     { key: 'authors', label: 'Authors' },
-                    { key: 'year', label: 'Year' }
+                    { key: 'year', label: 'Year' },
+                    { key: 'order', label: 'Order' }
                 ];
             case 'publication-stats':
                 return [
@@ -1333,11 +1422,11 @@ const AdminDashboard = () => {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Title</p>
-                                            <p className="text-xl font-bold text-gray-900">{conferenceInfo?.short_name || 'COMS2'} {conferenceInfo?.year || '2026'}</p>
+                                            <p className="text-xl font-bold text-gray-900">{conferenceInfo?.short_name} {conferenceInfo?.year}</p>
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Full Name</p>
-                                            <p className="text-sm text-gray-600 leading-snug">{conferenceInfo?.name || 'International Conference on Computing, Communication and Security'}</p>
+                                            <p className="text-sm text-gray-600 leading-snug">{conferenceInfo?.name}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-4">
@@ -1345,7 +1434,7 @@ const AdminDashboard = () => {
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Dates</p>
                                             <p className="text-sm font-medium text-gray-800">
                                                 {(() => {
-                                                    if (!conferenceInfo?.start_date || !conferenceInfo?.end_date) return 'Sept 10-11, 2026';
+                                                    if (!conferenceInfo?.start_date || !conferenceInfo?.end_date) return 'Dates not set';
                                                     const s = new Date(conferenceInfo.start_date);
                                                     const e = new Date(conferenceInfo.end_date);
                                                     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
@@ -1361,7 +1450,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Location</p>
-                                            <p className="text-sm font-medium text-gray-800">{conferenceInfo?.venue || 'Ganpat University'}, {conferenceInfo?.country || 'India'}</p>
+                                            <p className="text-sm font-medium text-gray-800">{conferenceInfo?.venue}, {conferenceInfo?.country}</p>
                                         </div>
                                     </div>
                                 </div>

@@ -3,44 +3,44 @@ import { Download, Globe, MapPin, Users, FileText, CheckCircle } from 'lucide-re
 
 const AcceptedPapers = () => {
     return (
-        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-6xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Hero */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-sm font-semibold mb-4">
                         Results Announced
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Accepted <span className="text-blue-600">Papers</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-gray-600 text-lg">
+                    <p className="max-w-2xl mx-auto text-gray-600 text-base md:text-lg break-words px-2">
                         List of accepted research papers for oral presentation and publication in Springer CCIS.
                     </p>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid lg:grid-cols-3 gap-8 overflow-x-visible">
 
                     {/* Main Content: Info & Stats */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-8 overflow-x-visible">
 
                         {/* Conference Info Card */}
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div className="bg-white rounded-[2rem] p-5 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">COMS2 2025</h2>
-                            <p className="text-gray-500 mb-6 relative z-10">Ganpat University, Gujarat, India • Sept 12-13, 2025</p>
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 relative z-10">COMS2 2025</h2>
+                            <p className="text-sm md:text-base text-gray-500 mb-6 relative z-10">Ganpat University, Gujarat, India • Sept 12-13, 2025</p>
 
-                            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-200 min-w-0">
                                 <div className="text-blue-900 font-serif font-bold text-xl">Springer</div>
-                                <div className="h-6 w-px bg-gray-300"></div>
+                                <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
                                 <div className="bg-orange-500 text-white font-bold px-2 py-0.5 rounded text-sm">CCIS</div>
-                                <div className="ml-auto text-sm text-gray-500 italic">Scopus Indexed</div>
+                                <div className="sm:ml-auto text-sm text-gray-500 italic break-words text-center">Scopus Indexed</div>
                             </div>
                         </div>
 
                         {/* Participation Modes */}
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <div className="bg-white rounded-[2rem] p-5 md:p-8 shadow-sm border border-gray-100">
+                            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 <Globe className="text-indigo-600" />
                                 Participation Modes
                             </h3>

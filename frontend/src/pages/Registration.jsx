@@ -83,10 +83,10 @@ const Registration = () => {
     ];
 
     return (
-        <div className="pt-32 pb-20 bg-white">
-            <div className="container mx-auto px-6">
-                <div className="max-w-5xl mx-auto">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-8 border-l-4 border-blue-600 pl-4">Registration Details</h1>
+        <div className="pt-32 pb-20 bg-white overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="max-w-5xl mx-auto min-w-0">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 border-l-4 border-blue-600 pl-4 break-words">Registration Details</h1>
 
                     {/* Registration Fee Table */}
                     <div className="mb-8">
@@ -148,16 +148,16 @@ const Registration = () => {
                     </div>
 
                     {/* Important Notes Section */}
-                    <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 mb-12">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                            <span className="w-2 h-8 bg-blue-600 mr-3 rounded-full"></span>
+                    <div className="bg-gray-50 rounded-2xl p-5 md:p-8 border border-gray-100 mb-12 min-w-0 overflow-x-visible">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center break-words">
+                            <span className="w-2 h-8 bg-blue-600 mr-3 rounded-full flex-shrink-0"></span>
                             Important Notes:
                         </h2>
                         <ul className="space-y-4">
                             {importantNotes.map((note, index) => (
                                 <li key={index} className="flex items-start">
                                     <span className="inline-block w-2 h-2 bg-blue-400 rounded-full mt-2.5 mr-3 flex-shrink-0"></span>
-                                    <span className="text-gray-700 leading-relaxed">{note}</span>
+                                    <span className="text-gray-700 leading-relaxed break-words min-w-0">{note}</span>
                                 </li>
                             ))}
                         </ul>

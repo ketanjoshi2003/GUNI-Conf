@@ -16,6 +16,7 @@
     width: 100%;
     position: relative;
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -35,6 +36,7 @@
 * {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -80,26 +82,72 @@
 }
 
 /* Fix explicit white text on frontend description and force wrapping */
-.conference-description,
-.conference-description * {
+.rich-text-content,
+.rich-text-content * {
   overflow-wrap: anywhere !important;
   word-wrap: break-word !important;
-  word-break: normal !important;
+  word-break: break-word !important;
   white-space: normal !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
-}
-
-/* Specific fix for elements that might have inline widths */
-.conference-description p,
-.conference-description span,
-.conference-description div,
-.conference-description table {
-  width: auto !important;
+  height: auto !important;
+  display: inline-block;
+  /* Helps with some wrapping issues in complex nested spans */
   min-width: 0 !important;
 }
 
-.conference-description img {
+.rich-text-content p,
+.rich-text-content div,
+.rich-text-content span {
+  display: block;
+  /* Force blocks for better wrapping */
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Force white text to be visible on light backgrounds */
+.rich-text-content span[style*="color: white"],
+.rich-text-content span[style*="color: #ffffff"],
+.rich-text-content span[style*="color: rgb(255, 255, 255)"],
+.rich-text-content p[style*="color: white"],
+.rich-text-content p[style*="color: #ffffff"],
+.rich-text-content p[style*="color: rgb(255, 255, 255)"] {
+  color: inherit !important;
+}
+
+/* Specific fix for elements that might have inline widths */
+.rich-text-content table {
+  width: 100% !important;
+  display: block !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  border-collapse: collapse !important;
+  border: 1px solid #e5e7eb !important;
+  margin: 1rem 0 !important;
+  min-width: 0 !important;
+}
+
+.rich-text-content table td,
+.rich-text-content table th {
+  padding: 0.75rem !important;
+  border: 1px solid #e5e7eb !important;
+  min-width: 120px !important;
+}
+
+/* Override inline width/height on spans/divs often coming from Quill */
+.rich-text-content span[style*="width"],
+.rich-text-content div[style*="width"] {
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+.rich-text-content p {
+  margin-bottom: 1rem !important;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.rich-text-content img {
   max-width: 100% !important;
   height: auto !important;
   border-radius: 0.5rem;
@@ -107,8 +155,26 @@
   margin: 1rem 0;
 }
 
-/* Ensure no horizontal scrolling on mobile */
+/* Ensure no horizontal scrolling on mobile and force wrapping */
 #root {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
+  /* clip is safer than hidden for some browsers to prevent scroll */
+}
+
+* {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word !important;
+  hyphens: auto;
 }

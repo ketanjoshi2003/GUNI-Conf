@@ -14,7 +14,9 @@ const conferenceSchema = new mongoose.Schema({
   start_date: { type: Date },
   end_date: { type: Date },
   website: { type: String },
-  author_page: { type: String }
+  author_page: { type: String },
+  university_about: { type: String },
+  university_video: { type: String }
 });
 
 module.exports = mongoose.model('Conference', conferenceSchema);

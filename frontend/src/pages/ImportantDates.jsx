@@ -53,51 +53,51 @@ const ImportantDates = () => {
     ];
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-4xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Schedule
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Important <span className="text-blue-600">Dates</span>
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-gray-600 text-base md:text-lg break-words">
                         Mark your calendars for the upcoming deadlines and events.
                     </p>
                 </div>
 
-                <div className="relative">
+                <div className="relative overflow-x-visible">
                     {/* Vertical Line */}
-                    <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 transform md:-translate-x-1/2"></div>
+                    <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 transform md:-translate-x-1/2"></div>
 
                     <div className="space-y-12">
                         {events.map((event, index) => (
                             <div key={index} className={`relative flex items-center md:justify-between group`}>
 
                                 {/* Date Box (Left on Desktop for odd, Right for even) */}
-                                <div className={`flex-1 md:text-right pl-20 md:pl-0 md:pr-12 ${index % 2 !== 0 ? 'md:order-1' : ''}`}>
-                                    <div className={`inline-block px-4 py-2 rounded-xl font-bold text-sm mb-2 shadow-sm ${event.highlight ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border border-gray-100'}`}>
+                                <div className={`flex-1 md:text-right pl-12 md:pl-0 md:pr-12 ${index % 2 !== 0 ? 'md:order-1' : ''}`}>
+                                    <div className={`inline-block px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm mb-2 shadow-sm ${event.highlight ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border border-gray-100'}`}>
                                         {event.date}
                                     </div>
-                                    <h3 className={`text-xl font-bold text-gray-800 hidden md:block ${event.highlight ? 'text-blue-600' : ''}`}>
+                                    <h3 className={`text-xl font-bold text-gray-800 hidden md:block ${event.highlight ? 'text-blue-600' : ''} break-words`}>
                                         {event.label}
                                     </h3>
                                 </div>
 
                                 {/* Center Dot */}
-                                <div className="absolute left-8 md:left-1/2 w-4 h-4 rounded-full border-4 border-white shadow-md transform -translate-x-1/2 z-10 bg-blue-500 group-hover:scale-125 transition-transform"></div>
+                                <div className="absolute left-6 md:left-1/2 w-4 h-4 rounded-full border-4 border-white shadow-md transform -translate-x-1/2 z-10 bg-blue-500 group-hover:scale-125 transition-transform"></div>
 
                                 {/* Content Box (Right on Desktop for odd, Left for even) */}
-                                <div className={`flex-1 pl-20 md:pl-12 ${index % 2 !== 0 ? 'md:text-right md:order-0 md:pr-12 md:pl-0' : ''}`}>
+                                <div className={`flex-1 pl-12 md:pl-12 ${index % 2 !== 0 ? 'md:text-right md:order-0 md:pr-12 md:pl-0' : ''}`}>
                                     {/* Mobile Only Title */}
-                                    <h3 className={`text-lg font-bold text-gray-800 md:hidden mb-1 ${event.highlight ? 'text-blue-600' : ''}`}>
+                                    <h3 className={`text-base font-bold text-gray-800 md:hidden mb-1 ${event.highlight ? 'text-blue-600' : ''} break-words`}>
                                         {event.label}
                                     </h3>
 
                                     {index % 2 !== 0 && (
-                                        <h3 className={`text-xl font-bold text-gray-800 hidden md:block ${event.highlight ? 'text-blue-600' : ''}`}>
+                                        <h3 className={`text-xl font-bold text-gray-800 hidden md:block ${event.highlight ? 'text-blue-600' : ''} break-words`}>
                                             {event.label}
                                         </h3>
                                     )}

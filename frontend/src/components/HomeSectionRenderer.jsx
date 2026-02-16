@@ -30,11 +30,11 @@ const HomeSectionRenderer = ({ section, data }) => {
     switch (section.type) {
         case 'welcome':
             return (
-                <section className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base break-words overflow-hidden w-full">
+                <section className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base break-words w-full overflow-x-visible">
                     <SectionHeader title={section.title || `Welcome to ${conferenceInfo?.short_name || 'COMS2'} ${conferenceInfo?.year || ''}`} />
                     {conferenceInfo?.description ? (
                         <div
-                            className="conference-description w-full overflow-hidden [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                            className="rich-text-content w-full overflow-x-visible [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
                             dangerouslySetInnerHTML={{ __html: conferenceInfo.description }}
                         />
                     ) : (
@@ -50,28 +50,32 @@ const HomeSectionRenderer = ({ section, data }) => {
 
         case 'about-university':
             return (
-                <section className="py-12 bg-gray-50/50 rounded-3xl px-4 md:px-8 border border-gray-100">
-                    <div className="text-center mb-10">
-                        <h2 className="text-3xl md:text-4xl font-bold text-sky-500">
+                <section className="py-6 md:py-10 bg-gray-50/50 rounded-xl md:rounded-3xl px-4 md:px-8 border border-gray-100 w-full overflow-x-visible">
+                    <div className="text-center mb-6 md:mb-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-sky-500 break-words">
                             {section.title || 'About the University'}
                         </h2>
-                        <div className="w-20 h-1 bg-sky-200 mx-auto mt-4 rounded-full"></div>
+                        <div className="w-16 h-1 bg-sky-200 mx-auto mt-3 rounded-full"></div>
                     </div>
-                    <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                        <div className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base text-justify px-4 lg:px-0">
-                            <p>
-                                Ganpat University is a well reputed State Private University established in 2005 through
-                                the State Legislative Act No.19/2005 on 12th April 2005, Government of Gujarat, and
-                                recognized by the UGC under the section 2(f) of the UGC Act, 1956 having campus
-                                spread over more than 300 acres of land with world-class infrastructure and more than
-                                10,000 students on campus.
-                            </p>
+                    <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-center">
+                        <div className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base text-justify px-2 lg:px-0 min-w-0 break-words w-full">
+                            {conferenceInfo?.university_about ? (
+                                <div className="rich-text-content w-full overflow-x-visible" dangerouslySetInnerHTML={{ __html: conferenceInfo.university_about }} />
+                            ) : (
+                                <p>
+                                    Ganpat University is a well reputed State Private University established in 2005 through
+                                    the State Legislative Act No.19/2005 on 12th April 2005, Government of Gujarat, and
+                                    recognized by the UGC under the section 2(f) of the UGC Act, 1956 having campus
+                                    spread over more than 300 acres of land with world-class infrastructure and more than
+                                    10,000 students on campus.
+                                </p>
+                            )}
                         </div>
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video border-2 md:border-4 border-white">
+                        <div className="relative w-full rounded-xl overflow-hidden shadow-lg aspect-video border-2 md:border-4 border-white mx-auto max-w-2xl lg:max-w-none">
                             <iframe
                                 className="absolute inset-0 w-full h-full"
-                                src="https://www.youtube.com/embed/OsoXEo1wpYI"
-                                title="Aerial Walkthrough of Ganpat University"
+                                src={conferenceInfo?.university_video || "https://www.youtube.com/embed/OsoXEo1wpYI"}
+                                title="About University Video"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen
@@ -101,9 +105,9 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="grid md:grid-cols-2">
                             {filteredTopics.map((topic, idx) => (
-                                <div key={topic._id || idx} className={`p-4 flex items-start gap-3 border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}>
+                                <div key={topic._id || idx} className={`p-3 sm:p-4 flex items-start gap-2 sm:gap-3 border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}>
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0 mt-2"></span>
-                                    <span className="text-gray-700 font-medium leading-relaxed">{topic.title}</span>
+                                    <span className="text-gray-700 font-medium leading-relaxed text-sm lg:text-base break-words">{topic.title}</span>
                                 </div>
                             ))}
                         </div>
@@ -169,8 +173,8 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Important Dates'} />
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         {importantDates.map((item, idx) => (
-                            <div key={item._id} className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-50 last:border-0 hover:bg-gray-50 gap-2`}>
-                                <span className="font-medium text-gray-700 text-sm md:text-base">{item.event}</span>
+                            <div key={item._id} className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-50 last:border-0 hover:bg-gray-50 gap-2 min-w-0`}>
+                                <span className="font-medium text-gray-700 text-sm md:text-base break-words flex-grow">{item.event}</span>
                                 <div className="flex items-center gap-3 self-end sm:self-auto">
                                     <span className="text-xs md:text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
                                         {new Date(item.date).toLocaleDateString()}
@@ -186,22 +190,22 @@ const HomeSectionRenderer = ({ section, data }) => {
         case 'registration-fees':
             return (
                 <section>
-                    <SectionHeader title={section.title || 'Registration Fees'} />
-                    <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-700 uppercase text-[10px] md:text-xs">
+                    <SectionHeader title={section.title || 'Registration Details'} />
+                    <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-x-auto">
+                        <table className="w-full text-sm text-left min-w-[600px] md:min-w-0">
+                            <thead className="bg-[#1a73e8] text-white">
                                 <tr>
-                                    <th className="px-3 md:px-6 py-3">Category</th>
-                                    <th className="px-3 md:px-6 py-3">Indian (INR)</th>
-                                    <th className="px-3 md:px-6 py-3">Foreign (USD)</th>
+                                    <th className="px-4 md:px-6 py-4 font-bold text-xs md:text-sm tracking-wide">Type of Registration</th>
+                                    <th className="px-4 md:px-6 py-4 font-bold text-xs md:text-sm tracking-wide">Indian participants (INR)</th>
+                                    <th className="px-4 md:px-6 py-4 font-bold text-xs md:text-sm tracking-wide">Foreign participants (USD)</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {registrationFees.map((fee) => (
-                                    <tr key={fee._id} className="hover:bg-gray-50 text-[11px] md:text-sm">
-                                        <td className="px-3 md:px-6 py-4 font-medium text-gray-900">{fee.type}</td>
-                                        <td className="px-3 md:px-6 py-4 text-gray-600">{fee.indian}</td>
-                                        <td className="px-3 md:px-6 py-4 text-gray-600">{fee.foreign}</td>
+                            <tbody className="divide-y divide-gray-200">
+                                {registrationFees.map((fee, index) => (
+                                    <tr key={fee._id} className={`transition-colors hover:bg-blue-50/50 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                        <td className="px-4 md:px-6 py-4 text-gray-800 font-medium whitespace-normal md:whitespace-nowrap">{fee.type}</td>
+                                        <td className="px-4 md:px-6 py-4 text-gray-600">{fee.indian}</td>
+                                        <td className="px-4 md:px-6 py-4 text-gray-600">{fee.foreign}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -216,13 +220,13 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Latest News'} />
                     <div className="space-y-4">
                         {news.map((item) => (
-                            <div key={item._id} className="p-4 bg-white border-l-4 border-yellow-400 shadow-sm rounded-r-lg">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <p className="font-bold text-gray-900">{item.title}</p>
+                            <div key={item._id} className="p-4 bg-white border-l-4 border-yellow-400 shadow-sm rounded-r-lg min-w-0">
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="min-w-0 flex-grow">
+                                        <p className="font-bold text-gray-900 break-words">{item.title}</p>
                                         <p className="text-xs text-gray-500 mt-1">{new Date(item.date).toLocaleDateString()}</p>
                                     </div>
-                                    <a href={item.link} target="_blank" className="text-blue-600 hover:text-blue-800"><ExternalLink size={16} /></a>
+                                    <a href={item.link} target="_blank" className="text-blue-600 hover:text-blue-800 shrink-0 mt-1"><ExternalLink size={16} /></a>
                                 </div>
                             </div>
                         ))}
@@ -373,10 +377,10 @@ const HomeSectionRenderer = ({ section, data }) => {
                     <SectionHeader title={section.title || 'Publication Stats'} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {pubStats.map((stat) => (
-                            <div key={stat._id} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center group hover:border-blue-200 transition-all">
-                                <div className="text-3xl font-black text-blue-600 mb-1 group-hover:scale-110 transition-transform">{stat.acceptedCount}</div>
-                                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Accepted Papers</div>
-                                <div className="mt-2 text-[10px] text-gray-300">{stat.year} • {stat.totalSubmissions} Submissions</div>
+                            <div key={stat._id} className="bg-white p-3 sm:p-6 rounded-xl border border-gray-100 shadow-sm text-center group hover:border-blue-200 transition-all flex flex-col justify-center min-w-0">
+                                <div className="text-2xl sm:text-3xl font-black text-blue-600 mb-1 group-hover:scale-110 transition-transform">{stat.acceptedCount}</div>
+                                <div className="text-[9px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest break-words">Accepted Papers</div>
+                                <div className="mt-2 text-[8px] sm:text-[10px] text-gray-400 font-medium">{stat.year} • {stat.totalSubmissions} Subs</div>
                             </div>
                         ))}
                     </div>

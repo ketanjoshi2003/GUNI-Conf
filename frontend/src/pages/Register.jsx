@@ -20,7 +20,7 @@ const Register = () => {
     };
 
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="pt-32 pb-20 bg-gray-50 min-h-screen flex items-center justify-center px-4 overflow-x-visible">
             <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full border border-gray-100">
                 <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Register</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">

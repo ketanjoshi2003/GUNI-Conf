@@ -58,13 +58,13 @@ const Archive = () => {
     ];
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
+        <div className="bg-gray-50 min-h-screen pt-28 pb-12 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="mb-10 md:mb-12 text-center">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up break-words">
                         Conference Archive
                     </h1>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
+                    <div className="w-20 md:w-24 h-1 bg-blue-600 mx-auto rounded-full mt-4 md:mt-6"></div>
                 </div>
 
                 <div className="max-w-6xl mx-auto">
@@ -139,7 +139,7 @@ const Archive = () => {
                                 {loading ? (
                                     <div className="py-20 text-center text-gray-400 italic">Loading glimpses...</div>
                                 ) : glimpseItems.length > 0 ? (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-visible">
                                         {glimpseItems.map((item, index) => (
                                             <div key={index} className="relative group aspect-square rounded-xl overflow-hidden shadow-lg border border-gray-100">
                                                 <img src={formatImageUrl(item.image) || 'https://via.placeholder.com/400?text=Conference+Glimpses'} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />

@@ -211,7 +211,7 @@ const Navbar = () => {
                     <img
                         src="/logo.png"
                         alt="Ganpat University Logo"
-                        className={`h-10 md:h-12 w-auto max-w-[160px] md:max-w-none transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : 'brightness-0'}`}
+                        className={`h-11 md:h-12 w-auto max-w-[180px] md:max-w-none transition-all duration-300 ${!useSolidStyle ? 'brightness-0 invert' : 'brightness-0'}`}
                     />
                 </Link>
 

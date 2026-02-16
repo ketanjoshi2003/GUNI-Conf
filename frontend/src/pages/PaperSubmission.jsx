@@ -4,27 +4,27 @@ import { FileUp, FileText, AlertCircle, ExternalLink, BookOpen } from 'lucide-re
 const PaperSubmission = () => {
     return (
         <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-5xl">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Header */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Guidelines & Process
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Paper <span className="text-blue-600">Submission</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
+                    <p className="max-w-3xl mx-auto text-gray-600 text-base md:text-lg leading-relaxed px-2">
                         We invite authors to submit original research papers. Please review the guidelines below before submitting your work.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-3 gap-8 overflow-x-visible">
                     {/* Left Column: Guidelines */}
-                    <div className="md:col-span-2 space-y-8">
+                    <div className="md:col-span-2 space-y-8 overflow-x-visible">
 
                         {/* Submission Link Card */}
-                        <div className="bg-white rounded-3xl p-8 shadow-lg border border-blue-100 relative overflow-hidden group">
+                        <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-lg border border-blue-100 relative overflow-x-visible group min-w-0">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-150 transition-transform duration-700"></div>
                             <div className="relative z-10">
                                 <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -48,7 +48,7 @@ const PaperSubmission = () => {
                         </div>
 
                         {/* Formatting Guidelines */}
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100 min-w-0">
                             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 <FileText className="text-indigo-600" />
                                 Formatting Guidelines

@@ -96,8 +96,8 @@ const Committees = () => {
         const icon = group.meta.icon;
 
         return (
-            <div key={type} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all animate-fade-in-up ${isLongList ? 'md:col-span-2' : ''}`}>
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3 pb-3 border-b border-gray-100 italic">
+            <div key={type} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-all animate-fade-in-up ${isLongList ? 'md:col-span-2' : ''}`}>
+                <h3 className="text-base md:text-lg font-bold text-gray-900 mb-5 flex items-center gap-3 pb-3 border-b border-gray-100 italic">
                     <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
                         {icon}
                     </div>
@@ -127,12 +127,12 @@ const Committees = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="mb-8 md:mb-12 text-center">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up break-words">
                         Committees <span className="text-blue-600">{selectedYear}</span>
                     </h1>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
+                    <div className="w-20 md:w-24 h-1 bg-blue-600 mx-auto rounded-full mt-4 md:mt-6"></div>
                 </div>
 
                 <div className="max-w-6xl mx-auto">

@@ -29,18 +29,18 @@ const CallForPapers = () => {
     useSocketRefresh(fetchTopics);
 
     return (
-        <div className="bg-gray-50 min-h-screen pt-32 pb-20">
-            <div className="container mx-auto px-6 max-w-6xl">
+        <div className="bg-gray-50 min-h-screen pt-32 pb-20 overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Header Section */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">
                         Submissions Open
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 break-words">
                         Call For <span className="text-blue-600">Papers</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
+                    <p className="max-w-3xl mx-auto text-gray-600 text-base md:text-lg leading-relaxed px-2 break-words">
                         Researchers, authors, and industrial practitioners are invited to submit original,
                         high-quality technical papers of their newest research findings, novel technical studies,
                         innovative ideas, and visionary perspectives.
@@ -72,10 +72,10 @@ const CallForPapers = () => {
                                 .map((topic, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
+                                        className={`p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 min-w-0 ${idx % 2 === 0 ? 'md:border-r' : ''}`}
                                     >
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0 mt-2"></span>
-                                        <span className="text-gray-700 font-medium leading-relaxed">{topic.title}</span>
+                                        <span className="text-gray-700 font-medium leading-relaxed break-words min-w-0">{topic.title}</span>
                                     </div>
                                 ))}
                             {topics.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
@@ -88,10 +88,10 @@ const CallForPapers = () => {
                 </div>
 
                 {/* CTA Section */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-10 text-white text-center shadow-2xl relative overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl md:rounded-3xl p-6 md:p-10 text-white text-center shadow-2xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                     <div className="relative z-10">
-                        <h3 className="text-2xl font-bold mb-4">Ready to Submit?</h3>
+                        <h3 className="text-xl md:text-2xl font-bold mb-4">Ready to Submit?</h3>
                         <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
                             Join us at the 7th Edition of Springer International Conference on Computing, Communication and Security (COMS2 - 2026).
                         </p>

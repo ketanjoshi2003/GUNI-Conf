@@ -40,9 +40,9 @@ const Footer = () => {
     return (
         <footer className="relative mt-20 lg:mt-32">
             {/* Top Footer: Info Cards */}
-            <div className="bg-gray-50/50 pb-16">
-                <div className="container mx-auto px-4 md:px-6">
-                    <div className="grid lg:grid-cols-2 gap-8 -translate-y-10 md:-translate-y-12">
+            <div className="bg-gray-50/50 pb-16 overflow-x-visible">
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="grid lg:grid-cols-2 gap-8 -translate-y-8 md:-translate-y-12 overflow-x-visible">
                         {/* Venue Card */}
                         <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-2xl border border-gray-100 p-6 md:p-8 flex flex-col h-full transform transition-all hover:scale-[1.01]">
                             <div className="flex items-start gap-4 md:gap-5 mb-6">
@@ -51,10 +51,10 @@ const Footer = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-xl md:text-2xl font-bold text-gray-900 mb-1 md:mb-2">Ganpat University</h4>
-                                    <div className="text-gray-500 text-xs md:text-sm space-y-1 leading-relaxed">
+                                    <div className="text-gray-500 text-xs md:text-sm space-y-1 leading-relaxed break-words">
                                         <p>Ganpat Vidyanagar, Mehsana-Gandhinagar Highway,</p>
                                         <p>North Gujarat, India, Pin Code 384012</p>
-                                        <a href="mailto:coms2@ganpatuniversity.ac.in" className="text-blue-600 font-bold hover:underline block pt-1 md:pt-2 text-sm md:text-base">coms2@ganpatuniversity.ac.in</a>
+                                        <a href="mailto:coms2@ganpatuniversity.ac.in" className="text-blue-600 font-bold hover:underline block pt-1 md:pt-2 text-sm md:text-base break-all">coms2@ganpatuniversity.ac.in</a>
                                     </div>
                                 </div>
                             </div>
@@ -83,7 +83,7 @@ const Footer = () => {
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-gray-900 text-sm md:text-lg mb-0.5 md:mb-1 transition-colors">International Authors</h5>
-                                        <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed font-medium">
+                                        <p className="text-xs md:text-sm text-gray-500 leading-relaxed font-medium">
                                             (Outside India): Hybrid participation requests will be considered.
                                         </p>
                                     </div>
@@ -95,7 +95,7 @@ const Footer = () => {
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-gray-900 text-sm md:text-lg mb-0.5 md:mb-1 transition-colors">Authors from Other States</h5>
-                                        <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed font-medium">
+                                        <p className="text-xs md:text-sm text-gray-500 leading-relaxed font-medium">
                                             (Other than Gujarat): Online participation may be permitted.
                                         </p>
                                     </div>
@@ -107,7 +107,7 @@ const Footer = () => {
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-gray-900 text-sm md:text-lg mb-0.5 md:mb-1 transition-colors">Authors from Gujarat</h5>
-                                        <p className="text-[10px] md:text-sm text-gray-500 leading-relaxed font-medium">
+                                        <p className="text-xs md:text-sm text-gray-500 leading-relaxed font-medium">
                                             Physical presence of the presenting author is mandatory.
                                         </p>
                                     </div>
@@ -119,19 +119,19 @@ const Footer = () => {
             </div>
 
             {/* Bottom Footer: Column Links */}
-            <div className="bg-[#111827] text-gray-400 pt-16 md:pt-12 pb-8 border-t border-gray-800">
-                <div className="container mx-auto px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-8">
+            <div className="bg-[#111827] text-gray-400 pt-16 md:pt-12 pb-8 border-t border-gray-800 overflow-x-visible">
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-8">
 
                         {/* Address & News */}
                         <div className="space-y-8">
                             <div>
                                 <h3 className="text-white text-base md:text-xl font-bold border-l-4 border-blue-500 pl-4 mb-6 uppercase tracking-wider">Address</h3>
-                                <div className="text-sm space-y-2 text-gray-400">
+                                <div className="text-sm md:text-base space-y-3 text-gray-400">
                                     <p className="font-bold text-gray-300">Ganpat University</p>
-                                    <p>Mehsana-Gozaria Highway, Kherva, Gujarat 384012</p>
-                                    <p className="flex items-center gap-2 pt-2">
-                                        <Mail className="w-4 h-4 text-blue-500" />
+                                    <p className="leading-relaxed">Mehsana-Gozaria Highway, Kherva, Gujarat 384012</p>
+                                    <p className="flex items-center gap-3 pt-2">
+                                        <Mail className="w-5 h-5 text-blue-500 shrink-0" />
                                         <a href="mailto:nirbhay.chaubey@ganpatuniversity.ac.in" className="hover:text-blue-400 transition-colors break-all">nirbhay.chaubey@ganpatuniversity.ac.in</a>
                                     </p>
                                 </div>
@@ -142,14 +142,14 @@ const Footer = () => {
                                 <ul className="text-sm space-y-3">
                                     {news.length > 0 ? (
                                         news.map((item) => (
-                                            <li key={item._id} className="flex items-start gap-2 group">
-                                                <ChevronRight className="w-4 h-4 text-blue-500 shrink-0 mt-0.5 group-hover:translate-x-1 transition-transform" />
+                                            <li key={item._id} className="flex items-start gap-3 group">
+                                                <ChevronRight className="w-5 h-5 text-blue-500 shrink-0 mt-0.5 group-hover:translate-x-1 transition-transform" />
                                                 {item.link ? (
-                                                    <a href={item.link} className="hover:text-blue-400 transition-colors italic text-xs leading-relaxed">
+                                                    <a href={item.link} className="hover:text-blue-400 transition-colors italic text-xs md:text-sm leading-relaxed break-words">
                                                         {item.title}
                                                     </a>
                                                 ) : (
-                                                    <span className="italic text-xs leading-relaxed">{item.title}</span>
+                                                    <span className="italic text-xs md:text-sm leading-relaxed break-words">{item.title}</span>
                                                 )}
                                             </li>
                                         ))
@@ -165,9 +165,9 @@ const Footer = () => {
                             <h3 className="text-white text-base md:text-xl font-bold border-l-4 border-blue-500 pl-4 mb-6 uppercase tracking-wider">Important Dates</h3>
                             <ul className="grid grid-cols-1 gap-4 text-sm">
                                 {footerDates.length > 0 ? footerDates.map((item, idx) => (
-                                    <li key={idx} className="flex justify-between items-center border-b border-gray-800/50 pb-2 gap-4">
-                                        <span className="text-gray-500 text-[10px] md:text-[11px] uppercase font-bold tracking-tight shrink-0">{item.label}</span>
-                                        <span className={item.highlight ? 'text-blue-400 font-bold whitespace-nowrap text-right' : 'text-gray-300 whitespace-nowrap text-right'}>{item.date}</span>
+                                    <li key={idx} className="flex flex-col border-b border-gray-800/50 pb-3 gap-1.5">
+                                        <span className="text-gray-500 text-xs uppercase font-bold tracking-tight">{item.label}</span>
+                                        <span className={item.highlight ? 'text-blue-400 font-bold text-sm md:text-base' : 'text-gray-300 text-xs md:text-sm'}>{item.date}</span>
                                     </li>
                                 )) : (
                                     <li className="text-xs text-gray-500 italic">Dates coming soon...</li>
@@ -175,17 +175,7 @@ const Footer = () => {
                             </ul>
                         </div>
 
-                        {/* Visitors */}
-                        <div className="space-y-4">
-                            <h3 className="text-white text-base md:text-xl font-bold border-l-4 border-blue-500 pl-4 uppercase tracking-wider">Visitors</h3>
-                            <div className="bg-[#0f172a] p-5 rounded-2xl border border-gray-800 shadow-2xl inline-block group hover:border-blue-500/50 transition-colors">
-                                <img
-                                    src="https://s11.flagcounter.com/count2/JO2k/bg_0F172A/txt_FFFFFF/border_334155/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/"
-                                    alt="Flag Counter"
-                                    className="block opacity-90 group-hover:opacity-100 transition-opacity max-w-full h-auto"
-                                />
-                            </div>
-                        </div>
+
 
                     </div>
 

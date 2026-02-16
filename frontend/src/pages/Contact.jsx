@@ -4,11 +4,11 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 const Contact = () => {
     return (
         <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 break-words">Contact Us</h1>
 
-                <div className="grid md:grid-cols-2 gap-12">
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+                    <div className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-gray-100 h-fit min-w-0">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6">Get in Touch</h2>
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
@@ -43,7 +43,7 @@ const Contact = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6">Send Message</h2>
                         <form className="space-y-4">
                             <div>

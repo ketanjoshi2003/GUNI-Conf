@@ -3,9 +3,9 @@ import React from 'react';
 const About = () => {
     return (
         <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-8">About COMS2</h1>
-                <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 prose max-w-none">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 break-words">About COMS2</h1>
+                <div className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-gray-100 prose max-w-none break-words min-w-0">
                     <p className="text-lg text-gray-600 mb-6">
                         The International Conference on Computing, Communication and Security (COMS2) is a premier forum for the presentation of new advances and research results in the fields of Computing, Communication and Security. The conference will bring together leading researchers, engineers and scientists in the domain of interest from around the world.
                     </p>

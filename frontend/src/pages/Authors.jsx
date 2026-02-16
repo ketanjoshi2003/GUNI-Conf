@@ -2,13 +2,13 @@ import React from 'react';
 
 const Authors = () => {
     return (
-        <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-8">For Authors</h1>
+        <div className="pt-32 pb-20 bg-gray-50 min-h-screen overflow-x-visible">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 break-words">For Authors</h1>
 
                 <div className="grid gap-8">
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Submission Guidelines</h2>
+                    <div className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">Submission Guidelines</h2>
                         <p className="text-gray-600 mb-6">
                             All papers must be original and not simultaneously submitted to another journal or conference.
                             The reviews will be double-blind. Please ensure that author names and affiliations are removed from the submitted PDF.
@@ -32,7 +32,7 @@ const Authors = () => {
                             href="https://link.springer.com/book/10.1007/978-3-031-75170-7"
                             target="_blank"
                             rel="noreferrer"
-                            className="text-accent underline font-medium"
+                            className="text-accent underline font-medium break-all"
                         >
                             View Previous Proceedings (Springer)
                         </a>

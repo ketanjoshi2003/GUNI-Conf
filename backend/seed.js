@@ -4,6 +4,7 @@ const Conference = require('./models/Conference');
 const RegistrationFee = require('./models/RegistrationFee');
 const Archive = require('./models/Archive');
 const Speaker = require('./models/Speaker');
+const Committee = require('./models/Committee');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -18,14 +19,26 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/guni_conf')
 const seedData = {
     conference_id: 'coms2-2026',
     name: 'COMS2 – International Conference on Computing Communication Security',
+    short_name: 'COMS2',
+    year: '2026',
+    edition: '7th Edition',
+    mode: 'Hybrid Mode',
+    description: `<p>The 7th Edition COMS2 will be held in hybrid mode at the vibrant campus of Ganpat University, Gujarat, India on the 12-13 September 2025. The theme of COMS2 2025 is “Sustainable Computing and Intelligent Network Systems,” focusing on cutting-edge research, innovations, and applications in computing, intelligent networking and communication technologies and related areas.</p>
+
+<p>COMS2 aims to unite leading academicians, researchers, scientists, and professionals from industry and academia, providing a platform to share research findings, experiences, and insights on networking, communication, and future trends. The conference will foster academic-industry collaboration, serving the research community on a larger scale.</p>
+
+<p>We cordially invite authors, researchers, and industry practitioners to submit their original, high-quality research papers showcasing the latest advancements and innovations in the fields of Computing, Networking, Communication, and Security, including but not limited to:</p>`,
     theme: 'Computing Communication Security',
     venue: 'Ganpat University',
     state: 'Gujarat',
     country: 'India',
-    start_date: new Date('2026-10-09'),
-    end_date: new Date('2026-10-10'),
+    start_date: new Date('2026-09-10'),
+    end_date: new Date('2026-09-11'),
     website: 'https://coms2.gnu.ac.in/',
-    author_page: 'https://coms2.gnu.ac.in/for-authors/'
+    author_page: 'https://coms2.gnu.ac.in/for-authors/',
+    university_about: `<p>Ganpat University is a well reputed State Private University established in 2005 through the State Legislative Act No.19/2005 on 12th April 2005, Government of Gujarat, and recognized by the UGC under the section 2(f) of the UGC Act, 1956 having campus spread over more than 300 acres of land with world-class infrastructure and more than 10,000 students on campus.</p> 
+
+<p>The University offers Diplomas, Under Graduate, Post Graduate, and Research Programs in the field of Engineering and Technology, Computer Applications, Management, Pharmacy, Sciences, Commerce & Social Science, Architecture, Design & Planning, Maritime Studies, Nursing, & Agriculture, etc.</p>`
 };
 
 const registrationFees = [
@@ -159,6 +172,226 @@ const seedDB = async () => {
         await Archive.insertMany(archives);
         await Speaker.deleteMany({});
         await Speaker.insertMany(speakers);
+
+        const technicalCommitteeData = [
+            "Ruoyu Wang, Arizona State University, USA",
+            "Kevin Gary, Arizona State University, USA",
+            "Tatyana Ryutov, University of Southern California, USA",
+            "George Sklivanitis, Florida Atlantic University, USA",
+            "Koushik A. Manjunatha, Idaho National Laboratory, USA",
+            "Sathyan Munirathinam, ASML Corporation, USA",
+            "Yogesh Patel, SalesForce, USA",
+            "Priyanshukumar Jha, Amazon, USA",
+            "El Sayed Mahmoud, Sheridan College, Canada",
+            "Jigisha Patel, Sheridan College, Canada",
+            "Pawan Lingra, St. Marry University, Canada",
+            "Xing Liu, Kwantlen Polytechnic University, Canada",
+            "Muhammad Dangana, University of Glasgow, U.K.",
+            "Gisa Fuatai Purcel, Victoria University of Wellingtons, U.K.",
+            "Gyu Myoung Lee, Liverpool John Moores University, U.K.",
+            "Stefano Cirillo, University of Salerno, Italy",
+            "Flavio Vella, Free University of Bozen, Italy",
+            "Alessandro Barbiero, Università degli Studi di Milano, Italy",
+            "Lelio Campanile, Università degli studi della Campania L.Vanvitelli, Italy",
+            "Asmerilda Hitaj, University of Milano Bicocca, Italy",
+            "Abdallah Handoura, Ecole Nationale Supérieure des Télécommunications de, France",
+            "Gua Xiangfa, National University of Singapore, Singapore",
+            "Raman Singh, The University of Dublin, Ireland",
+            "Ahmed M. Elmisery, Waterford Institute of Technology, Ireland",
+            "Shahzad Ashraf, Hohai University, China",
+            "Moharram Challenger, University of Antwerp, Belgium",
+            "Mamoun Alazab, Charles Darwin University, Australia",
+            "Dragi Kimovski, Klagenfurt University, Australia",
+            "Iwan Adhicandra, University of Sydney, Australia",
+            "Payal Mahida, Victorian Institute of Technology, Australia",
+            "Tarandeep Kaur Bhatia, Deakin University, Australia",
+            "Siddharth Patel, Eaton Corporation, Australia",
+            "Marcin Paprzycki, Polish Academy of Sciences, Poland",
+            "Sabyasachi Chakraborty, Inje University, South Korea",
+            "Sayan K. Ray, Manukau Institute of Technology, New Zealand",
+            "Ahmed Al-Sa’di, Auckland University of Technology, New Zealand",
+            "Clementine Gritti, University of Canterbury, New Zealand",
+            "Samaneh Madanian, Auckland University of Technology, New Zealand",
+            "Aravind Nair, KTH Royal Institute of Technology, Sweden",
+            "Yehia Abd Alrahman, Chalmers University of Technology, Sweden",
+            "Karl Andersson, Luleå University of Technology, Sweden",
+            "Jose M. Molina, Universidad Carlos III de Madrid, Spain",
+            "Manuel Chica, Universidad De Granada, Spain",
+            "Jose Angel Diaz-Garcia, Universidad De Granada, Spain",
+            "Carlos Fernandez-Basso, University of Granada, Spain",
+            "George Papakostas, Eastern Macedonia and Thrace Institute of Technology, Greece",
+            "Dimitris Karampatzakis, International Hellenic University, Greece",
+            "Ioannis Tollis, University of Crete, Greece",
+            "Christos J. Bouras, University of Patras, Greece",
+            "Loannis Tollis, University of Crete, Greece",
+            "Zitong Yu, University of Oulu, Finland",
+            "Akien Paul, University of the West Indies, West Indies",
+            "Rakhee, University of the West Indies, West Indies",
+            "Ammar Muthanna, Saint Petersburg State University of Telecommunications, Russia",
+            "Noor Zaman Jhanjhi, Taylor’s University, Malaysia",
+            "Irdayanti Mat Nashir, Universiti Pendidikan Sultan Idris, Malaysia",
+            "Jing Rui Tang, University Sains Malaysia, George Town, Malaysia",
+            "Jing Rui Tang, University Pendidikan Sultan Idris, Malaysia",
+            "Zaliza Hanapi, Universiti Pendidikan Sultan Idris, Malaysia",
+            "Encik Ong Jia Hui, Tunku Abdul Rahman University College, Malaysia",
+            "Qusay Medhat Salih, University Malaysia Pahang, Malaysia",
+            "Dalal A. Hammood, Universiti Malaysia Perlis, Malaysia",
+            "Muhammad Asif Khan, Qatar University, Qatar",
+            "Ashraf A. M. Khalaf, Minia University, Egypt",
+            "Dimiter G. Velev, University of National and World Economy, Bulgaria",
+            "Pahlaj Moolio, Pannasastra University of Cambodia, Cambodia",
+            "Mudassir Khan, King Khalid University, Saudi Arabia",
+            "Lamia Berriche, Prince Sultan University, Saudi Arabia",
+            "Lal Bihari Barik, King Abdulaziz University, Kingdom of Saudi Arabia",
+            "Shermin Shamsudheen, Jazan University, Saudi Arabia",
+            "Tran Cong Hung, Posts and Telecommunication Institute of Technology, VietNam",
+            "Anand Nayyar, Duy Tan University, Vietnam",
+            "Pao-Ann Hsiung, National Chung Cheng University, Taiwan",
+            "Seyyed Ahmad Edalatpanah, Ayandegan Institute of Higher Education, Iran",
+            "Aws Zuheer Yonis, Ninevah University, Iraq",
+            "Razan Abdulhammed, Northern Technical University, Iraq",
+            "Moharram Challenger, International Computer Institute at Ege University, Turkey",
+            "Sandeep Kautish, LBEF campus, Kathmandu, Nepal",
+            "A.A Gde Satia Utama, Universitas Airlangga, Indonesia",
+            "Eva Shayo, University of Dar es Salaam, Tanzania",
+            "Anil Audumbar Pise, University of the Witwatersrand Johannesburg, South Africa",
+            "Sarang C. Dhongdi, BITS Pilani, India",
+            "Satyabrata Jit, IIT(BHU), India",
+            "Pratik Chattopadhyay, IIT(BHU), India",
+            "Amrita Chaturvedi, IIT(BHU), India",
+            "Amit Kumar Singh, IIT(BHU), India",
+            "Amrita Mishra, IIIT Naya Raipur, India",
+            "Panchami V., IIIT, Kottayam, India",
+            "Bhuvaneswari Amma N.G., IIIT, Una, India",
+            "Jitendra Tembhurne, IIIT, Nagpur, India",
+            "Renjith P., IIIT, Kurnool, India",
+            "Sachin Jain, IIIT, Jabalpur, India",
+            "Priyanka Mishra, IIIT, Kota, India",
+            "Chetna Sharma, IIIT, Kota, India",
+            "Eswaramoorthy K., IIIT, Kurnool, India",
+            "Pandiyarasan Veluswamy, IIITDM Kancheepuram, India",
+            "Sahil, IIIT, Una, India",
+            "Sanya Anees, IIIT, Guwahati, India",
+            "Suvrojit Das, NIT, Durgapur, India",
+            "Aruna Jain, Birla Institute of Technology, India",
+            "Amit Kumar Gupta, DRDO, Hyderbad, India",
+            "R. Kumar, SRM University, India",
+            "B Ramachandran, SRM University, India",
+            "Iyyanki V Muralikrishna, J.N.Technological University, India",
+            "Apurv Shah, M.S. University, India",
+            "Manoj Kumar, Infliblnet University Grants Commission, India",
+            "U. Dinesh Kumar, IIM, Bangalore, India",
+            "Saurabh Bilgaiyan, KIIT, Deemed to be University, India",
+            "Raja Sarath Kumar Boddu, Jawaharlal Nehru Technological University, India",
+            "Kiran Sree Pokkuluri, SVECM, India",
+            "Devesh Kumar Srivastava, Manipal University, India",
+            "P. Muthulakshmi, SRM University, India",
+            "R. Anandan, VELS University, India",
+            "Amol Dhondse, IBM India Software Labs, India",
+            "R. Amirtharajan, SASTRA Deemed University, India",
+            "Padma Priya V., SASTRA Deemed University, India",
+            "Deepak H Sharma, K. J. Somaiya College of Engineering, India",
+            "Ravi Subban, Pondicherry University, India",
+            "Parameshachari B D, Visvesvaraya Technological University, India",
+            "Nilakshi Jain, University of Mumbai, India",
+            "Archana Mire, University of Mumbai, India",
+            "Sonali Bhutad, University of Mumbai, India",
+            "Anand Kumar, Visvesvaraya Technological University, India",
+            "Jyoti Pareek, Gujarat University, India",
+            "Sanjay Garg, Jaypee University of Engineering and Technology, India",
+            "Madhuri Bhavsar, Nirma University, India",
+            "Vijay Ukani, Nirma University, India",
+            "Mayur Vegad, BVM Engineering College, India",
+            "N. M. Patel, BVM Engineering College, India",
+            "J. M. Rathod, BVM Engineering College, India",
+            "Maulika Patel, CVM University, India",
+            "Nikhil Gondalia, CVM University, India",
+            "Priyanka Sharma, Rashtriya Raksha University, India",
+            "Digvijaysinh Rathod, National Forensic Science University, India",
+            "Kalpesh Parikh, Intellisense IT, India",
+            "Balaji Rajendran, CDAC, Bangaluru, India",
+            "Mehul C. Parikh, Gujarat Technological University, India",
+            "G. R. Kulkarni, Shivaji University, India",
+            "Amol C. Adamuthe, Shivaji University, India",
+            "Shrihari Khatawkar, Shivaji University, India",
+            "Snehal Joshi, Veer Narmad South Gujarat University, India",
+            "Ambika Nagaraj, Bengaluru Central University, India",
+            "Ashok Solanki, Veer Narmad South Gujarat University, India",
+            "Aditya Sinha, CDAC, India",
+            "Harshal Arolkar, GLS University, India",
+            "Binod Kumar, University of Pune, India",
+            "Maulin Joshi, Gujarat Technological University, India",
+            "Vrushank Shah, Indus University, India",
+            "Manish Patel, Sankalchand Patel University, India",
+            "Ankit Bhavsar, GLS University, India",
+            "Seema Mahajan, Indus University, India",
+            "S. K. Vij, ITM University, India",
+            "Vishal Jain, Sharda University, India",
+            "D. B. Choksi, Sardar Patel University, India",
+            "Paresh Virpariya, Sardar Patel University, India",
+            "Priti Srinivas Sajja, Sardar Patel University, India",
+            "C. K. Bhensdadia, Dharmsinh Desai University, India",
+            "Vipul K. Dabhi, Dharmsinh Desai University, India",
+            "N. J. Kothari, Dharmsinh Desai University, India",
+            "Narayan Joshi, Dharmsinh Desai University, India",
+            "S. D. Panchal, Gujarat Technological University, India",
+            "M. T. Savaliya, Gujarat Technological University, India",
+            "Vinod Desai, Gujarat Vidyapith, India",
+            "Himanshu Patel, Dr. Babasaheb Ambedkar Open University, India",
+            "Chhaya Patel, Gujarat Technological University, India",
+            "Jignesh Doshi, Gujarat Technological University, India",
+            "Bhaveshkumar Prajapati, Gujarat Technological University, India",
+            "Nisha Somani, Gujarat Technological University, India",
+            "Desai Archana Natvarbhai, Gujarat Technological University, India",
+            "Akhilesh Ladha, Gujarat Technological University, India",
+            "Jaymin Bhalani, Gujarat Technological University, India",
+            "Dhananjay Yadav, Gujarat Technological University, India",
+            "Keyur Jani, Gujarat Technological University, India",
+            "Jeegar Trivedi, Sardar Patel University, India"
+        ];
+
+        const technicalCommittees = technicalCommitteeData.map((item, index) => {
+            const parts = item.split(',').map(p => p.trim());
+
+            let name = parts[0];
+            let organization = "";
+            let designation = "";
+
+            // Heuristic for title/designation
+            if (name.includes("Dr. ")) {
+                designation = "Dr.";
+                name = name.replace("Dr. ", "");
+            } else if (name.includes("Prof. ")) {
+                designation = "Prof.";
+                name = name.replace("Prof. ", "");
+            } else if (name.includes("Mr. ")) {
+                designation = "Mr.";
+                name = name.replace("Mr. ", "");
+            } else {
+                designation = "Member";
+            }
+
+            // Extract Name and potentially designation from it first? 
+            // Actually the manual map below is safer but I used a data array above. 
+            // Let's refine the parsing.
+
+            if (parts.length >= 2) {
+                organization = parts.slice(1).join(', ');
+            }
+
+            return {
+                name: name,
+                designation: designation, // Set a default or extract if possible
+                organization: organization,
+                type: "Technical Program Committee Members",
+                sectionOrder: 3,
+                year: 2026,
+                order: index + 1
+            };
+        });
+
+        await Committee.deleteMany({ type: { $in: ["Technical Program Committee", "Technical Program Committee Members"] } });
+        await Committee.insertMany(technicalCommittees);
         console.log('Database seeded successfully');
     } catch (error) {
         console.error('Error seeding database:', error);

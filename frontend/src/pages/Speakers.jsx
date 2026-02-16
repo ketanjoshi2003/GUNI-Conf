@@ -342,46 +342,46 @@ const Speakers = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen pt-28 pb-12">
-            <div className="container mx-auto px-6">
-                <div className="mb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="mb-8 md:mb-12 text-center">
+                    <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-up break-words px-2">
                         Keynote Speakers {year}
                     </h1>
-                    <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6"></div>
+                    <div className="w-20 md:w-24 h-1 bg-blue-600 mx-auto rounded-full mt-4 md:mt-6"></div>
                 </div>
 
-                <div className="grid lg:grid-cols-1 gap-12">
+                <div className="grid lg:grid-cols-1 gap-8 md:gap-12">
                     {/* LEFT COLUMN (Speakers List) */}
                     <div className="w-full space-y-8 animate-fade-in-up">
                         {speakers.length > 0 ? (
                             speakers.map((speaker, index) => (
-                                <div key={index} className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-12 hover:shadow-2xl transition-all duration-500 overflow-hidden relative group">
+                                <div key={index} className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-xl border border-gray-100 p-4 sm:p-6 md:p-12 hover:shadow-2xl transition-all duration-500 overflow-hidden relative group min-w-0">
                                     {/* Session Metadata Header */}
                                     {/* Session Metadata Header */}
-                                    <div className="text-center mb-10 space-y-2">
+                                    <div className="text-center mb-6 md:mb-10 space-y-2">
                                         {speaker.date && (
                                             <p className="text-gray-500 font-medium text-sm tracking-wide">
                                                 Date: <span className="text-gray-800 font-bold">{speaker.date}</span>
                                             </p>
                                         )}
                                         {speaker.time && (
-                                            <p className="text-gray-500 font-medium text-sm tracking-wide">
+                                            <p className="text-gray-500 font-medium text-sm tracking-wide px-2 break-words">
                                                 Time: <span className="text-gray-800 font-bold">{speaker.time}</span>
                                             </p>
                                         )}
                                         {(speaker.sessionTitle || speaker.topic) && (
-                                            <h4 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-700 to-sky-600 bg-clip-text text-transparent italic">
+                                            <h4 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-700 to-sky-600 bg-clip-text text-transparent italic px-4 break-words leading-tight">
                                                 {speaker.sessionTitle}
                                                 {speaker.sessionTitle && speaker.topic && ': '}
                                                 {speaker.topic}
                                             </h4>
                                         )}
                                         <div className="pt-2">
-                                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-2">
+                                            <h2 className="text-lg md:text-3xl font-black text-gray-900 mb-2 break-words leading-tight px-1">
                                                 {speaker.designation ? 'Speaker: ' : ''}<span className="text-blue-600">{speaker.name}</span>
                                             </h2>
                                             {(speaker.title || speaker.affiliation) && (
-                                                <p className="text-lg text-gray-700 font-semibold max-w-2xl mx-auto leading-tight">
+                                                <p className="text-xs md:text-lg text-gray-700 font-semibold max-w-2xl mx-auto leading-tight break-words px-3">
                                                     {speaker.title}
                                                     {speaker.title && speaker.affiliation && ', '}
                                                     {speaker.affiliation}
@@ -390,11 +390,11 @@ const Speakers = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-start">
+                                    <div className="flex flex-col md:flex-row gap-6 md:gap-16 items-start">
                                         {/* Image Section */}
                                         <div className="flex-shrink-0 mx-auto md:mx-0">
                                             <div className="relative p-1 rounded-full bg-gradient-to-tr from-yellow-400 via-orange-500 to-yellow-200">
-                                                <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                                                <div className="w-32 h-32 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl transition-transform duration-700 group-hover:scale-105">
                                                     <img
                                                         src={formatImageUrl(speaker.image) || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop'}
                                                         alt={speaker.name}
@@ -408,13 +408,13 @@ const Speakers = () => {
                                         <div className="flex-grow space-y-6 min-w-0 w-full">
                                             <div>
                                                 <div
-                                                    className="text-gray-600 leading-relaxed text-base md:text-lg text-justify font-primary prose max-w-none break-words min-w-0 w-full [&_p]:mb-4 [&_p]:leading-7 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-gray-900 [&_em]:text-gray-800"
+                                                    className="rich-text-content text-gray-600 leading-relaxed text-sm md:text-lg text-left md:text-justify font-primary prose max-w-none break-words min-w-0 w-full"
                                                     dangerouslySetInnerHTML={{ __html: speaker.bio }}
                                                 />
                                                 {speaker.topicDescription && speaker.topicDescription.replace(/<[^>]+>/g, '').trim().length > 0 && (
-                                                    <div className="mt-6 p-5 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-gray-700 relative">
+                                                    <div className="mt-6 p-3 sm:p-5 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-gray-700 relative overflow-hidden">
                                                         <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase tracking-widest shadow-lg">Talk Abstract</div>
-                                                        <div dangerouslySetInnerHTML={{ __html: speaker.topicDescription }} />
+                                                        <div className="rich-text-content w-full" dangerouslySetInnerHTML={{ __html: speaker.topicDescription }} />
                                                     </div>
                                                 )}
                                             </div>
