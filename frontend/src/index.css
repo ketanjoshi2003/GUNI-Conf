@@ -82,27 +82,47 @@
 }
 
 /* Fix explicit white text on frontend description and force wrapping */
+/* Fix explicit white text on frontend description and force wrapping */
 .rich-text-content,
 .rich-text-content * {
-  overflow-wrap: anywhere !important;
+  overflow-wrap: break-word !important;
   word-wrap: break-word !important;
-  word-break: break-word !important;
-  white-space: normal !important;
-  max-width: 100% !important;
+  word-break: normal !important;
+  max-width: none !important;
+  /* Ensure containers aren't capped */
   box-sizing: border-box !important;
-  height: auto !important;
-  display: inline-block;
-  /* Helps with some wrapping issues in complex nested spans */
-  min-width: 0 !important;
+}
+
+.rich-text-content {
+  width: 100% !important;
+  white-space: normal !important;
+  text-align: left !important;
+  hyphens: none !important;
 }
 
 .rich-text-content p,
 .rich-text-content div,
-.rich-text-content span {
+.rich-text-content h1,
+.rich-text-content h2,
+.rich-text-content h3,
+.rich-text-content h4,
+.rich-text-content h5,
+.rich-text-content h6,
+.rich-text-content ul,
+.rich-text-content ol,
+.rich-text-content li {
   display: block;
-  /* Force blocks for better wrapping */
   width: 100% !important;
-  max-width: 100% !important;
+  min-width: 100% !important;
+  /* Force full width */
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+.rich-text-content span {
+  display: inline;
+  /* Fix: Spans must be inline for flow */
+  width: auto !important;
 }
 
 /* Force white text to be visible on light backgrounds */
@@ -143,7 +163,8 @@
 
 .rich-text-content p {
   margin-bottom: 1rem !important;
-  text-align: justify;
+  text-align: left !important;
+  /* Fix: justify causes extra spaces */
   line-height: 1.6;
 }
 
@@ -176,5 +197,4 @@ h4,
 h5,
 h6 {
   overflow-wrap: break-word !important;
-  hyphens: auto;
 }

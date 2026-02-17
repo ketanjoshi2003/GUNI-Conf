@@ -408,7 +408,7 @@ const Speakers = () => {
                                         <div className="flex-grow space-y-6 min-w-0 w-full">
                                             <div>
                                                 <div
-                                                    className="rich-text-content text-gray-600 leading-relaxed text-sm md:text-lg text-left md:text-justify font-primary prose max-w-none break-words min-w-0 w-full"
+                                                    className="rich-text-content text-gray-600 leading-relaxed text-sm md:text-lg text-left font-primary prose max-w-none break-words min-w-0 w-full"
                                                     dangerouslySetInnerHTML={{ __html: speaker.bio }}
                                                 />
                                                 {speaker.topicDescription && speaker.topicDescription.replace(/<[^>]+>/g, '').trim().length > 0 && (

@@ -58,7 +58,7 @@ const HomeSectionRenderer = ({ section, data }) => {
                         <div className="w-16 h-1 bg-sky-200 mx-auto mt-3 rounded-full"></div>
                     </div>
                     <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-center">
-                        <div className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base text-justify px-2 lg:px-0 min-w-0 break-words w-full">
+                        <div className="space-y-6 text-gray-700 leading-relaxed text-sm md:text-base text-left px-2 lg:px-0 min-w-0 break-words w-full">
                             {conferenceInfo?.university_about ? (
                                 <div className="rich-text-content w-full overflow-x-visible" dangerouslySetInnerHTML={{ __html: conferenceInfo.university_about }} />
                             ) : (
